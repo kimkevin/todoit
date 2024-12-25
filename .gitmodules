@@ -1,0 +1,3 @@
+[submodule "flutter_core"]
+	path = flutter_core
+	url = git@github.com:kimkevin/flutter_core.git

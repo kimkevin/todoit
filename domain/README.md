@@ -1,4 +1,4 @@
-# core
+# domain
 
 A new Flutter module project.
 

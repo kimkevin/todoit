@@ -1,5 +1,5 @@
-name: local
-description: "local module"
+name: domain
+description: "A new Flutter module project."
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -28,18 +28,10 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
-  drift: ^2.22.1
-  sqlite3_flutter_libs: ^0.5.0 # 최신 sqlite3 버전을 제공하는 패키지
-  path_provider: ^2.0.0 # 데이터베이스를 저장할 위치를 찾아주는 패키지
-  path: ^1.8.3 # 데이터베이스를 저장할 위치를 찾아주는 패키지
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
-
-  drift_dev: ^2.10.0 # 테이블의 쿼리 코드를 생성하는 패키지
-  build_runner: ^2.4.6 # code generation에 필요한 패키지
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -91,5 +83,5 @@ flutter:
   # identifiers, which may be completely independent or the same as these.
   module:
     androidX: true
-    androidPackage: com.example.local
-    iosBundleIdentifier: com.example.local
+    androidPackage: com.example.domain
+    iosBundleIdentifier: com.example.domain
