@@ -10,9 +10,9 @@ class TodosDao extends DatabaseAccessor<AppDatabase> with _$TodosDaoMixin {
 
   Future<int> createTodo(TodosCompanion todo) => into(todos).insert(todo);
 
-  Future<TodoTable> getTodo(int id) => (select(todos)..where((h) => h.id.equals(id))).getSingle();
+  Future<TodoTable> getTodo(int id) => (select(todos)..where((t) => t.id.equals(id))).getSingle();
 
   Future<bool> updateTodo(TodosCompanion todo) => update(todos).replace(todo);
 
-  Future<int> deleteTodo(int id) => (delete(todos)..where((h) => h.id.equals(id))).go();
+  Future<int> deleteTodo(int id) => (delete(todos)..where((t) => t.id.equals(id))).go();
 }

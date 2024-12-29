@@ -11,6 +11,6 @@ extension TodoEntityExtension on TodoEntity {
   );
 }
 
-extension TodoCompanionExtension on TodoTable {
+extension TodoTableExtension on TodoTable {
   TodoEntity toEntity() => TodoEntity(id: id, name: name, completed: completed);
 }
