@@ -51,3 +51,4 @@ app.*.map.json
 
 # Customize
 *.g.dart
+test_directory/
