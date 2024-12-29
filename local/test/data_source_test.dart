@@ -13,7 +13,7 @@ void main() {
     int id = 0;
     test('생성', () async {
       id = await todoDataSource.createTodo(todoName);
-      expect(id > 0, true);
+      expect(id > 0, true, reason: '투두가 생성되지 않았습니다');
     });
 
     test('변경', () async {
@@ -32,7 +32,7 @@ void main() {
 
     test('삭제', () async {
       final result = await todoDataSource.deleteTodo(id);
-      expect(result, true);
+      expect(result, true, reason: '투두가 삭제되지 않았습니다');
     });
   });
 }
