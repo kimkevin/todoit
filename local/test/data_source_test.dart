@@ -5,6 +5,7 @@ import 'package:local/database/database.dart';
 import 'package:local/datasource/page_data_source_impl.dart';
 import 'package:local/datasource/page_todo_data_source_impl.dart';
 import 'package:local/datasource/todo_data_source_impl.dart';
+import 'package:local/exceptions/basic_page_deletion_exception.dart';
 
 void main() {
   AppDatabase database = AppDatabase(true);
@@ -12,23 +13,39 @@ void main() {
   PageDataSource pageDataSource = PageDataSourceImpl(database: database);
   PageTodoDataSourceImpl pageTodoDataSource = PageTodoDataSourceImpl(database: database);
 
-  int pageId = 0;
+  int basicPageId = 0;
+  int page2Id = 0;
   int todo1Id = 0;
   int todo2Id = 0;
 
-  group('기본 페이지 - 생성,변경', () {
+  group('기본 페이지 - 생성,삭제', () {
     test('생성', () async {
-      pageId = await pageDataSource.createPage('기본');
-      expect(pageId > 0, true, reason: '페이지가 생성되지 않았습니다');
+      basicPageId = await pageDataSource.createPage('기본');
+      expect(basicPageId > 0, true, reason: '페이지가 생성되지 않았습니다');
+    });
+
+    test('삭제:불가', () async {
+      try {
+        await pageDataSource.deletePage(basicPageId);
+      } catch (e) {
+        expect(e, isA<BasicPageDeletionException>);
+      }
+    });
+  });
+
+  group('기본 페이지 - 생성,변경,조회,삭제', () {
+    test('생성', () async {
+      page2Id = await pageDataSource.createPage('뉴페이지');
+      expect(page2Id > 0, true, reason: '페이지가 생성되지 않았습니다');
     });
 
     test('변경', () async {
-      final result = await pageDataSource.updatePage(pageId, '테스트');
+      final result = await pageDataSource.updatePage(page2Id, '테스트');
       expect(result, true, reason: '이름이 변경되지 않았습니다');
     });
 
     test('조회', () async {
-      final result = await pageDataSource.getPage(pageId);
+      final result = await pageDataSource.getPage(page2Id);
       expect(result?.name, '테스트', reason: '이름이 변경되지 않았습니다');
     });
   });
@@ -38,7 +55,7 @@ void main() {
     final newTodoName = '물 주문';
     todo1Id = 0;
     test('생성', () async {
-      todo1Id = await todoDataSource.createTodo(pageId, todoName);
+      todo1Id = await todoDataSource.createTodo(page2Id, todoName);
       expect(todo1Id > 0, true, reason: '투두가 생성되지 않았습니다');
     });
 
@@ -61,7 +78,7 @@ void main() {
     final todoName = '물 주문하기';
     todo2Id = 0;
     test('생성', () async {
-      todo2Id = await todoDataSource.createTodo(pageId, todoName);
+      todo2Id = await todoDataSource.createTodo(page2Id, todoName);
       expect(todo2Id > 0, true, reason: '투두가 생성되지 않았습니다');
     });
 
@@ -73,7 +90,7 @@ void main() {
 
   group('페이지(삭제)', () {
     test('삭제', () async {
-      final result = await pageDataSource.deletePage(pageId);
+      final result = await pageDataSource.deletePage(page2Id);
       expect(result, true, reason: '페이지가 삭제되지 않았습니다');
     });
 
@@ -85,7 +102,7 @@ void main() {
 
   group('페이지/투두 - 빈상태', () {
     test('페이지 빈상태', () async {
-      final result = await pageDataSource.getPage(pageId);
+      final result = await pageDataSource.getPage(page2Id);
       expect(result, null, reason: '페이지가 비어있지 않습니다');
     });
     test('투두 빈상태', () async {

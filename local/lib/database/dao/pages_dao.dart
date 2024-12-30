@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:local/database/database.dart';
 import 'package:local/database/models/pages_table.dart';
+import 'package:local/exceptions/basic_page_deletion_exception.dart';
 
 part 'pages_dao.g.dart';
 
@@ -15,7 +16,12 @@ class PagesDao extends DatabaseAccessor<AppDatabase> with _$PagesDaoMixin {
 
   Future<bool> updatePage(PagesCompanion page) => update(pages).replace(page);
 
-  Future<int> _deletePage(int id) => (delete(pages)..where((p) => p.id.equals(id))).go();
+  Future<int> _deletePage(int id) {
+    if (id == 1) {
+      throw BasicPageDeletionException();
+    }
+    return (delete(pages)..where((p) => p.id.equals(id))).go();
+  }
 
   Future<bool> deletePageAndTodos(int id) => transaction(() async {
     try {
