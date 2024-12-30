@@ -9,11 +9,11 @@ class TodoDataSourceImpl extends TodoDataSource {
   TodoDataSourceImpl({required this.database});
 
   @override
-  Future<int> createTodo(String title) async =>
-      await database.todosDao.createTodo(TodoEntity(name: title).toCompanion());
+  Future<int> createTodo(int pageId, String title) async =>
+      await database.todosDao.createTodo(pageId, TodoEntity(name: title).toCompanion());
 
   @override
-  Future<TodoEntity> getTodo(int id) async => (await database.todosDao.getTodo(id)).toEntity();
+  Future<TodoEntity?> getTodo(int id) async => (await database.todosDao.getTodo(id))?.toEntity();
 
   @override
   Future<bool> updateTodo(int id, String name, bool completed) async {
@@ -23,8 +23,5 @@ class TodoDataSourceImpl extends TodoDataSource {
   }
 
   @override
-  Future<bool> deleteTodo(int id) async {
-    final result = await database.todosDao.deleteTodo(id);
-    return result > 0;
-  }
+  Future<int> deleteTodo(int id) => database.todosDao.deleteTodo(id);
 }

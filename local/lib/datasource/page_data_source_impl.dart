@@ -13,7 +13,7 @@ class PageDataSourceImpl extends PageDataSource {
       await database.pagesDao.createPage(PageEntity(name: title).toCompanion());
 
   @override
-  Future<PageEntity> getPage(int id) async => (await database.pagesDao.getPage(id)).toEntity();
+  Future<PageEntity?> getPage(int id) async => (await database.pagesDao.getPage(id))?.toEntity();
 
   @override
   Future<bool> updatePage(int id, String name) async {
@@ -23,8 +23,5 @@ class PageDataSourceImpl extends PageDataSource {
   }
 
   @override
-  Future<bool> deletePage(int id) async {
-    final result = await database.pagesDao.deleteTodo(id);
-    return result > 0;
-  }
+  Future<bool> deletePage(int id) => database.pagesDao.deletePageAndTodos(id);
 }

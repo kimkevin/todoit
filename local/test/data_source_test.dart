@@ -1,38 +1,102 @@
+import 'package:data/datasource/page_data_source.dart';
 import 'package:data/datasource/todo_data_source.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:local/database/database.dart';
+import 'package:local/datasource/page_data_source_impl.dart';
+import 'package:local/datasource/page_todo_data_source_impl.dart';
 import 'package:local/datasource/todo_data_source_impl.dart';
 
 void main() {
   AppDatabase database = AppDatabase(true);
   TodoDataSource todoDataSource = TodoDataSourceImpl(database: database);
+  PageDataSource pageDataSource = PageDataSourceImpl(database: database);
+  PageTodoDataSourceImpl pageTodoDataSource = PageTodoDataSourceImpl(database: database);
 
-  group('투두', () {
-    final todoName = '물 주문하기';
-    final newTodoName = '물 주문';
-    int id = 0;
+  int pageId = 0;
+  int todo1Id = 0;
+  int todo2Id = 0;
+
+  group('기본 페이지 - 생성,변경', () {
     test('생성', () async {
-      id = await todoDataSource.createTodo(todoName);
-      expect(id > 0, true, reason: '투두가 생성되지 않았습니다');
+      pageId = await pageDataSource.createPage('기본');
+      expect(pageId > 0, true, reason: '페이지가 생성되지 않았습니다');
     });
 
     test('변경', () async {
-      final nameResult = await todoDataSource.updateTodo(id, newTodoName, false);
+      final result = await pageDataSource.updatePage(pageId, '테스트');
+      expect(result, true, reason: '이름이 변경되지 않았습니다');
+    });
+
+    test('조회', () async {
+      final result = await pageDataSource.getPage(pageId);
+      expect(result?.name, '테스트', reason: '이름이 변경되지 않았습니다');
+    });
+  });
+
+  group('투두1 - 생성,변경,조회', () {
+    final todoName = '물 주문하기';
+    final newTodoName = '물 주문';
+    todo1Id = 0;
+    test('생성', () async {
+      todo1Id = await todoDataSource.createTodo(pageId, todoName);
+      expect(todo1Id > 0, true, reason: '투두가 생성되지 않았습니다');
+    });
+
+    test('변경', () async {
+      final nameResult = await todoDataSource.updateTodo(todo1Id, newTodoName, false);
       expect(nameResult, true, reason: '이름이 변경되지 않았습니다');
 
-      final completeResult = await todoDataSource.updateTodo(id, newTodoName, true);
+      final completeResult = await todoDataSource.updateTodo(todo1Id, newTodoName, true);
       expect(completeResult, true, reason: '투두가 완료되지 않았습니다');
     });
 
     test('조회', () async {
-      final result = await todoDataSource.getTodo(id);
-      expect(result.name, newTodoName, reason: '투두의 이름이 다릅니다');
-      expect(result.completed, true, reason: '투두가 완료되지 않았습니다');
+      final result = await todoDataSource.getTodo(todo1Id);
+      expect(result?.name, newTodoName, reason: '투두의 이름이 다릅니다');
+      expect(result?.completed, true, reason: '투두가 완료되지 않았습니다');
+    });
+  });
+
+  group('투두2 - 생성,삭제', () {
+    final todoName = '물 주문하기';
+    todo2Id = 0;
+    test('생성', () async {
+      todo2Id = await todoDataSource.createTodo(pageId, todoName);
+      expect(todo2Id > 0, true, reason: '투두가 생성되지 않았습니다');
     });
 
     test('삭제', () async {
-      final result = await todoDataSource.deleteTodo(id);
-      expect(result, true, reason: '투두가 삭제되지 않았습니다');
+      final result = await todoDataSource.deleteTodo(todo2Id);
+      expect(result, 1, reason: '투두가 삭제되지 않았습니다');
+    });
+  });
+
+  group('페이지(삭제)', () {
+    test('삭제', () async {
+      final result = await pageDataSource.deletePage(pageId);
+      expect(result, true, reason: '페이지가 삭제되지 않았습니다');
+    });
+
+    test('투두 조회', () async {
+      final result = await todoDataSource.getTodo(todo1Id);
+      expect(result, null, reason: '투두가 삭제되지 않았습니다');
+    });
+  });
+
+  group('페이지/투두 - 빈상태', () {
+    test('페이지 빈상태', () async {
+      final result = await pageDataSource.getPage(pageId);
+      expect(result, null, reason: '페이지가 비어있지 않습니다');
+    });
+    test('투두 빈상태', () async {
+      final result1 = await todoDataSource.getTodo(todo1Id);
+      final result2 = await todoDataSource.getTodo(todo2Id);
+      expect(result1, null, reason: '투두1 삭제되지 않았습니다');
+      expect(result2, null, reason: '투두2 삭제되지 않았습니다');
+    });
+    test('페이지투두  빈상태', () async {
+      final result1 = await pageTodoDataSource.getAllPageTodo();
+      expect(result1.isEmpty, true, reason: '페이지투두가 비어있지 않습니다');
     });
   });
 }

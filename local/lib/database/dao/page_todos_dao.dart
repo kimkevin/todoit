@@ -7,4 +7,19 @@ part 'page_todos_dao.g.dart';
 @DriftAccessor(tables: [PageTodos])
 class PageTodosDao extends DatabaseAccessor<AppDatabase> with _$PageTodosDaoMixin {
   PageTodosDao(super.db);
+
+  Future<int> createPageTodo(PageTodosCompanion pageTodo) => into(pageTodos).insert(pageTodo);
+
+  Future<List<int>> getTodoIdsByPageId(int pageId) async {
+    final result = select(pageTodos)..where((pt) => pt.pageId.equals(pageId));
+    return (await result.get()).map((pt) => pt.todoId).toList();
+  }
+
+  Future<List<PageTodoTable>> getAllPageTodo() => (select(pageTodos)).get();
+
+  Future<int> deletePageTodosByPageId(int pageId) =>
+      (delete(pageTodos)..where((pt) => pt.pageId.equals(pageId))).go();
+
+  Future<int> deletePageTodoByTodoId(int todoId) =>
+      (delete(pageTodos)..where((pt) => pt.todoId.equals(todoId))).go();
 }

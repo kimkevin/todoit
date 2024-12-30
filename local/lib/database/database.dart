@@ -19,6 +19,18 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   int get schemaVersion => 1;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (Migrator m) {
+      return m.createAllTables().then((_) {
+        customStatement('PRAGMA foreign_keys = ON'); // 외래키 제약 조건 활성화
+      });
+    },
+    onUpgrade: (migrator, from, to) async {
+      // if from < to, perform migration. You can execute special migration steps here if needed.
+    },
+  );
 }
 
 LazyDatabase _openConnections() {
