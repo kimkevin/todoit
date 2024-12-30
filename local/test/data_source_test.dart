@@ -51,11 +51,10 @@ void main() {
   });
 
   group('투두1 - 생성,변경,조회', () {
-    final todoName = '물 주문하기';
     final newTodoName = '물 주문';
     todo1Id = 0;
     test('생성', () async {
-      todo1Id = await todoDataSource.createTodo(page2Id, todoName);
+      todo1Id = await todoDataSource.createTodo(page2Id, '투두1');
       expect(todo1Id > 0, true, reason: '투두가 생성되지 않았습니다');
     });
 
@@ -75,10 +74,9 @@ void main() {
   });
 
   group('투두2 - 생성,삭제', () {
-    final todoName = '물 주문하기';
     todo2Id = 0;
     test('생성', () async {
-      todo2Id = await todoDataSource.createTodo(page2Id, todoName);
+      todo2Id = await todoDataSource.createTodo(page2Id, '투두2');
       expect(todo2Id > 0, true, reason: '투두가 생성되지 않았습니다');
     });
 
