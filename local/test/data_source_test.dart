@@ -33,9 +33,9 @@ void main() {
     });
   });
 
-  group('기본 페이지 - 생성,변경,조회,삭제', () {
+  group('신규페이지 - 생성,변경,조회,삭제', () {
     test('생성', () async {
-      page2Id = await pageDataSource.createPage('뉴페이지');
+      page2Id = await pageDataSource.createPage('신규페이지');
       expect(page2Id > 0, true, reason: '페이지가 생성되지 않았습니다');
     });
 
