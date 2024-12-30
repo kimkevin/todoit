@@ -8,4 +8,6 @@ abstract class TodoDataSource {
   Future<bool> updateTodo(int id, String title, bool isCompleted);
 
   Future<int> deleteTodo(int id);
+
+  Future<List<TodoEntity>> getTodosByPageId(int pageId);
 }

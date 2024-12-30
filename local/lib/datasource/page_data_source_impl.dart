@@ -24,4 +24,16 @@ class PageDataSourceImpl extends PageDataSource {
 
   @override
   Future<bool> deletePage(int id) => database.pagesDao.deletePageAndTodos(id);
+
+  @override
+  Future<bool> initBasicPage() {
+    // TODO: implement initBasicPage
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> isPageExisted() {
+    // TODO: implement isPageExisted
+    throw UnimplementedError();
+  }
 }

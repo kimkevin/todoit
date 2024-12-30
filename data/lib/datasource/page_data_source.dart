@@ -8,4 +8,8 @@ abstract class PageDataSource {
   Future<bool> updatePage(int id, String title);
 
   Future<bool> deletePage(int id);
+
+  Future<bool> isPageExisted();
+
+  Future<bool> initBasicPage();
 }

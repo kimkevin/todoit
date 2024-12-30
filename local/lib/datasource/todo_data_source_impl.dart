@@ -24,4 +24,18 @@ class TodoDataSourceImpl extends TodoDataSource {
 
   @override
   Future<int> deleteTodo(int id) => database.todosDao.deleteTodo(id);
+
+  @override
+  Future<List<TodoEntity>> getTodosByPageId(int pageId) async {
+    List<int> todoIds = await database.pageTodosDao.getTodoIdsByPageId(pageId);
+    List<Future> futures = [];
+
+    for (final id in todoIds) {
+      futures.add(database.todosDao.getTodo(id));
+    }
+
+    return await Future.wait(
+      futures,
+    ).then((results) => results.whereType<TodoTable>().map((t) => t.toEntity()).toList());
+  }
 }
