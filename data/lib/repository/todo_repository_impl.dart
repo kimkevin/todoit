@@ -12,9 +12,6 @@ class TodoRepositoryImpl extends TodoRepository {
   Future<int> createTodo(int pageId, String name) => todoDataSource.createTodo(pageId, name);
 
   @override
-  Future<TodoModel?> getTodo(int id) async => (await todoDataSource.getTodo(id))?.toModel();
-
-  @override
   Future<List<TodoModel>> getTodosByPageId(int pageId) async =>
       (await todoDataSource.getTodosByPageId(pageId)).map((e) => e.toModel()).toList();
 
