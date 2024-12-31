@@ -4,12 +4,15 @@ import 'package:local/database/database.dart';
 
 extension PageEntityExtension on PageEntity {
   PagesCompanion toCompanion() => PagesCompanion(
-    id: id > 0 ? Value(id) : const Value.absent(),
-    name: Value(name),
-    updatedAt: Value(DateTime.now()),
-  );
+        id: id > 0 ? Value(id) : const Value.absent(),
+        name: Value(name),
+        updatedAt: Value(DateTime.now()),
+      );
 }
 
 extension PageTableExtension on PageTable {
-  PageEntity toEntity() => PageEntity(id: id, name: name);
+  PageEntity toEntity() => PageEntity(
+        id: id,
+        name: name,
+      );
 }
