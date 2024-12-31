@@ -1,7 +1,7 @@
 import 'package:data/model/entity/page_entity.dart';
 
 abstract class PageDataSource {
-  Future<int> createPage(String title);
+  Future<int> createPage(String name);
 
   Future<PageEntity?> getPage(int id);
 

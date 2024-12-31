@@ -11,11 +11,15 @@ class PageTodosDao extends DatabaseAccessor<AppDatabase> with _$PageTodosDaoMixi
   Future<int> createPageTodo(PageTodosCompanion pageTodo) => into(pageTodos).insert(pageTodo);
 
   Future<List<int>> getTodoIdsByPageId(int pageId) async {
-    final result = select(pageTodos)..where((pt) => pt.pageId.equals(pageId));
+    final result = select(pageTodos)
+      ..where((pt) => pt.pageId.equals(pageId))
+      ..orderBy([(t) => OrderingTerm(expression: t.todoId, mode: OrderingMode.desc)]);
     return (await result.get()).map((pt) => pt.todoId).toList();
   }
 
-  Future<List<PageTodoTable>> getAllPageTodo() => (select(pageTodos)).get();
+  Future<List<PageTodoTable>> getAllPageTodo() => (select(pageTodos)
+        ..orderBy([(t) => OrderingTerm(expression: t.todoId, mode: OrderingMode.desc)]))
+      .get();
 
   Future<int> deletePageTodosByPageId(int pageId) =>
       (delete(pageTodos)..where((pt) => pt.pageId.equals(pageId))).go();

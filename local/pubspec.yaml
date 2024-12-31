@@ -18,7 +18,7 @@ description: "local module"
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.7.0-267.0.dev
+  sdk: '>=3.0.6 <4.0.0'
 
 dependencies:
   flutter:
