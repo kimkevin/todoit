@@ -8,3 +8,11 @@ extension TodoDomainExtension on TodoModel {
         completed: completed,
       );
 }
+
+extension TodoUiExtension on Todo {
+  TodoModel toModel() => TodoModel(
+        id: id,
+        name: name,
+        completed: completed,
+      );
+}

@@ -4,7 +4,7 @@ import 'package:di/injection_container.dart';
 import 'package:domain/repository/todo_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:presentation/extensions/todo_domain_extensions.dart';
+import 'package:presentation/extensions/todo_domain_ui_extensions.dart';
 import 'package:presentation/ui/model/todo.dart';
 
 class HomeNotifier with ChangeNotifier {
@@ -27,6 +27,14 @@ class HomeNotifier with ChangeNotifier {
   void addTodo(String name) async {
     await todoRepository.createTodo(_currentPageId, name);
     loadTodoList();
+  }
+
+  void toggleTodo(Todo todo) async {
+    final newTodo = todo.copyWith(completed: !todo.completed);
+    final result = await todoRepository.updateTodo(newTodo.toModel());
+    if (result) {
+      loadTodoList();
+    }
   }
 }
 

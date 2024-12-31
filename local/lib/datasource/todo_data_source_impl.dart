@@ -16,11 +16,8 @@ class TodoDataSourceImpl extends TodoDataSource {
   Future<TodoEntity?> getTodo(int id) async => (await database.todosDao.getTodo(id))?.toEntity();
 
   @override
-  Future<bool> updateTodo(int id, String name, bool completed) async {
-    final newTodo = TodoEntity(id: id, name: name, completed: completed);
-    final result = await database.todosDao.updateTodo(newTodo.toCompanion());
-    return result;
-  }
+  Future<bool> updateTodo(TodoEntity newTodo) async =>
+      database.todosDao.updateTodo(newTodo.toCompanion());
 
   @override
   Future<int> deleteTodo(int id) => database.todosDao.deleteTodo(id);

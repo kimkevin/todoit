@@ -5,7 +5,12 @@ class Todo {
 
   Todo({required this.id, required this.name, required this.completed});
 
+  Todo copyWith({String? name, bool? completed}) => Todo(
+        id: id,
+        name: name ?? this.name,
+        completed: completed ?? this.completed,
+      );
+
   @override
-  String toString() =>
-    'Todo{id: $id, name: $name, completed: $completed}';
+  String toString() => 'Todo{id: $id, name: $name, completed: $completed}';
 }

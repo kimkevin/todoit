@@ -14,14 +14,6 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  int _counter = 0;
-
-  void _createTodo() {
-    setState(() {
-      _counter++;
-    });
-  }
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -32,31 +24,32 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     final todoNotifier = ref.watch(homeProvider);
-    print('todo list= ${todoNotifier.todos}');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            TodoInputItem(
-              onTodoSubmitted: (input) {
-                print('input= $input');
-                todoNotifier.addTodo(input);
-              },
-            ),
-            ...todoNotifier.todos.map((todo) => TodoListItem(todo: todo)),
-          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              TodoInputItem(onTodoSubmitted: todoNotifier.addTodo),
+              ...todoNotifier.todos.map(
+                (todo) => TodoListItem(
+                  todo: todo,
+                  onClick: todoNotifier.toggleTodo,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _createTodo,
-        tooltip: 'Create Todo',
-        child: const Icon(Icons.add),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {},
+      //   tooltip: 'Create Todo',
+      //   child: const Icon(Icons.add),
+      // ),
     );
   }
 }

@@ -5,7 +5,7 @@ abstract class TodoDataSource {
 
   Future<TodoEntity?> getTodo(int id);
 
-  Future<bool> updateTodo(int id, String name, bool isCompleted);
+  Future<bool> updateTodo(TodoEntity newTodo);
 
   Future<int> deleteTodo(int id);
 

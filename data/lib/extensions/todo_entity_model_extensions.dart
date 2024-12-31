@@ -4,3 +4,7 @@ import 'package:domain/model/todo_model.dart';
 extension TodoEntityExtension on TodoEntity {
   TodoModel toModel() => TodoModel(id: id, name: name, completed: completed);
 }
+
+extension TodoModelExtension on TodoModel {
+  TodoEntity toEntity() => TodoEntity(id: id, name: name, completed: completed);
+}
