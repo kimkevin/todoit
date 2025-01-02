@@ -16,7 +16,9 @@ class PagesDao extends DatabaseAccessor<AppDatabase> with _$PagesDaoMixin {
 
   Future<bool> updatePage(PagesCompanion page) => update(pages).replace(page);
 
-  Future<List<PageTable>> getAllPage() => select(pages).get();
+  Future<List<PageTable>> getAllPage() => (select(pages)
+        ..orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)]))
+      .get();
 
   Future<int> _deletePage(int id) {
     if (id == 1) {

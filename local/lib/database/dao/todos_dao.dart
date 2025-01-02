@@ -32,8 +32,4 @@ class TodosDao extends DatabaseAccessor<AppDatabase> with _$TodosDaoMixin {
           return 0;
         }
       });
-
-  Future<List<TodoTable>> getAllTodo() =>
-      (select(todos)..orderBy([(t) => OrderingTerm(expression: t.id, mode: OrderingMode.asc)]))
-          .get();
 }

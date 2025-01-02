@@ -13,12 +13,12 @@ class PageTodosDao extends DatabaseAccessor<AppDatabase> with _$PageTodosDaoMixi
   Future<List<int>> getTodoIdsByPageId(int pageId) async {
     final result = select(pageTodos)
       ..where((pt) => pt.pageId.equals(pageId))
-      ..orderBy([(t) => OrderingTerm(expression: t.todoId, mode: OrderingMode.desc)]);
+      ..orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.asc)]);
     return (await result.get()).map((pt) => pt.todoId).toList();
   }
 
   Future<List<PageTodoTable>> getAllPageTodo() => (select(pageTodos)
-        ..orderBy([(t) => OrderingTerm(expression: t.todoId, mode: OrderingMode.desc)]))
+        ..orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.asc)]))
       .get();
 
   Future<int> deletePageTodosByPageId(int pageId) =>
