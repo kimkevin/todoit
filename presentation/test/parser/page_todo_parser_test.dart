@@ -91,4 +91,24 @@ void main() {
     ]);
     expect(parser.parse(), actual);
   });
+
+  test('여러 페이지 + 투두(•)', () {
+    final inputText = '''
+장보기
+• 당근
+• 채소
+• 과일
+공부하기
+• 수학
+• 영어
+• 국어
+''';
+
+    final parser = PageTodoParser(inputText);
+    final actual = PageTodoParseResult(pageTodos: [
+      ParsedPageTodo(pageName: '장보기', todoNames: ['당근', '채소', '과일']),
+      ParsedPageTodo(pageName: '공부하기', todoNames: ['수학', '영어', '국어'])
+    ]);
+    expect(parser.parse(), actual);
+  });
 }
