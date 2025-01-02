@@ -9,7 +9,5 @@ abstract class PageDataSource {
 
   Future<bool> deletePage(int id);
 
-  Future<bool> isPageExisted();
-
-  Future<bool> initBasicPage();
+  Future<List<PageEntity>> getAllPages();
 }

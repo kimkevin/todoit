@@ -1,7 +1,7 @@
 import 'package:data/datasource/todo_data_source.dart';
 import 'package:data/model/entity/todo_entity.dart';
 import 'package:local/database/database.dart';
-import 'package:local/database/extensions/todo_entity_companion_extensions.dart';
+import 'package:local/database/extensions/todo_companion_entity_extensions.dart';
 
 class TodoDataSourceImpl extends TodoDataSource {
   final AppDatabase database;

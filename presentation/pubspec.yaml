@@ -42,6 +42,8 @@ dependencies:
     path: ../domain
   di:
     path: ../di
+  flutter_core:
+    path: ../flutter_core
 
 dev_dependencies:
   flutter_test:

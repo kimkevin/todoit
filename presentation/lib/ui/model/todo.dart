@@ -1,11 +1,11 @@
-class Todo {
+class TodoUiModel {
   final int id;
   final String name;
   final bool completed;
 
-  Todo({required this.id, required this.name, required this.completed});
+  TodoUiModel({required this.id, required this.name, required this.completed});
 
-  Todo copyWith({String? name, bool? completed}) => Todo(
+  TodoUiModel copyWith({String? name, bool? completed}) => TodoUiModel(
         id: id,
         name: name ?? this.name,
         completed: completed ?? this.completed,

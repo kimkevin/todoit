@@ -1,40 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:presentation/notifier/home_notifier.dart';
+import 'package:presentation/notifier/todo_list_page.dart';
+import 'package:presentation/ui/model/page.dart';
 import 'package:presentation/ui/widgets/todo_input_item.dart';
 import 'package:presentation/ui/widgets/todo_list_item.dart';
 
-class HomePage extends ConsumerStatefulWidget {
-  const HomePage({super.key, required this.title});
-
-  final String title;
+class TodoListPage extends ConsumerStatefulWidget {
+  final PageUiModel page;
+  const TodoListPage({super.key, required this.page});
 
   @override
-  ConsumerState<HomePage> createState() => _HomePageState();
+  ConsumerState<TodoListPage> createState() => _TodoListPageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage> {
+class _TodoListPageState extends ConsumerState<TodoListPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    ref.watch(homeProvider).loadTodoList();
+    ref.watch(todoListProvider).loadTodoList(widget.page.id);
   }
 
   @override
   Widget build(BuildContext context) {
-    final todoNotifier = ref.watch(homeProvider);
+    final todoNotifier = ref.watch(todoListProvider);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text(widget.page.name),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              TodoInputItem(onTodoSubmitted: todoNotifier.addTodo),
+              InputItem(name: '투두', onSubmit: todoNotifier.addTodo,),
               ...todoNotifier.todos.map(
                 (todo) => TodoListItem(
                   todo: todo,

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:presentation/ui/model/todo.dart';
 
 class TodoListItem extends StatelessWidget {
-  final Todo todo;
-  final Function(Todo) onClick;
+  final TodoUiModel todo;
+  final Function(TodoUiModel) onClick;
 
   const TodoListItem({
     super.key,

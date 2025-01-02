@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 
-class TodoInputItem extends StatefulWidget {
-  final Function(String) onTodoSubmitted;
+class InputItem extends StatefulWidget {
+  final String name;
+  final Function(String) onSubmit;
 
-  const TodoInputItem({super.key, required this.onTodoSubmitted});
+  const InputItem({super.key, required this.name, required this.onSubmit,});
 
   @override
-  State<TodoInputItem> createState() => _TodoInputItemState();
+  State<InputItem> createState() => _InputItemState();
 }
 
-class _TodoInputItemState extends State<TodoInputItem> {
+class _InputItemState extends State<InputItem> {
   late TextEditingController _textEditingController;
   late FocusNode _focusNode;
 
   void onTodoSubmitted(String name) {
-    widget.onTodoSubmitted(name);
+    widget.onSubmit(name);
     _textEditingController.clear();
     _focusNode.unfocus();
   }
@@ -44,7 +45,7 @@ class _TodoInputItemState extends State<TodoInputItem> {
         focusNode: _focusNode,
         decoration: InputDecoration(
           isDense: true,
-          hintText: '+클릭해서 추가하기',
+          hintText: '+클릭해서 ${widget.name} 추가하기',
           hintStyle: TextStyle(fontStyle: FontStyle.normal, fontSize: 24, color: Colors.grey),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.only(top: 12, bottom: 12),

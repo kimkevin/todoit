@@ -7,38 +7,40 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:presentation/extensions/todo_domain_ui_extensions.dart';
 import 'package:presentation/ui/model/todo.dart';
 
-class HomeNotifier with ChangeNotifier {
+class TodoListNotifier with ChangeNotifier {
   final TodoRepository todoRepository;
 
-  final _currentPageId = 1;
+  var _pageId = 0;
 
-  List<Todo> _todos = <Todo>[];
-  List<Todo> get todos => UnmodifiableListView(_todos);
+  List<TodoUiModel> _todos = <TodoUiModel>[];
+  List<TodoUiModel> get todos => UnmodifiableListView(_todos);
 
-  HomeNotifier({required this.todoRepository});
+  TodoListNotifier({required this.todoRepository});
 
-  void loadTodoList() async {
-    _todos =
-        (await todoRepository.getTodosByPageId(_currentPageId)).map((e) => e.toUiModel()).toList();
+  void loadTodoList(int pageId) async {
+    if (pageId <= 0) return;
+
+    _pageId = pageId;
+    _todos = (await todoRepository.getTodosByPageId(pageId)).map((e) => e.toUiModel()).toList();
     print('todos= $_todos');
     notifyListeners();
   }
 
   void addTodo(String name) async {
-    await todoRepository.createTodo(_currentPageId, name);
-    loadTodoList();
+    await todoRepository.createTodo(_pageId, name);
+    loadTodoList(_pageId);
   }
 
-  void toggleTodo(Todo todo) async {
+  void toggleTodo(TodoUiModel todo) async {
     final newTodo = todo.copyWith(completed: !todo.completed);
     final result = await todoRepository.updateTodo(newTodo.toModel());
     if (result) {
-      loadTodoList();
+      loadTodoList(_pageId);
     }
   }
 }
 
 // Finally, we are using ChangeNotifierProvider to allow the UI to interact with our TodosNotifier class.
-final homeProvider = ChangeNotifierProvider<HomeNotifier>(
-  (ref) => HomeNotifier(todoRepository: getIt<TodoRepository>()),
+final todoListProvider = ChangeNotifierProvider<TodoListNotifier>(
+  (ref) => TodoListNotifier(todoRepository: getIt<TodoRepository>()),
 );

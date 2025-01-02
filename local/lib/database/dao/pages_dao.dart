@@ -16,6 +16,8 @@ class PagesDao extends DatabaseAccessor<AppDatabase> with _$PagesDaoMixin {
 
   Future<bool> updatePage(PagesCompanion page) => update(pages).replace(page);
 
+  Future<List<PageTable>> getAllPage() => select(pages).get();
+
   Future<int> _deletePage(int id) {
     if (id == 1) {
       throw BasicPageDeletionException();
@@ -24,22 +26,22 @@ class PagesDao extends DatabaseAccessor<AppDatabase> with _$PagesDaoMixin {
   }
 
   Future<bool> deletePageAndTodos(int id) => transaction(() async {
-    try {
-      // 1. 페이지에 연관된 모든  투두 삭제
-      final todoIds = await db.pageTodosDao.getTodoIdsByPageId(id);
-      if (todoIds.isNotEmpty) {
-        List<Future> deleteFutures = [];
-        for (var id in todoIds) {
-          deleteFutures.add(db.todosDao.deleteTodo(id));
-        }
-        await Future.wait(deleteFutures);
-      }
+        try {
+          // 1. 페이지에 연관된 모든  투두 삭제
+          final todoIds = await db.pageTodosDao.getTodoIdsByPageId(id);
+          if (todoIds.isNotEmpty) {
+            List<Future> deleteFutures = [];
+            for (var id in todoIds) {
+              deleteFutures.add(db.todosDao.deleteTodo(id));
+            }
+            await Future.wait(deleteFutures);
+          }
 
-      // 2. 페이지 삭제
-      await _deletePage(id);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  });
+          // 2. 페이지 삭제
+          await _deletePage(id);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      });
 }

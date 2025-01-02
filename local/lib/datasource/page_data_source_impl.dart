@@ -1,7 +1,7 @@
 import 'package:data/datasource/page_data_source.dart';
 import 'package:data/model/entity/page_entity.dart';
 import 'package:local/database/database.dart';
-import 'package:local/database/extensions/page_entity_companion_extensions.dart';
+import 'package:local/database/extensions/page_companion_entity_extensions.dart';
 
 class PageDataSourceImpl extends PageDataSource {
   final AppDatabase database;
@@ -26,14 +26,6 @@ class PageDataSourceImpl extends PageDataSource {
   Future<bool> deletePage(int id) => database.pagesDao.deletePageAndTodos(id);
 
   @override
-  Future<bool> initBasicPage() {
-    // TODO: implement initBasicPage
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<bool> isPageExisted() {
-    // TODO: implement isPageExisted
-    throw UnimplementedError();
-  }
+  Future<List<PageEntity>> getAllPages() async =>
+      (await database.pagesDao.getAllPage()).map((e) => e.toEntity()).toList();
 }
