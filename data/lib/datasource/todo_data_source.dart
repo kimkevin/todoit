@@ -10,4 +10,6 @@ abstract class TodoDataSource {
   Future<int> deleteTodo(int id);
 
   Future<List<TodoEntity>> getTodosByPageId(int pageId);
+
+  Future<bool> reorderTodos(int oldIndex, int newIndex);
 }

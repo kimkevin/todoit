@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:presentation/temp_ds.dart';
 import 'package:presentation/ui/model/todo.dart';
 
@@ -20,7 +21,7 @@ class TodoListItem extends StatelessWidget {
       textStyle = DsTextStyles.item.copyWith(
         decoration: TextDecoration.lineThrough,
         decorationColor: Color(0xFF9E9FA0),
-        decorationThickness: 3.0,
+        decorationThickness: 2.0,
         color: Color(0xFF9E9FA0),
       );
       // TextStyle(
@@ -34,11 +35,12 @@ class TodoListItem extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
+        HapticFeedback.lightImpact();
         onClick(todo);
       },
       child: Container(
         color: Colors.transparent,
-        padding: EdgeInsets.symmetric(vertical: 12),
+        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
         child: Row(
           children: [
             Expanded(child: Text(todo.name, style: textStyle)),

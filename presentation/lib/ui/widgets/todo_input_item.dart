@@ -46,34 +46,37 @@ class _InputItemState extends State<InputItem> {
   }
 
   @override
-  Widget build(BuildContext context) => Row(
-        children: [
-          Expanded(
-            child: TextField(
-              textInputAction: TextInputAction.done,
-              controller: _textEditingController,
-              focusNode: _focusNode,
-              decoration: InputDecoration(
-                isDense: true,
-                hintText: '+클릭해서 ${widget.name} 추가하기',
-                hintStyle: DsTextStyles.item.copyWith(color: Colors.grey.shade400),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.only(top: 12, bottom: 12),
+  Widget build(BuildContext context) => Padding(
+        padding: EdgeInsets.symmetric(horizontal: 32),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                textInputAction: TextInputAction.done,
+                controller: _textEditingController,
+                focusNode: _focusNode,
+                decoration: InputDecoration(
+                  isDense: true,
+                  hintText: '+클릭해서 ${widget.name} 추가하기',
+                  hintStyle: DsTextStyles.item.copyWith(color: Colors.grey.shade400),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.only(top: 12, bottom: 12),
+                ),
+                style: TextStyle(fontStyle: FontStyle.normal, fontSize: 24),
+                keyboardType: TextInputType.multiline,
+                minLines: 1,
+                maxLines: 5,
+                onSubmitted: onTodoSubmitted,
               ),
-              style: TextStyle(fontStyle: FontStyle.normal, fontSize: 24),
-              keyboardType: TextInputType.multiline,
-              minLines: 1,
-              maxLines: 5,
-              onSubmitted: onTodoSubmitted,
             ),
-          ),
-          if (widget.fromPage)
-            GestureDetector(
-              onTap: () {
-                context.navigator.push(MaterialPageRoute(builder: (context) => ParseTodoPage()));
-              },
-              child: Text('복붙'),
-            ),
-        ],
+            if (widget.fromPage)
+              GestureDetector(
+                onTap: () {
+                  context.navigator.push(MaterialPageRoute(builder: (context) => ParseTodoPage()));
+                },
+                child: Text('복붙'),
+              ),
+          ],
+        ),
       );
 }

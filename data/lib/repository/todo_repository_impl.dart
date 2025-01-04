@@ -17,4 +17,8 @@ class TodoRepositoryImpl extends TodoRepository {
 
   @override
   Future<bool> updateTodo(TodoModel newTodo) => todoDataSource.updateTodo(newTodo.toEntity());
+
+  @override
+  Future<bool> reorderTodos(int oldIndex, int newIndex) =>
+      todoDataSource.reorderTodos(oldIndex, newIndex);
 }

@@ -5,6 +5,7 @@ extension TodoDomainExtension on TodoModel {
   TodoUiModel toUiModel() => TodoUiModel(
         id: id,
         name: name,
+        orderIndex: orderIndex,
         completed: completed,
       );
 }
@@ -13,6 +14,7 @@ extension TodoUiExtension on TodoUiModel {
   TodoModel toModel() => TodoModel(
         id: id,
         name: name,
+        orderIndex: orderIndex,
         completed: completed,
       );
 }

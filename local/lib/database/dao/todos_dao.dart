@@ -8,7 +8,14 @@ part 'todos_dao.g.dart';
 class TodosDao extends DatabaseAccessor<AppDatabase> with _$TodosDaoMixin {
   TodosDao(super.db);
 
-  Future<int> _createTodo(TodosCompanion todo) => into(todos).insert(todo);
+  Future<int> _createTodo(TodosCompanion todo) async {
+    final minOrderIndex = await _getMinOrderIndex();
+
+    todo = todo.copyWith(orderIndex: Value(minOrderIndex - 1));
+
+    final result = await into(todos).insert(todo);
+    return result;
+  }
 
   Future<TodoTable?> getTodo(int id) =>
       (select(todos)..where((t) => t.id.equals(id))).getSingleOrNull();
@@ -26,10 +33,38 @@ class TodosDao extends DatabaseAccessor<AppDatabase> with _$TodosDaoMixin {
           await db.pageTodosDao.createPageTodo(
             PageTodosCompanion(pageId: Value(pageId), todoId: Value(id)),
           );
-
           return id;
         } catch (e) {
           return 0;
         }
       });
+
+  Future<bool> reorderTodos(int oldIndex, int newIndex) => transaction(() async {
+        try {
+          final list =
+              await (select(todos)..orderBy([(e) => OrderingTerm(expression: e.orderIndex)])).get();
+          final movedTodo = list.removeAt(oldIndex);
+          list.insert(newIndex, movedTodo);
+
+          for (int i = 0; i < list.length; i++) {
+            await (update(todos)..where((e) => e.id.equals(list[i].id))).write(
+              TodosCompanion(
+                orderIndex: Value(i),
+                updatedAt: Value(DateTime.now()),
+              ),
+            );
+          }
+          return true;
+        } catch (e) {
+          return false;
+        }
+      });
+
+  Future<int> _getMinOrderIndex() async {
+    final result = await (select(todos)
+          ..orderBy([(e) => OrderingTerm(expression: e.orderIndex, mode: OrderingMode.asc)]))
+        .get();
+
+    return result.firstOrNull?.orderIndex ?? 0;
+  }
 }

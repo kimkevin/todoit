@@ -20,7 +20,7 @@ class PageListItem extends StatelessWidget {
       },
       child: Container(
         color: Colors.transparent,
-        padding: EdgeInsets.symmetric(vertical: 16),
+        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
         child: Row(
           children: [
             Expanded(

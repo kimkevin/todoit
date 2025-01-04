@@ -6,4 +6,6 @@ abstract class TodoRepository {
   Future<bool> updateTodo(TodoModel todoModel);
 
   Future<List<TodoModel>> getTodosByPageId(int pageId);
+
+  Future<bool> reorderTodos(int oldIndex, int newIndex);
 }

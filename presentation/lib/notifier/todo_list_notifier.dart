@@ -13,7 +13,14 @@ class TodoListNotifier with ChangeNotifier {
   var _pageId = 0;
 
   List<TodoUiModel> _todos = <TodoUiModel>[];
+
   List<TodoUiModel> get todos => UnmodifiableListView(_todos);
+
+  double get completeRate {
+    final completeCount = todos.where((e) => e.completed).length;
+    if (todos.isEmpty) return 0.0;
+    return completeCount / todos.length;
+  }
 
   TodoListNotifier({required this.todoRepository});
 
@@ -37,6 +44,19 @@ class TodoListNotifier with ChangeNotifier {
     if (result) {
       loadTodoList(_pageId);
     }
+  }
+
+  void reorderTodos(int oldIndex, int newIndex) async {
+    // UI 먼저 보여줌
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    }
+    final item = _todos.removeAt(oldIndex);
+    _todos.insert(newIndex, item);
+    notifyListeners();
+
+    await todoRepository.reorderTodos(oldIndex, newIndex);
+    loadTodoList(_pageId);
   }
 }
 

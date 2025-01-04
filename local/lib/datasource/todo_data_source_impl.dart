@@ -31,8 +31,14 @@ class TodoDataSourceImpl extends TodoDataSource {
       futures.add(database.todosDao.getTodo(id));
     }
 
-    return await Future.wait(
+    final todos = await Future.wait(
       futures,
     ).then((results) => results.whereType<TodoTable>().map((t) => t.toEntity()).toList());
+    todos.sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
+    return todos;
   }
+
+  @override
+  Future<bool> reorderTodos(int oldIndex, int newIndex) =>
+      database.todosDao.reorderTodos(oldIndex, newIndex);
 }
