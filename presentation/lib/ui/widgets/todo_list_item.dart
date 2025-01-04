@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:presentation/temp_ds.dart';
 import 'package:presentation/ui/model/todo.dart';
 
 class TodoListItem extends StatelessWidget {
@@ -16,17 +17,19 @@ class TodoListItem extends StatelessWidget {
     TextStyle textStyle;
 
     if (todo.completed) {
-      textStyle = TextStyle(
-        fontStyle: FontStyle.normal,
-        fontSize: 24,
+      textStyle = DsTextStyles.item.copyWith(
         decoration: TextDecoration.lineThrough,
-        decorationColor: Colors.black,
+        decorationColor: Color(0xFF9E9FA0),
+        decorationThickness: 3.0,
+        color: Color(0xFF9E9FA0),
       );
+      // TextStyle(
+      //   decoration: TextDecoration.lineThrough, // 취소선
+      //   decorationColor: Colors.red,            // 취소선 색상 (선택 사항)
+      //   decorationThickness: 2.0,               // 취소선 두께 (선택 사항)
+      // )
     } else {
-      textStyle = TextStyle(
-        fontStyle: FontStyle.normal,
-        fontSize: 24,
-      );
+      textStyle = DsTextStyles.item;
     }
 
     return GestureDetector(
@@ -35,7 +38,7 @@ class TodoListItem extends StatelessWidget {
       },
       child: Container(
         color: Colors.transparent,
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.symmetric(vertical: 12),
         child: Row(
           children: [
             Expanded(child: Text(todo.name, style: textStyle)),

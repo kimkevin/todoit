@@ -9,8 +9,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'todoit',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+        brightness: Brightness.light,
+        colorScheme: ColorScheme.light(
+          primary: Colors.white,
+          secondary: Colors.white,
+        ),
+        splashColor: Colors.transparent,
       ),
       home: PageListPage(title: 'todoit'),
     );

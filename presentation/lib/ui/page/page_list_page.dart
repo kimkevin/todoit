@@ -33,22 +33,29 @@ class _PageListPageState extends ConsumerState<PageListPage> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              InputItem(name: '페이지', onSubmit: pageNotifier.addPage,),
-              ...pageNotifier.pages.map(
-                (page) => PageListItem(
-                  page: page,
-                  onClick: (page) {
-                    if (!mounted) return;
-
-                    context.navigator
-                        .push(MaterialPageRoute(builder: (context) => TodoListPage(page: page)));
-                  },
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                InputItem(
+                  name: '페이지',
+                  onSubmit: pageNotifier.addPage,
+                  fromPage: true,
                 ),
-              ),
-            ],
+                ...pageNotifier.pages.map(
+                  (page) => PageListItem(
+                    page: page,
+                    onClick: (page) {
+                      if (!mounted) return;
+
+                      context.navigator
+                          .push(MaterialPageRoute(builder: (context) => TodoListPage(page: page)));
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

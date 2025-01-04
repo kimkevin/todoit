@@ -1,11 +1,7 @@
 import 'package:presentation/ui/model/paeg_todo_parse_result.dart';
 
 class PageTodoParser {
-  final String inputText;
-
-  PageTodoParser(this.inputText);
-
-  PageTodoParseResult parse() {
+  PageTodoParseResult parse(String inputText) {
     final lines = inputText.split('\n').toList();
     List<ParsedPageTodo> result = [];
     String? currentPageTitle;

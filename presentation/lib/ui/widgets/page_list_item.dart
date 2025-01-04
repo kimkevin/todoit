@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:presentation/temp_ds.dart';
 import 'package:presentation/ui/model/page.dart';
 
 class PageListItem extends StatelessWidget {
@@ -19,16 +20,13 @@ class PageListItem extends StatelessWidget {
       },
       child: Container(
         color: Colors.transparent,
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.symmetric(vertical: 16),
         child: Row(
           children: [
             Expanded(
               child: Text(
                 page.name,
-                style: TextStyle(
-                  fontStyle: FontStyle.normal,
-                  fontSize: 24,
-                ),
+                style: DsTextStyles.item,
               ),
             ),
           ],
