@@ -9,8 +9,8 @@ class TodoDataSourceImpl extends TodoDataSource {
   TodoDataSourceImpl({required this.database});
 
   @override
-  Future<int> createTodo(int pageId, String title) async =>
-      await database.todosDao.createTodo(pageId, TodoEntity(name: title).toCompanion());
+  Future<int> createTodo(int pageId, String name) async =>
+      await database.todosDao.createTodo(pageId, TodoEntity(name: name).toCompanion());
 
   @override
   Future<TodoEntity?> getTodo(int id) async => (await database.todosDao.getTodo(id))?.toEntity();

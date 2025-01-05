@@ -23,4 +23,8 @@ class PageRepositoryImpl extends PageRepository {
   @override
   Future<List<PageModel>> getAllPages() async =>
       (await pageDataSource.getAllPages()).map((e) => e.toModel()).toList();
+
+  @override
+  Future<bool> reorderTodos(int oldIndex, int newIndex) =>
+      pageDataSource.reorderPages(oldIndex, newIndex);
 }

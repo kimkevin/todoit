@@ -10,4 +10,6 @@ abstract class PageDataSource {
   Future<bool> deletePage(int id);
 
   Future<List<PageEntity>> getAllPages();
+
+  Future<bool> reorderPages(int oldIndex, int newIndex);
 }

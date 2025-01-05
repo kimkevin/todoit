@@ -9,7 +9,14 @@ part 'pages_dao.g.dart';
 class PagesDao extends DatabaseAccessor<AppDatabase> with _$PagesDaoMixin {
   PagesDao(super.db);
 
-  Future<int> createPage(PagesCompanion page) => into(pages).insert(page);
+  Future<int> createPage(PagesCompanion page) async {
+    final minOrderIndex = await _getMinOrderIndex();
+
+    page = page.copyWith(orderIndex: Value(minOrderIndex - 1));
+
+    final result = await into(pages).insert(page);
+    return result;
+  }
 
   Future<PageTable?> getPage(int id) =>
       (select(pages)..where((p) => p.id.equals(id))).getSingleOrNull();
@@ -17,7 +24,7 @@ class PagesDao extends DatabaseAccessor<AppDatabase> with _$PagesDaoMixin {
   Future<bool> updatePage(PagesCompanion page) => update(pages).replace(page);
 
   Future<List<PageTable>> getAllPage() => (select(pages)
-        ..orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)]))
+        ..orderBy([(t) => OrderingTerm(expression: t.orderIndex, mode: OrderingMode.asc)]))
       .get();
 
   Future<int> _deletePage(int id) {
@@ -41,6 +48,35 @@ class PagesDao extends DatabaseAccessor<AppDatabase> with _$PagesDaoMixin {
 
           // 2. 페이지 삭제
           await _deletePage(id);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      });
+
+  Future<int> _getMinOrderIndex() async {
+    final result = await (select(pages)
+          ..orderBy([(e) => OrderingTerm(expression: e.orderIndex, mode: OrderingMode.asc)]))
+        .get();
+
+    return result.firstOrNull?.orderIndex ?? 0;
+  }
+
+  Future<bool> reorderTodos(int oldIndex, int newIndex) => transaction(() async {
+        try {
+          final list =
+              await (select(pages)..orderBy([(e) => OrderingTerm(expression: e.orderIndex)])).get();
+          final movedPage = list.removeAt(oldIndex);
+          list.insert(newIndex, movedPage);
+
+          for (int i = 0; i < list.length; i++) {
+            await (update(pages)..where((e) => e.id.equals(list[i].id))).write(
+              PagesCompanion(
+                orderIndex: Value(i),
+                updatedAt: Value(DateTime.now()),
+              ),
+            );
+          }
           return true;
         } catch (e) {
           return false;

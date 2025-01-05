@@ -71,18 +71,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
             ),
             Expanded(
               child: ReorderableListView(
-                onReorder: (oldIndex, newIndex) {
-                  setState(() {
-                    // 타이틀의 순서를 변경하지 않도록 설정
-                    // if (oldIndex == 0 || newIndex == 0) return;
-
-                    // if (newIndex > oldIndex) newIndex -= 1;
-                    // final item = items.removeAt(oldIndex - 1);
-                    // items.insert(newIndex - 1, item);
-
-                    todoNotifier.reorderTodos(oldIndex, newIndex);
-                  });
-                },
+                onReorder: todoNotifier.reorderTodos,
                 children: [
                   ...todoNotifier.todos.map(
                     (todo) => TodoListItem(

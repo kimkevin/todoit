@@ -28,4 +28,8 @@ class PageDataSourceImpl extends PageDataSource {
   @override
   Future<List<PageEntity>> getAllPages() async =>
       (await database.pagesDao.getAllPage()).map((e) => e.toEntity()).toList();
+
+  @override
+  Future<bool> reorderPages(int oldIndex, int newIndex) =>
+      database.pagesDao.reorderTodos(oldIndex, newIndex);
 }

@@ -25,6 +25,19 @@ class PageListNotifier with ChangeNotifier {
     await pageRepository.createPage(name);
     loadPageList();
   }
+
+  void reorderPages(int oldIndex, int newIndex) async {
+    // UI 먼저 보여줌
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    }
+    final item = _pages.removeAt(oldIndex);
+    _pages.insert(newIndex, item);
+    notifyListeners();
+
+    await pageRepository.reorderTodos(oldIndex, newIndex);
+    loadPageList();
+  }
 }
 
 // Finally, we are using ChangeNotifierProvider to allow the UI to interact with our TodosNotifier class.

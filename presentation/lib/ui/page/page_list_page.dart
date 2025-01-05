@@ -32,28 +32,33 @@ class _PageListPageState extends ConsumerState<PageListPage> {
         title: Text(widget.title),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              InputItem(
-                name: '페이지',
-                onSubmit: pageNotifier.addPage,
-                fromPage: true,
-              ),
-              ...pageNotifier.pages.map(
-                (page) => PageListItem(
-                  page: page,
-                  onClick: (page) {
-                    if (!mounted) return;
+        child: Column(
+          children: [
+            InputItem(
+              name: '페이지',
+              onSubmit: pageNotifier.addPage,
+              fromPage: true,
+            ),
+            Expanded(
+              child: ReorderableListView(
+                onReorder: pageNotifier.reorderPages,
+                children: [
+                  ...pageNotifier.pages.map(
+                    (page) => PageListItem(
+                      key: ValueKey(page),
+                      page: page,
+                      onClick: (page) {
+                        if (!mounted) return;
 
-                    context.navigator
-                        .push(MaterialPageRoute(builder: (context) => TodoListPage(page: page)));
-                  },
-                ),
+                        context.navigator.push(
+                            MaterialPageRoute(builder: (context) => TodoListPage(page: page)));
+                      },
+                    ),
+                  )
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       // floatingActionButton: FloatingActionButton(

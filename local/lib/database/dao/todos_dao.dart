@@ -9,9 +9,9 @@ class TodosDao extends DatabaseAccessor<AppDatabase> with _$TodosDaoMixin {
   TodosDao(super.db);
 
   Future<int> _createTodo(TodosCompanion todo) async {
-    final minOrderIndex = await _getMinOrderIndex();
+    final maxOrderIndex = await _getMaxOrderIndex();
 
-    todo = todo.copyWith(orderIndex: Value(minOrderIndex - 1));
+    todo = todo.copyWith(orderIndex: Value(maxOrderIndex + 1));
 
     final result = await into(todos).insert(todo);
     return result;
@@ -60,9 +60,9 @@ class TodosDao extends DatabaseAccessor<AppDatabase> with _$TodosDaoMixin {
         }
       });
 
-  Future<int> _getMinOrderIndex() async {
+  Future<int> _getMaxOrderIndex() async {
     final result = await (select(todos)
-          ..orderBy([(e) => OrderingTerm(expression: e.orderIndex, mode: OrderingMode.asc)]))
+          ..orderBy([(e) => OrderingTerm(expression: e.orderIndex, mode: OrderingMode.desc)]))
         .get();
 
     return result.firstOrNull?.orderIndex ?? 0;

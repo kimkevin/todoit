@@ -4,5 +4,10 @@ class TodoEntity {
   final int orderIndex;
   final bool completed;
 
-  TodoEntity({this.id = 0, required this.name, this.orderIndex = 0, this.completed = false});
+  TodoEntity({
+    this.id = 0,
+    required this.name,
+    this.orderIndex = 0,
+    this.completed = false,
+  });
 }
