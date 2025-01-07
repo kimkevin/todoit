@@ -12,6 +12,10 @@ class TodoListNotifier with ChangeNotifier {
 
   var _pageId = 0;
 
+  var _isEditMode = false;
+
+  bool get isEditMode => _isEditMode;
+
   List<TodoUiModel> _todos = <TodoUiModel>[];
 
   List<TodoUiModel> get todos => UnmodifiableListView(_todos);
@@ -58,9 +62,14 @@ class TodoListNotifier with ChangeNotifier {
     await todoRepository.reorderTodos(oldIndex, newIndex);
     loadTodoList(_pageId);
   }
+
+  void toggleEditMode() {
+    _isEditMode = !_isEditMode;
+    notifyListeners();
+  }
 }
 
 // Finally, we are using ChangeNotifierProvider to allow the UI to interact with our TodosNotifier class.
-final todoListProvider = ChangeNotifierProvider<TodoListNotifier>(
+final todoListProvider = ChangeNotifierProvider.autoDispose<TodoListNotifier>(
   (ref) => TodoListNotifier(todoRepository: getIt<TodoRepository>()),
 );
