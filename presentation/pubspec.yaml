@@ -38,6 +38,8 @@ dependencies:
   flutter_riverpod: ^2.6.1
   riverpod_annotation: ^2.6.1
 
+  flutter_svg: ^2.0.16
+
   domain:
     path: ../domain
   di:
@@ -56,10 +58,19 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
 
+  flutter_gen_runner: ^5.8.0
   build_runner:
   custom_lint:
   riverpod_generator: ^2.6.3
   riverpod_lint: ^2.6.3
+
+# If you are using SVG images with flutter_svg you can use the integration feature.
+# https://pub.dev/packages/flutter_gen
+flutter_gen:
+  output: lib/gen/ # Optional (default: lib/gen/)
+  line_length: 80 # Optional (default: 80)
+  integrations:
+    flutter_svg: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -73,6 +84,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/svg/
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

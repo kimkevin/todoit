@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:presentation/notifier/todo_list_notifier.dart';
@@ -91,10 +92,12 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
               child: ReorderableListView(
                 onReorder: todoNotifier.reorderTodos,
                 children: [
-                  ...todoNotifier.todos.map(
-                    (todo) => TodoListItem(
+                  ...todoNotifier.todos.mapIndexed(
+                    (index, todo) => TodoListItem(
                       key: ValueKey(todo),
+                      index: index,
                       todo: todo,
+                      isEditMode: todoNotifier.isEditMode,
                       onClick: todoNotifier.toggleTodo,
                     ),
                   ),
