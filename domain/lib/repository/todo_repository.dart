@@ -8,4 +8,6 @@ abstract class TodoRepository {
   Future<List<TodoModel>> getTodosByPageId(int pageId);
 
   Future<bool> reorderTodos(int oldIndex, int newIndex);
+
+  Future<int> deleteTodo(int id);
 }

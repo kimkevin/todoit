@@ -63,6 +63,11 @@ class TodoListNotifier with ChangeNotifier {
     loadTodoList(_pageId);
   }
 
+  void deleteTodo(int id) async {
+    await todoRepository.deleteTodo(id);
+    loadTodoList(_pageId);
+  }
+
   void toggleEditMode() {
     _isEditMode = !_isEditMode;
     notifyListeners();

@@ -8,7 +8,8 @@ import 'package:presentation/ui/model/todo.dart';
 class TodoListItem extends StatelessWidget {
   final int index;
   final TodoUiModel todo;
-  final Function(TodoUiModel) onClick;
+  final Function(TodoUiModel) actionClick;
+  final Function(int) deleteClick;
   final bool isEditMode;
 
   const TodoListItem({
@@ -16,7 +17,8 @@ class TodoListItem extends StatelessWidget {
     required this.index,
     required this.todo,
     required this.isEditMode,
-    required this.onClick,
+    required this.deleteClick,
+    required this.actionClick,
   });
 
   @override
@@ -42,7 +44,7 @@ class TodoListItem extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
-        onClick(todo);
+        actionClick(todo);
       },
       child: Container(
         color: Colors.transparent,
@@ -66,9 +68,14 @@ class TodoListItem extends StatelessWidget {
               duration: Duration(milliseconds: 100),
               child: Row(
                 children: [
-                  Padding(
-                    padding: EdgeInsets.only(right: 29),
-                    child: Text('삭제'),
+                  InkWell(
+                    onTap: () {
+                      deleteClick(todo.id);
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 29),
+                      child: Text('삭제'),
+                    ),
                   ),
                   ReorderableDragStartListener(
                     index: index,

@@ -21,4 +21,7 @@ class TodoRepositoryImpl extends TodoRepository {
   @override
   Future<bool> reorderTodos(int oldIndex, int newIndex) =>
       todoDataSource.reorderTodos(oldIndex, newIndex);
+
+  @override
+  Future<int> deleteTodo(int id) => todoDataSource.deleteTodo(id);
 }
