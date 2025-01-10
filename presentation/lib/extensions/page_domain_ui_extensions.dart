@@ -5,6 +5,7 @@ extension PageDomainExtension on PageModel {
   PageUiModel toUiModel() => PageUiModel(
         id: id,
         name: name,
+        todoCount: todoCount,
       );
 }
 
@@ -12,5 +13,6 @@ extension PageUiExtension on PageUiModel {
   PageModel toModel() => PageModel(
         id: id,
         name: name,
+        todoCount: todoCount,
       );
 }

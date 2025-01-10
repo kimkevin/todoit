@@ -20,15 +20,20 @@ class PageListItem extends StatelessWidget {
       },
       child: Container(
         color: Colors.transparent,
-        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
           children: [
-            Expanded(
-              child: Text(
-                page.name,
-                style: DsTextStyles.item,
-              ),
+            Text(
+              page.name,
+              style: DsTextStyles.item,
             ),
+            SizedBox(width: 12),
+            Text(
+              page.todoCount.toString(),
+              style: DsTextStyles.pageInfo.copyWith(color: Color(0xFF9E9FA0)),
+            )
           ],
         ),
       ),

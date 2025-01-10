@@ -8,15 +8,6 @@ class PageRepositoryImpl extends PageRepository {
 
   PageRepositoryImpl({required this.pageDataSource});
 
-  // Future<bool> initBasicPage() async {
-  //   final basicPage = await pageDataSource.getPage(1);
-  //   if (basicPage == null) {
-  //     final id = await pageDataSource.createPage("basic");
-  //     return id > 0;
-  //   }
-  //   return true;
-  // }
-
   @override
   Future<int> createPage(String name) => pageDataSource.createPage(name);
 

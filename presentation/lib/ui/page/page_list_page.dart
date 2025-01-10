@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:presentation/notifier/page_list_notifier.dart';
 import 'package:presentation/ui/page/todo_list_page.dart';
 import 'package:presentation/ui/widgets/page_list_item.dart';
-import 'package:presentation/ui/widgets/todo_input_item.dart';
 
 class PageListPage extends ConsumerStatefulWidget {
   const PageListPage({super.key, required this.title});
@@ -34,11 +33,11 @@ class _PageListPageState extends ConsumerState<PageListPage> {
       body: SafeArea(
         child: Column(
           children: [
-            InputItem(
-              name: '페이지',
-              onSubmit: pageNotifier.addPage,
-              fromPage: true,
-            ),
+            // InputItem(
+            //   name: '페이지',
+            //   onSubmit: pageNotifier.addPage,
+            //   fromPage: true,
+            // ),
             Expanded(
               child: ReorderableListView(
                 onReorder: pageNotifier.reorderPages,

@@ -10,8 +10,15 @@ class DsTextStyles {
 
   static const item = TextStyle(
     fontStyle: FontStyle.normal,
-    fontSize: 24,
-    height: 1.5,
+    fontSize: 40,
+    height: 1,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const pageInfo = TextStyle(
+    fontStyle: FontStyle.normal,
+    fontSize: 16,
+    height: 1,
     fontWeight: FontWeight.w700,
   );
 }
