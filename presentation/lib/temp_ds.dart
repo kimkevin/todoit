@@ -15,6 +15,13 @@ class DsTextStyles {
     fontWeight: FontWeight.w700,
   );
 
+  static const todo = TextStyle(
+    fontStyle: FontStyle.normal,
+    fontSize: 24,
+    height: 1,
+    fontWeight: FontWeight.w700,
+  );
+
   static const pageInfo = TextStyle(
     fontStyle: FontStyle.normal,
     fontSize: 16,

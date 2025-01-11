@@ -95,7 +95,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                   ...todoNotifier.todos.mapIndexed(
                     (index, todo) => TodoListItem(
                       key: ValueKey(todo),
-                      index: index,
+                      reorderIndex: index,
                       todo: todo,
                       isEditMode: todoNotifier.isEditMode,
                       actionClick: todoNotifier.toggleTodo,
