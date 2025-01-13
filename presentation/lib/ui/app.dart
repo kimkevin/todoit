@@ -12,7 +12,8 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         brightness: Brightness.light,
         colorScheme: ColorScheme.light(
-          primary: Colors.white,
+          primary: Color(0xFFFFACB6),
+          // primary: Colors.white,
           secondary: Colors.white,
         ),
         splashColor: Colors.transparent,

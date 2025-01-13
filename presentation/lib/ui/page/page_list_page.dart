@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:presentation/notifier/page_list_notifier.dart';
 import 'package:presentation/ui/page/new_page_page.dart';
 import 'package:presentation/ui/page/todo_list_page.dart';
+import 'package:presentation/ui/widgets/action_button.dart';
 import 'package:presentation/ui/widgets/page_list_item.dart';
 import 'package:presentation/ui/widgets/todo_input_item.dart';
 
@@ -65,25 +66,13 @@ class _PageListPageState extends ConsumerState<PageListPage> {
             ),
             Align(
               alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0), // 버튼 주변 패딩
-                child: ElevatedButton(
-                  onPressed: () {
-                    context.navigator.push(
-                      MaterialPageRoute(builder: (context) => NewPagePage()),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size.fromHeight(64), // 버튼 높이 설정
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12), // 버튼 모서리 둥글게
-                    ),
-                  ),
-                  child: Text(
-                    '+ 새로 만들기',
-                    style: TextStyle(fontSize: 18).copyWith(color: Colors.black),
-                  ),
-                ),
+              child: ActionButton(
+                buttonName: '+ 새로 만들기',
+                onClick: () {
+                  context.navigator.push(
+                    MaterialPageRoute(builder: (context) => NewPagePage()),
+                  );
+                },
               ),
             ),
           ],

@@ -42,24 +42,8 @@ class _TodoListItemState extends State<TodoListItem> {
 
   @override
   Widget build(BuildContext context) {
-    TextStyle textStyle;
     final screenWidth = MediaQuery.of(context).size.width;
-
-    if (widget.todo?.completed == true) {
-      textStyle = DsTextStyles.todo.copyWith(
-        decoration: TextDecoration.lineThrough,
-        decorationColor: Color(0xFF9E9FA0),
-        decorationThickness: 2.0,
-        color: Color(0xFF9E9FA0),
-      );
-      // TextStyle(
-      //   decoration: TextDecoration.lineThrough, // 취소선
-      //   decorationColor: Colors.red,            // 취소선 색상 (선택 사항)
-      //   decorationThickness: 2.0,               // 취소선 두께 (선택 사항)
-      // )
-    } else {
-      textStyle = DsTextStyles.todo;
-    }
+    final isCompleted = widget.todo?.completed == true;
 
     return GestureDetector(
       onTap: () {
@@ -84,9 +68,9 @@ class _TodoListItemState extends State<TodoListItem> {
                         child: widget.isEditMode && widget.reorderIndex != null
                             ? ReorderableDragStartListener(
                                 index: widget.reorderIndex!,
-                                child: _buildTextField(widget.isEditMode),
+                                child: _buildTextField(widget.isEditMode, isCompleted),
                               )
-                            : _buildTextField(widget.isEditMode),
+                            : _buildTextField(widget.isEditMode, isCompleted),
                       ),
                       AnimatedOpacity(
                         opacity: widget.isEditMode ? 1 : 0,
@@ -143,14 +127,33 @@ class _TodoListItemState extends State<TodoListItem> {
     );
   }
 
-  TextField _buildTextField(bool isEditMode) => TextField(
-        controller: textController,
-        style: DsTextStyles.todo.copyWith(color: Color(0xFF242B34)),
-        enabled: isEditMode,
-        decoration: InputDecoration(
-          hintText: '할일 입력',
-          hintStyle: DsTextStyles.todo.copyWith(color: Color(0xFFC8C8C8)),
-          border: InputBorder.none,
-        ),
+  Widget _buildTextField(bool isEditMode, bool isCompleted) {
+    TextStyle textStyle;
+    if (isCompleted) {
+      textStyle = DsTextStyles.todo.copyWith(
+        decoration: TextDecoration.lineThrough,
+        decorationColor: Color(0xFF9E9FA0),
+        decorationThickness: 2.0,
+        color: Color(0xFF9E9FA0),
       );
+      // TextStyle(
+      //   decoration: TextDecoration.lineThrough, // 취소선
+      //   decorationColor: Colors.red,            // 취소선 색상 (선택 사항)
+      //   decorationThickness: 2.0,               // 취소선 두께 (선택 사항)
+      // )
+    } else {
+      textStyle = DsTextStyles.todo.copyWith(color: Color(0xFF242B34));
+    }
+
+    return TextField(
+      controller: textController,
+      style: textStyle,
+      enabled: isEditMode,
+      decoration: InputDecoration(
+        hintText: '할일 입력',
+        hintStyle: DsTextStyles.todo.copyWith(color: Color(0xFFC8C8C8)),
+        border: InputBorder.none,
+      ),
+    );
+  }
 }
