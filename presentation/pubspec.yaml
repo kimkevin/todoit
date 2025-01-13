@@ -63,6 +63,7 @@ dev_dependencies:
   custom_lint:
   riverpod_generator: ^2.6.3
   riverpod_lint: ^2.6.3
+  flutter_dash: ^1.0.0
 
 # If you are using SVG images with flutter_svg you can use the integration feature.
 # https://pub.dev/packages/flutter_gen

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dash/flutter_dash.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:presentation/gen/assets.gen.dart';
 import 'package:presentation/temp_ds.dart';
@@ -42,6 +43,7 @@ class _TodoListItemState extends State<TodoListItem> {
   @override
   Widget build(BuildContext context) {
     TextStyle textStyle;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     if (widget.todo?.completed == true) {
       textStyle = DsTextStyles.todo.copyWith(
@@ -67,49 +69,75 @@ class _TodoListItemState extends State<TodoListItem> {
           widget.actionClick!(widget.todo!);
         }
       },
-      child: Container(
-        color: Colors.transparent,
-        constraints: BoxConstraints(minHeight: 74),
-        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-        child: Row(
-          children: [
-            Expanded(
-              child: widget.isEditMode && widget.reorderIndex != null
-                  ? ReorderableDragStartListener(
-                      index: widget.reorderIndex!,
-                      child: _buildTextField(widget.isEditMode),
-                    )
-                  : _buildTextField(widget.isEditMode),
-            ),
-            AnimatedOpacity(
-              opacity: widget.isEditMode ? 1 : 0,
-              duration: Duration(milliseconds: 300),
-              child: Row(
-                children: [
-                  Visibility(
-                      visible: widget.todo != null && widget.deleteClick != null,
-                      child: InkWell(
-                        onTap: () {
-                          widget.deleteClick!(widget.todo!.id);
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.only(right: 29),
-                          child: Text('삭제'),
-                        ),
-                      )),
-                  if (widget.reorderIndex != null)
-                    ReorderableDragStartListener(
-                      index: widget.reorderIndex!,
-                      child: SvgPicture.asset(
-                        Assets.svg.svgHandle.path,
-                        width: 18,
-                        height: 6,
+      child: IntrinsicHeight(
+        child: Container(
+          constraints: BoxConstraints(minHeight: 74, maxHeight: double.infinity),
+          child: Stack(
+            children: [
+              Align(
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 32),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: widget.isEditMode && widget.reorderIndex != null
+                            ? ReorderableDragStartListener(
+                                index: widget.reorderIndex!,
+                                child: _buildTextField(widget.isEditMode),
+                              )
+                            : _buildTextField(widget.isEditMode),
                       ),
-                    )
-                ],
+                      AnimatedOpacity(
+                        opacity: widget.isEditMode ? 1 : 0,
+                        duration: Duration(milliseconds: 300),
+                        child: Row(
+                          children: [
+                            Visibility(
+                                visible: widget.todo != null && widget.deleteClick != null,
+                                child: InkWell(
+                                  onTap: () {
+                                    widget.deleteClick!(widget.todo!.id);
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsets.only(right: 29),
+                                    child: SvgPicture.asset(
+                                      Assets.svg.icTrash.path,
+                                      width: 24,
+                                      height: 24,
+                                    ),
+                                  ),
+                                )),
+                            if (widget.reorderIndex != null)
+                              ReorderableDragStartListener(
+                                index: widget.reorderIndex!,
+                                child: SvgPicture.asset(
+                                  Assets.svg.icDragHandle.path,
+                                  width: 24,
+                                  height: 24,
+                                ),
+                              )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ],
+              Positioned(
+                bottom: 0,
+                left: 32,
+                right: 32,
+                child: Dash(
+                  length: screenWidth - 64,
+                  dashLength: 5,
+                  dashGap: 3,
+                  dashThickness: 1,
+                  dashColor: Color(0x9E9FA080),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
