@@ -1,6 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:presentation/gen/assets.gen.dart';
 import 'package:presentation/notifier/todo_list_notifier.dart';
 import 'package:presentation/temp_ds.dart';
 import 'package:presentation/ui/model/page.dart';
@@ -30,7 +32,6 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // title: Text(widget.page.name),
         actions: [
           GestureDetector(
             onTap: () {
@@ -38,9 +39,10 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
             },
             child: Padding(
               padding: const EdgeInsets.only(right: 16.0),
-              child: Text(
-                '편집',
-                style: TextStyle(fontSize: 16),
+              child: SvgPicture.asset(
+                todoNotifier.isEditMode ? Assets.svg.icCheck.path : Assets.svg.icEdit.path,
+                width: 24,
+                height: 24,
               ),
             ),
           ),
