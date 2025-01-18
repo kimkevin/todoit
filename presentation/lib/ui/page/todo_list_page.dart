@@ -124,6 +124,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                           isEditMode: todoNotifier.isEditMode,
                           actionClick: todoNotifier.toggleTodo,
                           deleteClick: todoNotifier.deleteTodo,
+                          saveCallback: todoNotifier.updateName,
                         ),
                       ),
                     ],
@@ -135,7 +136,11 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
               alignment: Alignment.bottomCenter,
               child: ActionButton(
                 buttonName: '+ 할일 추가하기',
-                onClick: () {},
+                onClick: () {
+                  todoNotifier.addTodo('');
+                  // final id = await todoNotifier.addTodo('');
+                  // 찾아서 에딧 모드?
+                },
               ),
             )
           ],

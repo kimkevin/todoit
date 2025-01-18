@@ -16,6 +16,7 @@ class TodoListItem extends StatefulWidget {
   final TodoUiModel? todo;
   final Function(TodoUiModel)? actionClick;
   final Function(int)? deleteClick;
+  final Function(int, String)? saveCallback;
   final bool isEditMode;
 
   const TodoListItem({
@@ -25,6 +26,7 @@ class TodoListItem extends StatefulWidget {
     this.isEditMode = true,
     this.deleteClick,
     this.actionClick,
+    this.saveCallback,
   });
 
   @override
@@ -32,12 +34,34 @@ class TodoListItem extends StatefulWidget {
 }
 
 class _TodoListItemState extends State<TodoListItem> {
-  late TextEditingController textController;
+  late TextEditingController _textController;
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    textController = TextEditingController(text: widget.todo?.name);
+    _textController = TextEditingController(text: widget.todo?.name);
+
+    print('initState 1111');
+    _focusNode.addListener(() {
+      print('_focusNode 1111');
+      final newName = _textController.text;
+      print('_focusNode= $_focusNode');
+      if (!_focusNode.hasFocus && widget.todo?.name != newName) {
+        final id = widget.todo?.id;
+        if (id != null) {
+          print('_focusNode= 11111');
+          widget.saveCallback?.call(id, newName);
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    _focusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -45,26 +69,26 @@ class _TodoListItemState extends State<TodoListItem> {
     final screenWidth = MediaQuery.of(context).size.width;
     final isCompleted = widget.todo?.completed == true;
 
-    return GestureDetector(
-      onTap: () {
-        if (widget.actionClick == null) return;
-        HapticFeedback.lightImpact();
-        if (widget.todo != null) {
-          widget.actionClick!(widget.todo!);
-        }
-      },
-      child: IntrinsicHeight(
-        child: Container(
-          constraints: BoxConstraints(minHeight: 74, maxHeight: double.infinity),
-          child: Stack(
-            children: [
-              Align(
-                alignment: Alignment.center,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 32),
-                  child: Row(
-                    children: [
-                      Padding(
+    return IntrinsicHeight(
+      child: Container(
+        constraints: BoxConstraints(minHeight: 74, maxHeight: double.infinity),
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.center,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 32),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        if (widget.actionClick == null) return;
+                        HapticFeedback.lightImpact();
+                        if (widget.todo != null) {
+                          widget.actionClick!(widget.todo!);
+                        }
+                      },
+                      child: Padding(
                         padding: EdgeInsets.only(right: 16),
                         child: widget.todo?.completed == true
                             ? SvgPicture.asset(
@@ -79,64 +103,64 @@ class _TodoListItemState extends State<TodoListItem> {
                                 height: 24,
                               ),
                       ),
-                      Expanded(
-                        child: widget.isEditMode && widget.reorderIndex != null
-                            ? ReorderableDragStartListener(
-                                index: widget.reorderIndex!,
-                                child: _buildTextField(widget.isEditMode, isCompleted),
-                              )
-                            : _buildTextField(widget.isEditMode, isCompleted),
-                      ),
-                      AnimatedOpacity(
-                        opacity: widget.isEditMode ? 1 : 0,
-                        duration: Duration(milliseconds: 300),
-                        child: Row(
-                          children: [
-                            Visibility(
-                                visible: widget.todo != null && widget.deleteClick != null,
-                                child: InkWell(
-                                  onTap: () {
-                                    widget.deleteClick!(widget.todo!.id);
-                                  },
-                                  child: Padding(
-                                    padding: EdgeInsets.only(right: 29),
-                                    child: SvgPicture.asset(
-                                      Assets.svg.icTrash.path,
-                                      width: 24,
-                                      height: 24,
-                                    ),
+                    ),
+                    Expanded(
+                      child: widget.isEditMode && widget.reorderIndex != null
+                          ? ReorderableDragStartListener(
+                              index: widget.reorderIndex!,
+                              child: _buildTextField(widget.isEditMode, isCompleted),
+                            )
+                          : _buildTextField(widget.isEditMode, isCompleted),
+                    ),
+                    AnimatedOpacity(
+                      opacity: widget.isEditMode ? 1 : 0,
+                      duration: Duration(milliseconds: 300),
+                      child: Row(
+                        children: [
+                          Visibility(
+                              visible: widget.todo != null && widget.deleteClick != null,
+                              child: InkWell(
+                                onTap: () {
+                                  widget.deleteClick!(widget.todo!.id);
+                                },
+                                child: Padding(
+                                  padding: EdgeInsets.only(right: 29),
+                                  child: SvgPicture.asset(
+                                    Assets.svg.icTrash.path,
+                                    width: 24,
+                                    height: 24,
                                   ),
-                                )),
-                            if (widget.reorderIndex != null)
-                              ReorderableDragStartListener(
-                                index: widget.reorderIndex!,
-                                child: SvgPicture.asset(
-                                  Assets.svg.icDragHandle.path,
-                                  width: 24,
-                                  height: 24,
                                 ),
-                              )
-                          ],
-                        ),
+                              )),
+                          if (widget.reorderIndex != null)
+                            ReorderableDragStartListener(
+                              index: widget.reorderIndex!,
+                              child: SvgPicture.asset(
+                                Assets.svg.icDragHandle.path,
+                                width: 24,
+                                height: 24,
+                              ),
+                            )
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              Positioned(
-                bottom: 0,
-                left: 32,
-                right: 32,
-                child: Dash(
-                  length: screenWidth - 64,
-                  dashLength: 5,
-                  dashGap: 3,
-                  dashThickness: 1,
-                  dashColor: Color(0x9E9FA080),
-                ),
+            ),
+            Positioned(
+              bottom: 0,
+              left: 32,
+              right: 32,
+              child: Dash(
+                length: screenWidth - 64,
+                dashLength: 5,
+                dashGap: 3,
+                dashThickness: 1,
+                dashColor: Color(0x9E9FA080),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -160,10 +184,13 @@ class _TodoListItemState extends State<TodoListItem> {
       textStyle = DsTextStyles.todo.copyWith(color: Color(0xFF242B34));
     }
 
+    print('isEditMode= $isEditMode');
+
     return TextField(
-      controller: textController,
+      controller: _textController,
       style: textStyle,
-      enabled: isEditMode,
+      focusNode: _focusNode,
+      // enabled: isEditMode,
       decoration: InputDecoration(
         hintText: '할일 입력',
         hintStyle: DsTextStyles.todo.copyWith(color: Color(0xFFC8C8C8)),

@@ -41,4 +41,11 @@ class TodoDataSourceImpl extends TodoDataSource {
   @override
   Future<bool> reorderTodos(int oldIndex, int newIndex) =>
       database.todosDao.reorderTodos(oldIndex, newIndex);
+
+  @override
+  Future<bool> updateTodoName(int id, String name) async {
+    final oldTodo = await database.todosDao.getTodo(id);
+    if (oldTodo == null) return false;
+    return await updateTodo(oldTodo.copyWith(name: name).toEntity());
+  }
 }

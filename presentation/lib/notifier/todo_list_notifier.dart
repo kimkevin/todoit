@@ -38,8 +38,16 @@ class TodoListNotifier with ChangeNotifier {
   }
 
   void addTodo(String name) async {
-    await todoRepository.createTodo(_pageId, name);
+    final result = await todoRepository.createTodo(_pageId, name);
+    print('result= $result');
     loadTodoList(_pageId);
+  }
+
+  void updateName(int id, String name) async {
+    final updated = await todoRepository.updateTodoName(id, name);
+    if (updated) {
+      loadTodoList(_pageId);
+    }
   }
 
   void toggleTodo(TodoUiModel todo) async {
