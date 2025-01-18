@@ -131,10 +131,10 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                           saveCallback: todoNotifier.updateName,
                         ),
                       ),
+                      SizedBox(key: ValueKey("bottom_padding"), height: 96),
                     ],
                   ),
                 ),
-                SizedBox(height: 96),
               ],
             ),
             Align(
