@@ -76,29 +76,36 @@ class _TodoListItemState extends State<TodoListItem> {
                 padding: EdgeInsets.symmetric(horizontal: 32),
                 child: Row(
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        if (widget.actionClick == null) return;
-                        HapticFeedback.lightImpact();
-                        if (widget.todo != null) {
-                          widget.actionClick!(widget.todo!);
-                        }
-                      },
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 16),
-                        child: widget.todo?.completed == true
-                            ? SvgPicture.asset(
-                                Assets.svg.icCheck.path,
-                                width: 24,
-                                height: 24,
-                                colorFilter: ColorFilter.mode(Color(0xFFFF8794), BlendMode.srcIn),
-                              )
-                            : SvgPicture.asset(
-                                Assets.svg.icCircle.path,
-                                width: 24,
-                                height: 24,
+                    AnimatedSize(
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      child: widget.isEditMode
+                          ? SizedBox.shrink()
+                          : GestureDetector(
+                              onTap: () {
+                                if (widget.actionClick == null) return;
+                                HapticFeedback.lightImpact();
+                                if (widget.todo != null) {
+                                  widget.actionClick!(widget.todo!);
+                                }
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.only(right: 16),
+                                child: widget.todo?.completed == true
+                                    ? SvgPicture.asset(
+                                        Assets.svg.icCheck.path,
+                                        width: 24,
+                                        height: 24,
+                                        colorFilter:
+                                            ColorFilter.mode(Color(0xFFFF8794), BlendMode.srcIn),
+                                      )
+                                    : SvgPicture.asset(
+                                        Assets.svg.icCircle.path,
+                                        width: 24,
+                                        height: 24,
+                                      ),
                               ),
-                      ),
+                            ),
                     ),
                     Expanded(
                       child:
