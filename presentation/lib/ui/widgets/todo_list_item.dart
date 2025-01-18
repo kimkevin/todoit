@@ -42,15 +42,11 @@ class _TodoListItemState extends State<TodoListItem> {
     super.initState();
     _textController = TextEditingController(text: widget.todo?.name);
 
-    print('initState 1111');
     _focusNode.addListener(() {
-      print('_focusNode 1111');
       final newName = _textController.text;
-      print('_focusNode= $_focusNode');
       if (!_focusNode.hasFocus && widget.todo?.name != newName) {
         final id = widget.todo?.id;
         if (id != null) {
-          print('_focusNode= 11111');
           widget.saveCallback?.call(id, newName);
         }
       }
@@ -105,12 +101,14 @@ class _TodoListItemState extends State<TodoListItem> {
                       ),
                     ),
                     Expanded(
-                      child: widget.isEditMode && widget.reorderIndex != null
-                          ? ReorderableDragStartListener(
-                              index: widget.reorderIndex!,
-                              child: _buildTextField(widget.isEditMode, isCompleted),
-                            )
-                          : _buildTextField(widget.isEditMode, isCompleted),
+                      child:
+                          // widget.isEditMode && widget.reorderIndex != null
+                          //     ? ReorderableDragStartListener(
+                          //         index: widget.reorderIndex!,
+                          //         child: _buildTextField(widget.isEditMode, isCompleted),
+                          //       )
+                          //     :
+                          _buildTextField(widget.isEditMode, isCompleted),
                     ),
                     AnimatedOpacity(
                       opacity: widget.isEditMode ? 1 : 0,
@@ -183,8 +181,6 @@ class _TodoListItemState extends State<TodoListItem> {
     } else {
       textStyle = DsTextStyles.todo.copyWith(color: Color(0xFF242B34));
     }
-
-    print('isEditMode= $isEditMode');
 
     return TextField(
       controller: _textController,

@@ -9,6 +9,7 @@ import 'package:presentation/temp_ds.dart';
 import 'package:presentation/ui/model/page.dart';
 import 'package:presentation/ui/widgets/action_button.dart';
 import 'package:presentation/ui/widgets/todo_list_item.dart';
+import 'package:presentation/utils/future_utils.dart';
 
 class TodoListPage extends ConsumerStatefulWidget {
   final PageUiModel page;
@@ -20,6 +21,8 @@ class TodoListPage extends ConsumerStatefulWidget {
 }
 
 class _TodoListPageState extends ConsumerState<TodoListPage> {
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -114,6 +117,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                 // ),
                 Expanded(
                   child: ReorderableListView(
+                    scrollController: _scrollController,
                     onReorder: todoNotifier.reorderTodos,
                     children: [
                       ...todoNotifier.todos.mapIndexed(
@@ -130,16 +134,22 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                     ],
                   ),
                 ),
+                SizedBox(height: 96),
               ],
             ),
             Align(
               alignment: Alignment.bottomCenter,
               child: ActionButton(
                 buttonName: '+ 할일 추가하기',
-                onClick: () {
-                  todoNotifier.addTodo('');
-                  // final id = await todoNotifier.addTodo('');
-                  // 찾아서 에딧 모드?
+                onClick: () async {
+                  await todoNotifier.addTodo('');
+                  FutureUtils.runDelayed(() {
+                    _scrollController.animateTo(
+                      _scrollController.position.maxScrollExtent,
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.easeInOut,
+                    );
+                  });
                 },
               ),
             )

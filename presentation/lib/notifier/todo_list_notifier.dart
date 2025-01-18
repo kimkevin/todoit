@@ -37,7 +37,7 @@ class TodoListNotifier with ChangeNotifier {
     notifyListeners();
   }
 
-  void addTodo(String name) async {
+  Future addTodo(String name) async {
     final result = await todoRepository.createTodo(_pageId, name);
     print('result= $result');
     loadTodoList(_pageId);
