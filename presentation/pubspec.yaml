@@ -37,8 +37,7 @@ dependencies:
 
   flutter_riverpod: ^2.6.1
   riverpod_annotation: ^2.6.1
-
-  flutter_svg: ^2.0.16
+  flutter_keyboard_visibility: ^6.0.0
 
   domain:
     path: ../domain
@@ -46,6 +45,8 @@ dependencies:
     path: ../di
   flutter_core:
     path: ../flutter_core
+  flutter_ds:
+    path: ../flutter_ds
 
 dev_dependencies:
   flutter_test:
