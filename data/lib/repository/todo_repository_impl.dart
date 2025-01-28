@@ -27,4 +27,8 @@ class TodoRepositoryImpl extends TodoRepository {
 
   @override
   Future<bool> updateTodoName(int id, String name) => todoDataSource.updateTodoName(id, name);
+
+  @override
+  Future<bool> updateTodoCompleted(int id, bool completed) =>
+      todoDataSource.updateTodoCompleted(id, completed);
 }

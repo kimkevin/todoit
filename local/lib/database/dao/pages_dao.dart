@@ -1,5 +1,9 @@
+import 'package:data/model/entity/page_entity.dart';
+import 'package:data/model/entity/todo_entity.dart';
 import 'package:drift/drift.dart';
 import 'package:local/database/database.dart';
+import 'package:local/database/extensions/page_companion_entity_extensions.dart';
+import 'package:local/database/extensions/todo_companion_entity_extensions.dart';
 import 'package:local/database/models/pages_table.dart';
 import 'package:local/exceptions/basic_page_deletion_exception.dart';
 
@@ -77,6 +81,21 @@ class PagesDao extends DatabaseAccessor<AppDatabase> with _$PagesDaoMixin {
               ),
             );
           }
+          return true;
+        } catch (e) {
+          return false;
+        }
+      });
+
+  Future<bool> createPageTodos(String name, List<String> todoNames) => transaction(() async {
+        try {
+          final pageId = await createPage(PageEntity(name: name).toCompanion());
+          final todos = todoNames.map((e) => TodoEntity(name: e));
+          List<Future> todoFutures = [];
+          for (final todo in todos) {
+            todoFutures.add(db.todosDao.createTodo(pageId, todo.toCompanion()));
+          }
+          await Future.wait(todoFutures);
           return true;
         } catch (e) {
           return false;

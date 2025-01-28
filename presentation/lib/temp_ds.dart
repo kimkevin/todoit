@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+class DsTextColors {
+  static const primary = Color(0xFF242B34);
+}
+
 class DsTextStyles {
   static const title = TextStyle(
     fontStyle: FontStyle.normal,

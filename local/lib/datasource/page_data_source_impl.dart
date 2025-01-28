@@ -45,4 +45,8 @@ class PageDataSourceImpl extends PageDataSource {
   @override
   Future<bool> reorderPages(int oldIndex, int newIndex) =>
       database.pagesDao.reorderTodos(oldIndex, newIndex);
+
+  @override
+  Future<bool> createPageTodos(String name, List<String> todoNames) =>
+      database.pagesDao.createPageTodos(name, todoNames);
 }

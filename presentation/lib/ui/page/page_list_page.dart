@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_core/extensions/context_extensions.dart';
+import 'package:flutter_ds/ds_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:presentation/gen/assets.gen.dart';
 import 'package:presentation/notifier/page_list_notifier.dart';
-import 'package:presentation/ui/page/new_page_page.dart';
+import 'package:presentation/ui/page/new_page.dart';
 import 'package:presentation/ui/page/todo_list_page.dart';
-import 'package:presentation/ui/widgets/action_button.dart';
 import 'package:presentation/ui/widgets/page_list_item.dart';
+import 'package:presentation/ui/widgets/rounded_text_floating_action_button.dart';
 import 'package:presentation/ui/widgets/todo_input_item.dart';
 
 class PageListPage extends ConsumerStatefulWidget {
@@ -64,19 +66,22 @@ class _PageListPageState extends ConsumerState<PageListPage> {
                 ),
               ],
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: ActionButton(
-                buttonName: '+ 새로 만들기',
-                onClick: () {
-                  context.navigator.push(
-                    MaterialPageRoute(builder: (context) => NewPagePage()),
-                  );
-                },
-              ),
-            ),
           ],
         ),
+      ),
+      floatingActionButton: RoundedTextFloatingActionButton(
+        icon: DsImage(path: Assets.svg.icPlus.path, width: 24, height: 24),
+        onPressed: () {
+          context.navigator
+              .push(MaterialPageRoute(builder: (context) => NewPagePage()))
+              .then((isUpdated) {
+            if (isUpdated == true) {
+              pageNotifier.loadPageList();
+            }
+          });
+        },
+        text: '새로 만들기',
+        // elevation: 20,
       ),
       // floatingActionButton: FloatingActionButton(
       //   onPressed: () {},

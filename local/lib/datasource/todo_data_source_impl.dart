@@ -48,4 +48,11 @@ class TodoDataSourceImpl extends TodoDataSource {
     if (oldTodo == null) return false;
     return await updateTodo(oldTodo.copyWith(name: name).toEntity());
   }
+
+  @override
+  Future<bool> updateTodoCompleted(int id, bool completed) async {
+    final oldTodo = await database.todosDao.getTodo(id);
+    if (oldTodo == null) return false;
+    return await updateTodo(oldTodo.copyWith(completed: completed).toEntity());
+  }
 }

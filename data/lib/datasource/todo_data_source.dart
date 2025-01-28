@@ -14,4 +14,6 @@ abstract class TodoDataSource {
   Future<bool> reorderTodos(int oldIndex, int newIndex);
 
   Future<bool> updateTodoName(int id, String name);
+
+  Future<bool> updateTodoCompleted(int id, bool completed);
 }

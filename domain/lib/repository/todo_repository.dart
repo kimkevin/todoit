@@ -5,7 +5,7 @@ abstract class TodoRepository {
 
   Future<bool> updateTodoName(int id, String name);
 
-  Future<bool> updateTodo(TodoModel todoModel);
+  Future<bool> updateTodoCompleted(int id, bool completed);
 
   Future<List<TodoModel>> getTodosByPageId(int pageId);
 

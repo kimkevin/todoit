@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:collection/collection.dart';
 import 'package:di/injection_container.dart';
 import 'package:domain/repository/todo_repository.dart';
 import 'package:flutter/cupertino.dart';
@@ -32,28 +33,28 @@ class TodoListNotifier with ChangeNotifier {
     if (pageId <= 0) return;
 
     _pageId = pageId;
-    _todos = (await todoRepository.getTodosByPageId(pageId)).map((e) => e.toUiModel()).toList();
+    _todos = (await todoRepository.getTodosByPageId(pageId)).map(
+      (e) {
+        return e.toUiModel();
+      },
+    ).toList();
     print('todos= $_todos');
     notifyListeners();
   }
 
-  Future addTodo(String name) async {
-    final result = await todoRepository.createTodo(_pageId, name);
-    print('result= $result');
-    loadTodoList(_pageId);
-  }
+  Future<int> addTodo(String name) => todoRepository.createTodo(_pageId, name);
 
   void updateName(int id, String name) async {
     final updated = await todoRepository.updateTodoName(id, name);
-    if (updated) {
+    // 이름은 스테이트풀하게 관리하고 있음
+    if (!updated) {
       loadTodoList(_pageId);
     }
   }
 
   void toggleTodo(TodoUiModel todo) async {
-    final newTodo = todo.copyWith(completed: !todo.completed);
-    final result = await todoRepository.updateTodo(newTodo.toModel());
-    if (result) {
+    final updated = await todoRepository.updateTodoCompleted(todo.id, !todo.completed);
+    if (updated) {
       loadTodoList(_pageId);
     }
   }

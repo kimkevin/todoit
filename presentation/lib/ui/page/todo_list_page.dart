@@ -1,14 +1,15 @@
-import 'package:collection/collection.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_core/extensions/context_extensions.dart';
+import 'package:flutter_ds/ds_image.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:presentation/gen/assets.gen.dart';
 import 'package:presentation/notifier/todo_list_notifier.dart';
 import 'package:presentation/temp_ds.dart';
 import 'package:presentation/ui/model/page.dart';
 import 'package:presentation/ui/widgets/action_button.dart';
-import 'package:presentation/ui/widgets/todo_list_item.dart';
 import 'package:presentation/utils/future_utils.dart';
 
 class TodoListPage extends ConsumerStatefulWidget {
@@ -22,12 +23,39 @@ class TodoListPage extends ConsumerStatefulWidget {
 
 class _TodoListPageState extends ConsumerState<TodoListPage> {
   final ScrollController _scrollController = ScrollController();
+  int? newTodoId;
+  late StreamSubscription<bool> keyboardSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+
+    var keyboardVisibilityController = KeyboardVisibilityController();
+    // Query
+    print('TESTTEST Keyboard visibility direct query: ${keyboardVisibilityController.isVisible}');
+
+    // Subscribe
+    keyboardSubscription = keyboardVisibilityController.onChange.listen((bool visible) {
+      print('TESTTEST Keyboard visibility update. Is visible: $visible');
+    });
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
     ref.watch(todoListProvider).loadTodoList(widget.page.id);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    keyboardSubscription.cancel();
+  }
+
+  void onNewTodoFocused() {
+    newTodoId = null;
   }
 
   @override
@@ -43,8 +71,8 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
             },
             child: Padding(
               padding: const EdgeInsets.only(right: 16.0),
-              child: SvgPicture.asset(
-                todoNotifier.isEditMode ? Assets.svg.icCheck.path : Assets.svg.icEdit.path,
+              child: DsImage(
+                path: todoNotifier.isEditMode ? Assets.svg.icCheck.path : Assets.svg.icEdit.path,
                 width: 24,
                 height: 24,
               ),
@@ -120,17 +148,19 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                     scrollController: _scrollController,
                     onReorder: todoNotifier.reorderTodos,
                     children: [
-                      ...todoNotifier.todos.mapIndexed(
-                        (index, todo) => TodoListItem(
-                          key: ValueKey(todo),
-                          reorderIndex: index,
-                          todo: todo,
-                          isEditMode: todoNotifier.isEditMode,
-                          actionClick: todoNotifier.toggleTodo,
-                          deleteClick: todoNotifier.deleteTodo,
-                          saveCallback: todoNotifier.updateName,
-                        ),
-                      ),
+                      // ...todoNotifier.todos.mapIndexed(
+                      //   (index, todo) => TodoListItem(
+                      //     key: ValueKey(todo),
+                      //     reorderIndex: index,
+                      //     todo: todo,
+                      //     isEditMode: todoNotifier.isEditMode,
+                      //     actionClick: todoNotifier.toggleTodo,
+                      //     deleteClick: todoNotifier.deleteTodo,
+                      //     onTextChanged: todoNotifier.updateName,
+                      //     // onNewTodoFocused: onNewTodoFocused,
+                      //     isNew: todo.id == newTodoId,
+                      //   ),
+                      // ),
                       SizedBox(key: ValueKey("bottom_padding"), height: 96),
                     ],
                   ),
@@ -142,11 +172,12 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
               child: ActionButton(
                 buttonName: '+ 할일 추가하기',
                 onClick: () async {
-                  await todoNotifier.addTodo('');
+                  newTodoId = await todoNotifier.addTodo('');
+                  todoNotifier.loadTodoList(widget.page.id);
                   FutureUtils.runDelayed(() {
                     _scrollController.animateTo(
                       _scrollController.position.maxScrollExtent,
-                      duration: Duration(milliseconds: 500),
+                      duration: Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
                     );
                   });

@@ -1,0 +1,113 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_core/extensions/context_extensions.dart';
+import 'package:flutter_ds/ds_image.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:presentation/gen/assets.gen.dart';
+import 'package:presentation/notifier/new_page_notifier.dart';
+import 'package:presentation/ui/widgets/new_page_item.dart';
+import 'package:presentation/utils/future_utils.dart';
+import 'package:presentation/utils/localization_utils.dart';
+
+class NewPagePage extends ConsumerStatefulWidget {
+  const NewPagePage({super.key});
+
+  @override
+  ConsumerState<NewPagePage> createState() => _NewPagePageState();
+}
+
+class _NewPagePageState extends ConsumerState<NewPagePage> {
+  final ScrollController _scrollController = ScrollController();
+  final List<TextEditingController> _todoNameControllers = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    _todoNameControllers.add(TextEditingController());
+  }
+
+  void _dismissKeyboard() {
+    final currentFocus = FocusManager.instance.primaryFocus;
+    if (currentFocus != null && currentFocus.hasFocus) {
+      currentFocus.unfocus();
+    }
+  }
+
+  void onActionClicked(NewPageNotifier notifier, bool isKeyboardVisible) {
+    print('isKeyboardVisible= $isKeyboardVisible');
+    if (isKeyboardVisible) {
+      _dismissKeyboard();
+      // TODO: 투두가 1개이고 아무것도 미입력이면 포커스를 옮겨준다
+    } else {
+      notifier.addTodo();
+
+      FutureUtils.runDelayed(() {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final newPageNotifier = ref.watch(newPageProvider);
+    return KeyboardVisibilityBuilder(
+      builder: (context, isKeyboardVisible) => Scaffold(
+        appBar: AppBar(
+          actions: [
+            GestureDetector(
+              onTap: () async {
+                if (!mounted) return;
+                final result =
+                    await newPageNotifier.save(LocalizationUtils.getDefaultName(context));
+                context.navigator.pop(result);
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: DsImage(path: Assets.svg.icCheck.path, width: 24, height: 24),
+              ),
+            )
+          ],
+        ),
+        body: SizedBox(
+          child: SingleChildScrollView(
+            controller: _scrollController,
+            child: Column(
+              children: [
+                NewPageItem(
+                  key: ValueKey(newPageNotifier.pageItemModel),
+                  newPage: newPageNotifier.pageItemModel,
+                  onPageNameChanged: newPageNotifier.changePageName,
+                  onTodoNameChanged: newPageNotifier.changeTodoName,
+                  onTodoDeleted: newPageNotifier.deleteTodo,
+                ),
+                SizedBox(height: 96),
+              ],
+            ),
+          ),
+        ),
+        floatingActionButton: SizedBox(
+          width: isKeyboardVisible ? 44.0 : 64.0,
+          height: isKeyboardVisible ? 44.0 : 64.0,
+          child: FloatingActionButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(32.0),
+            ),
+            onPressed: () {
+              onActionClicked(newPageNotifier, isKeyboardVisible);
+            },
+            child: DsImage(
+              path: isKeyboardVisible ? Assets.svg.icCheck.path : Assets.svg.icPlus.path,
+              width: 24,
+              height: 24,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

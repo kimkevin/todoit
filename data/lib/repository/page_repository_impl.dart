@@ -18,4 +18,8 @@ class PageRepositoryImpl extends PageRepository {
   @override
   Future<bool> reorderTodos(int oldIndex, int newIndex) =>
       pageDataSource.reorderPages(oldIndex, newIndex);
+
+  @override
+  Future<bool> createPageTodos(String name, List<String> todoNames) =>
+      pageDataSource.createPageTodos(name, todoNames);
 }
