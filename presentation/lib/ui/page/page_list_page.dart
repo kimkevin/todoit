@@ -16,7 +16,6 @@ import 'package:presentation/ui/page/new_parsed_page.dart';
 import 'package:presentation/ui/page/todo_list_page.dart';
 import 'package:presentation/ui/widgets/page_list_item.dart';
 import 'package:presentation/ui/widgets/rounded_text_floating_action_button.dart';
-import 'package:presentation/ui/widgets/todo_input_item.dart';
 import 'package:presentation/utils/future_utils.dart';
 
 class PageListPage extends ConsumerStatefulWidget {
@@ -92,6 +91,9 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
 
     if (!mounted || newClipboardHash == lastClipboardHash) return;
 
+    final result = PageTodoParser().parse(clipboardText);
+    if (result == null) return;
+
     onClipboardHashUpdated(newClipboardHash);
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -100,7 +102,6 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
         action: SnackBarAction(
           label: "붙여넣기",
           onPressed: () {
-            final result = PageTodoParser().parse(clipboardText);
             List<NewPageItemUiModel> newPageItems = [];
             for (final pageTodo in result.pageTodos) {
               final items =
@@ -130,18 +131,31 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        actions: [
+          GestureDetector(
+            onTap: () {},
+            child: Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: DsImage(
+                path: Assets.svg.icEdit.path,
+                width: 24,
+                height: 24,
+              ),
+            ),
+          ),
+        ],
+        // title: Text(widget.title),
       ),
       body: SafeArea(
         child: Stack(
           children: [
             Column(
               children: [
-                InputItem(
-                  name: '페이지',
-                  onSubmit: pageNotifier.addPage,
-                  fromPage: true,
-                ),
+                // InputItem(
+                //   name: '페이지',
+                //   onSubmit: pageNotifier.addPage,
+                //   fromPage: true,
+                // ),
                 Expanded(
                   child: ReorderableListView(
                     onReorder: pageNotifier.reorderPages,
@@ -172,18 +186,10 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
           context.navigator
               .push(MaterialPageRoute(builder: (context) => NewPage()))
               .then((isUpdated) {
-            if (isUpdated == true) {
+            if (isUpdated is bool && isUpdated) {
               pageNotifier.loadPageList();
             }
           });
-
-          // context.navigator
-          //     .push(MaterialPageRoute(builder: (context) => NewPage()))
-          //     .then((isUpdated) {
-          //   if (isUpdated == true) {
-          //     pageNotifier.loadPageList();
-          //   }
-          // });
         },
         text: '새로 만들기',
         // elevation: 20,

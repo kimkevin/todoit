@@ -1,7 +1,7 @@
 import 'package:presentation/ui/model/paeg_todo_parse_result.dart';
 
 class PageTodoParser {
-  PageTodoParseResult parse(String inputText) {
+  PageTodoParseResult? parse(String inputText) {
     final lines = inputText.split('\n').toList();
     List<ParsedPageTodo> result = [];
     String? currentPageTitle;
@@ -31,6 +31,9 @@ class PageTodoParser {
     // 페이지만 있는 경우 'Untitled' 페이지로 처리
     if (_isAllPages(result)) {
       final todoNames = result.map((e) => e.pageName).toList();
+      if (todoNames.length <= 1) {
+        return null;
+      }
       result.clear();
       result.add(ParsedPageTodo(
         pageName: 'Untitled',
