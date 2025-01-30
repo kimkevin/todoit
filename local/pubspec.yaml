@@ -33,6 +33,8 @@ dependencies:
   path_provider: ^2.0.0 # 데이터베이스를 저장할 위치를 찾아주는 패키지
   path: ^1.8.3 # 데이터베이스를 저장할 위치를 찾아주는 패키지
 
+  shared_preferences: ^2.4.0
+
   data:
     path: ../data
 

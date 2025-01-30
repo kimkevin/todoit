@@ -1,9 +1,10 @@
+import 'package:data/model/entity/new_page_entity.dart';
 import 'package:data/model/entity/page_entity.dart';
 
 abstract class PageDataSource {
   Future<int> createPage(String name);
 
-  Future<bool> createPageTodos(String name, List<String> todoNames);
+  Future<bool> createPageTodos(List<NewPageEntity> newPages);
 
   Future<PageEntity?> getPage(int id);
 

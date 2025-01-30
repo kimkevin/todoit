@@ -3,10 +3,10 @@ import 'package:flutter_dash/flutter_dash.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:presentation/gen/assets.gen.dart';
 import 'package:presentation/temp_ds.dart';
-import 'package:presentation/ui/model/new_page_item_model.dart';
+import 'package:presentation/ui/model/new_todo_item_model.dart';
 
 class NewTodoItem extends StatefulWidget {
-  final NewTodoItemModel newTodo;
+  final NewTodoItemUiModel newTodo;
   final Function(String) onTextChanged;
   final VoidCallback onDeleteClick;
 

@@ -9,14 +9,14 @@ import 'package:presentation/ui/widgets/new_page_item.dart';
 import 'package:presentation/utils/future_utils.dart';
 import 'package:presentation/utils/localization_utils.dart';
 
-class NewPagePage extends ConsumerStatefulWidget {
-  const NewPagePage({super.key});
+class NewPage extends ConsumerStatefulWidget {
+  const NewPage({super.key});
 
   @override
-  ConsumerState<NewPagePage> createState() => _NewPagePageState();
+  ConsumerState<NewPage> createState() => _NewPageState();
 }
 
-class _NewPagePageState extends ConsumerState<NewPagePage> {
+class _NewPageState extends ConsumerState<NewPage> {
   final ScrollController _scrollController = ScrollController();
   final List<TextEditingController> _todoNameControllers = [];
 

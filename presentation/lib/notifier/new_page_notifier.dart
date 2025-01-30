@@ -1,14 +1,17 @@
 import 'package:di/injection_container.dart';
+import 'package:domain/model/new_page_model.dart';
+import 'package:domain/model/new_todo_model.dart';
 import 'package:domain/repository/page_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:presentation/ui/model/new_page_item_model.dart';
+import 'package:presentation/ui/model/new_todo_item_model.dart';
 
 class NewPageNotifier with ChangeNotifier {
   final PageRepository pageRepository;
 
-  NewPageItemModel pageItemModel = NewPageItemModel(
-    todoItemModels: [NewTodoItemModel(autoFocus: true)],
+  NewPageItemUiModel pageItemModel = NewPageItemUiModel(
+    todoItemModels: [NewTodoItemUiModel(autoFocus: true)],
     autoFocus: true,
   );
 
@@ -23,7 +26,7 @@ class NewPageNotifier with ChangeNotifier {
 
   void changeTodoName(int index, String name) {
     final newTodoItemModels = [...pageItemModel.todoItemModels];
-    newTodoItemModels[index] = NewTodoItemModel(name: name);
+    newTodoItemModels[index] = NewTodoItemUiModel(name: name);
     pageItemModel = pageItemModel.copyWith(
       autoFocus: false,
       todoItemModels: newTodoItemModels,
@@ -33,7 +36,7 @@ class NewPageNotifier with ChangeNotifier {
   void addTodo() {
     pageItemModel = pageItemModel.copyWith(
       autoFocus: false,
-      todoItemModels: [...pageItemModel.todoItemModels, NewTodoItemModel()],
+      todoItemModels: [...pageItemModel.todoItemModels, NewTodoItemUiModel()],
     );
     notifyListeners();
   }
@@ -55,8 +58,12 @@ class NewPageNotifier with ChangeNotifier {
       name = defaultName;
     }
     return await pageRepository.createPageTodos(
-      name,
-      pageItemModel.todoItemModels.map((e) => e.name).toList(),
+      [
+        NewPageModel(
+          name: name,
+          todos: pageItemModel.todoItemModels.map((e) => NewTodoModel(name: e.name)).toList(),
+        )
+      ],
     );
   }
 }

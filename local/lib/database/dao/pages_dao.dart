@@ -1,9 +1,5 @@
-import 'package:data/model/entity/page_entity.dart';
-import 'package:data/model/entity/todo_entity.dart';
 import 'package:drift/drift.dart';
 import 'package:local/database/database.dart';
-import 'package:local/database/extensions/page_companion_entity_extensions.dart';
-import 'package:local/database/extensions/todo_companion_entity_extensions.dart';
 import 'package:local/database/models/pages_table.dart';
 import 'package:local/exceptions/basic_page_deletion_exception.dart';
 
@@ -87,15 +83,22 @@ class PagesDao extends DatabaseAccessor<AppDatabase> with _$PagesDaoMixin {
         }
       });
 
-  Future<bool> createPageTodos(String name, List<String> todoNames) => transaction(() async {
+  Future<bool> createPageTodos(
+    List<PagesCompanion> newPages,
+    List<List<TodosCompanion>> newTodosByPage,
+  ) =>
+      transaction(() async {
         try {
-          final pageId = await createPage(PageEntity(name: name).toCompanion());
-          final todos = todoNames.map((e) => TodoEntity(name: e));
-          List<Future> todoFutures = [];
-          for (final todo in todos) {
-            todoFutures.add(db.todosDao.createTodo(pageId, todo.toCompanion()));
+          List<Future<int>> allInsertions = [];
+
+          for (int i = 0; i < newPages.length; i++) {
+            final pageId = await createPage(newPages[i]);
+            for (final todo in newTodosByPage[i]) {
+              allInsertions.add(db.todosDao.createTodo(pageId, todo));
+            }
           }
-          await Future.wait(todoFutures);
+
+          await Future.wait(allInsertions);
           return true;
         } catch (e) {
           return false;

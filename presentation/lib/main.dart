@@ -7,7 +7,7 @@ import 'package:presentation/ui/app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  setupGetIt();
+  await setupGetIt();
 
   // final isBasicPageNotExisted = await initializeApp();
   // if (!isBasicPageNotExisted) {

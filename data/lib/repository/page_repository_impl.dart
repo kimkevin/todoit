@@ -1,5 +1,7 @@
 import 'package:data/datasource/page_data_source.dart';
+import 'package:data/extensions/new_page_entity_model_extensions.dart';
 import 'package:data/extensions/page_entity_model_extensions.dart';
+import 'package:domain/model/new_page_model.dart';
 import 'package:domain/model/page_model.dart';
 import 'package:domain/repository/page_repository.dart';
 
@@ -20,6 +22,6 @@ class PageRepositoryImpl extends PageRepository {
       pageDataSource.reorderPages(oldIndex, newIndex);
 
   @override
-  Future<bool> createPageTodos(String name, List<String> todoNames) =>
-      pageDataSource.createPageTodos(name, todoNames);
+  Future<bool> createPageTodos(List<NewPageModel> newPages) =>
+      pageDataSource.createPageTodos(newPages.map((model) => model.toEntity()).toList());
 }

@@ -1,6 +1,9 @@
 import 'package:data/datasource/page_data_source.dart';
+import 'package:data/model/entity/new_page_entity.dart';
 import 'package:data/model/entity/page_entity.dart';
 import 'package:local/database/database.dart';
+import 'package:local/database/extensions/new_page_entity_extensions.dart';
+import 'package:local/database/extensions/new_todo_entity_extensions.dart';
 import 'package:local/database/extensions/page_companion_entity_extensions.dart';
 
 class PageDataSourceImpl extends PageDataSource {
@@ -47,6 +50,8 @@ class PageDataSourceImpl extends PageDataSource {
       database.pagesDao.reorderTodos(oldIndex, newIndex);
 
   @override
-  Future<bool> createPageTodos(String name, List<String> todoNames) =>
-      database.pagesDao.createPageTodos(name, todoNames);
+  Future<bool> createPageTodos(List<NewPageEntity> newPages) => database.pagesDao.createPageTodos(
+        newPages.map((p) => p.toCompanion()).toList(),
+        newPages.map((p) => p.todos.map((t) => t.toCompanion()).toList()).toList(),
+      );
 }

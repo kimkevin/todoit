@@ -1,25 +1,27 @@
 import 'dart:collection';
 
-class NewPageItemModel {
+import 'package:presentation/ui/model/new_todo_item_model.dart';
+
+class NewPageItemUiModel {
   final String name;
-  final List<NewTodoItemModel> _todoItemModels;
+  final List<NewTodoItemUiModel> _todoItemModels;
   final bool autoFocus;
 
-  NewPageItemModel({
+  NewPageItemUiModel({
     this.name = '',
-    List<NewTodoItemModel> todoItemModels = const [],
+    List<NewTodoItemUiModel> todoItemModels = const [],
     this.autoFocus = false,
   }) : _todoItemModels = List.unmodifiable(todoItemModels);
 
-  UnmodifiableListView<NewTodoItemModel> get todoItemModels =>
+  UnmodifiableListView<NewTodoItemUiModel> get todoItemModels =>
       UnmodifiableListView(_todoItemModels);
 
-  NewPageItemModel copyWith({
+  NewPageItemUiModel copyWith({
     String? name,
     bool? autoFocus,
-    List<NewTodoItemModel>? todoItemModels,
+    List<NewTodoItemUiModel>? todoItemModels,
   }) =>
-      NewPageItemModel(
+      NewPageItemUiModel(
         name: name ?? this.name,
         autoFocus: autoFocus ?? this.autoFocus,
         todoItemModels: todoItemModels ?? this.todoItemModels,
@@ -28,20 +30,5 @@ class NewPageItemModel {
   @override
   String toString() {
     return 'NewPageItemModel{name: $name, todoItemModels: $todoItemModels, autoFocus: $autoFocus}';
-  }
-}
-
-class NewTodoItemModel {
-  final String name;
-  final bool autoFocus;
-
-  NewTodoItemModel({
-    this.name = '',
-    this.autoFocus = false,
-  });
-
-  @override
-  String toString() {
-    return 'NewTodoItemModel{name: $name, autoFocus: $autoFocus}';
   }
 }

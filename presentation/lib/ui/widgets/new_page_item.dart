@@ -5,7 +5,7 @@ import 'package:presentation/ui/model/new_page_item_model.dart';
 import 'package:presentation/ui/widgets/new_todo_item.dart';
 
 class NewPageItem extends StatefulWidget {
-  final NewPageItemModel newPage;
+  final NewPageItemUiModel newPage;
   final Function(String) onPageNameChanged;
   final Function(int, String) onTodoNameChanged;
   final Function(int) onTodoDeleted;
@@ -23,7 +23,7 @@ class NewPageItem extends StatefulWidget {
 }
 
 class _NewPageItemState extends State<NewPageItem> {
-  late NewPageItemModel pageItemModel;
+  late NewPageItemUiModel pageItemModel;
   late TextEditingController _nameController;
   final FocusNode nameFocusNode = FocusNode();
 
