@@ -49,7 +49,7 @@ class _NewParsedPageState extends ConsumerState<NewParsedPage> {
               },
               child: Padding(
                 padding: const EdgeInsets.only(right: 16.0),
-                child: DsImage(path: Assets.svg.icCheck.path, width: 24, height: 24),
+                child: DsImage(Assets.svg.icCheck.path, width: 24, height: 24),
               ),
             )
           ],

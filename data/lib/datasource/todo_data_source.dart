@@ -11,7 +11,7 @@ abstract class TodoDataSource {
 
   Future<List<TodoEntity>> getTodosByPageId(int pageId);
 
-  Future<bool> reorderTodos(int oldIndex, int newIndex);
+  Future<bool> reorderTodos(int pageId, int oldIndex, int newIndex);
 
   Future<bool> updateTodoName(int id, String name);
 

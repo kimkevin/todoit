@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:presentation/gen/assets.gen.dart';
 import 'package:presentation/notifier/new_page_notifier.dart';
 import 'package:presentation/ui/widgets/new_page_item.dart';
+import 'package:presentation/ui/widgets/text_input_bottom_sheet.dart';
 import 'package:presentation/utils/future_utils.dart';
 import 'package:presentation/utils/localization_utils.dart';
 
@@ -60,6 +61,29 @@ class _NewPageState extends ConsumerState<NewPage> {
         appBar: AppBar(
           actions: [
             GestureDetector(
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.white,
+                  builder: (context) => TextInputBottomSheet(),
+                ).then((text) {
+                  if (text is String) {
+                    newPageNotifier.addTodos(text.split('\n'));
+                  }
+                });
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(right: 36.0),
+                child: Text(
+                  'T',
+                  style: TextStyle(
+                    fontSize: 22,
+                  ),
+                ),
+              ),
+            ),
+            GestureDetector(
               onTap: () async {
                 if (!mounted) return;
                 final result =
@@ -68,7 +92,7 @@ class _NewPageState extends ConsumerState<NewPage> {
               },
               child: Padding(
                 padding: const EdgeInsets.only(right: 16.0),
-                child: DsImage(path: Assets.svg.icCheck.path, width: 24, height: 24),
+                child: DsImage(Assets.svg.icCheck.path, width: 24, height: 24),
               ),
             )
           ],
@@ -101,7 +125,7 @@ class _NewPageState extends ConsumerState<NewPage> {
               onActionClicked(newPageNotifier, isKeyboardVisible);
             },
             child: DsImage(
-              path: isKeyboardVisible ? Assets.svg.icCheck.path : Assets.svg.icPlus.path,
+              isKeyboardVisible ? Assets.svg.icCheck.path : Assets.svg.icPlus.path,
               width: 24,
               height: 24,
             ),

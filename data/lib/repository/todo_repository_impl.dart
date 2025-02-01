@@ -16,11 +16,8 @@ class TodoRepositoryImpl extends TodoRepository {
       (await todoDataSource.getTodosByPageId(pageId)).map((e) => e.toModel()).toList();
 
   @override
-  Future<bool> updateTodo(TodoModel newTodo) => todoDataSource.updateTodo(newTodo.toEntity());
-
-  @override
-  Future<bool> reorderTodos(int oldIndex, int newIndex) =>
-      todoDataSource.reorderTodos(oldIndex, newIndex);
+  Future<bool> reorderTodos(int pageId, int oldIndex, int newIndex) =>
+      todoDataSource.reorderTodos(pageId, oldIndex, newIndex);
 
   @override
   Future<int> deleteTodo(int id) => todoDataSource.deleteTodo(id);

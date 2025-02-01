@@ -1,25 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dash/flutter_dash.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_ds/ds_image.dart';
 import 'package:presentation/gen/assets.gen.dart';
 import 'package:presentation/temp_ds.dart';
-import 'package:presentation/ui/model/new_todo_item_model.dart';
-import 'package:presentation/ui/model/todo.dart';
-
-enum TextMode {
-  text,
-  edit // check 안됨
-}
 
 class TodoListItem extends StatefulWidget {
   final int? reorderIndex;
-  // final TextEditingController textController;
-
-  // final TodoUiModel? todo;
-  final NewTodoItemUiModel todoItemModel;
-  final Function(TodoUiModel)? actionClick;
-  final Function(int)? deleteClick;
+  final String text;
+  final VoidCallback actionClick;
+  final VoidCallback deleteClick;
+  final VoidCallback onTap;
   final Function(String) onTextChanged;
 
   // final VoidCallback? onNewTodoFocused;
@@ -29,15 +20,14 @@ class TodoListItem extends StatefulWidget {
 
   const TodoListItem({
     super.key,
+    required this.text,
     this.reorderIndex,
-    // required this.textController,
-    required this.todoItemModel,
+    required this.onTap,
     required this.onTextChanged,
     this.isCompleted = false,
-    // this.todo,
     this.isEditMode = false,
-    this.deleteClick,
-    this.actionClick,
+    required this.deleteClick,
+    required this.actionClick,
     // this.onNewTodoFocused,
     this.isNew = false,
   });
@@ -55,7 +45,7 @@ class _TodoListItemState extends State<TodoListItem> {
   void initState() {
     super.initState();
 
-    _textController = TextEditingController(text: widget.todoItemModel.name);
+    _textController = TextEditingController(text: widget.text);
 
     isNew = widget.isNew;
 
@@ -103,6 +93,7 @@ class _TodoListItemState extends State<TodoListItem> {
       focusNode: _focusNode,
       maxLines: null,
       keyboardType: TextInputType.multiline,
+      onTap: widget.onTap,
       // textInputAction: TextInputAction.done,
       onChanged: onTextChanged,
       decoration: InputDecoration(
@@ -130,27 +121,23 @@ class _TodoListItemState extends State<TodoListItem> {
                     AnimatedSize(
                       duration: Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
-                      child: widget.actionClick == null || widget.isEditMode
+                      child: widget.isEditMode
                           ? SizedBox.shrink()
                           : GestureDetector(
                               onTap: () {
-                                if (widget.actionClick == null) return;
                                 HapticFeedback.lightImpact();
-                                // if (widget.todo != null) {
-                                //   widget.actionClick!(widget.todo!);
-                                // }
+                                widget.actionClick();
                               },
                               child: Padding(
                                 padding: EdgeInsets.only(right: 16),
                                 child: widget.isCompleted
-                                    ? SvgPicture.asset(
+                                    ? DsImage(
                                         Assets.svg.icCheck.path,
                                         width: 24,
                                         height: 24,
-                                        colorFilter:
-                                            ColorFilter.mode(Color(0xFFFF8794), BlendMode.srcIn),
+                                        color: Color(0xFFFF8794),
                                       )
-                                    : SvgPicture.asset(
+                                    : DsImage(
                                         Assets.svg.icCircle.path,
                                         width: 24,
                                         height: 24,
@@ -173,25 +160,21 @@ class _TodoListItemState extends State<TodoListItem> {
                       duration: Duration(milliseconds: 300),
                       child: Row(
                         children: [
-                          Visibility(
-                              visible: widget.deleteClick != null,
-                              child: InkWell(
-                                onTap: () {
-                                  // widget.deleteClick!(widget.todo!.id);
-                                },
-                                child: Padding(
-                                  padding: EdgeInsets.only(right: 29),
-                                  child: SvgPicture.asset(
-                                    Assets.svg.icTrash.path,
-                                    width: 24,
-                                    height: 24,
-                                  ),
-                                ),
-                              )),
+                          InkWell(
+                            onTap: widget.deleteClick,
+                            child: Padding(
+                              padding: EdgeInsets.only(right: 29),
+                              child: DsImage(
+                                Assets.svg.icTrash.path,
+                                width: 24,
+                                height: 24,
+                              ),
+                            ),
+                          ),
                           if (widget.reorderIndex != null)
                             ReorderableDragStartListener(
                               index: widget.reorderIndex!,
-                              child: SvgPicture.asset(
+                              child: DsImage(
                                 Assets.svg.icDragHandle.path,
                                 width: 24,
                                 height: 24,

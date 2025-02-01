@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-@DataClassName("PageTable")
+@DataClassName("Page")
 class Pages extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().withLength(max: 30)();

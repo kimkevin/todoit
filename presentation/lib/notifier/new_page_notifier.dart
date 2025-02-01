@@ -33,6 +33,26 @@ class NewPageNotifier with ChangeNotifier {
     );
   }
 
+  void addTodos(List<String> names) {
+    final newTodoItemModels = List<NewTodoItemUiModel>.from(pageItemModel.todoItemModels);
+    for (int i = 0; i < names.length; i++) {
+      if (newTodoItemModels.isEmpty) break;
+
+      if (newTodoItemModels.last.name.isEmpty) {
+        newTodoItemModels.remove(newTodoItemModels.last);
+      }
+    }
+
+    pageItemModel = pageItemModel.copyWith(
+      autoFocus: false,
+      todoItemModels: [
+        ...newTodoItemModels,
+        ...names.map((name) => NewTodoItemUiModel(name: name)),
+      ],
+    );
+    notifyListeners();
+  }
+
   void addTodo() {
     pageItemModel = pageItemModel.copyWith(
       autoFocus: false,
@@ -57,6 +77,9 @@ class NewPageNotifier with ChangeNotifier {
     if (name.isEmpty) {
       name = defaultName;
     }
+    
+    print('pageItemModel.todoItemModels= ${pageItemModel.todoItemModels}');
+    
     return await pageRepository.createPageTodos(
       [
         NewPageModel(

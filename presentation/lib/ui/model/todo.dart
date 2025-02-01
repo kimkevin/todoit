@@ -1,14 +1,16 @@
 class TodoUiModel {
-  final int id;
+  final int? id;
+  final int? pageId;
   final String name;
-  final int orderIndex;
+  final int? orderIndex;
   final bool completed;
 
   TodoUiModel({
-    required this.id,
-    required this.name,
-    required this.orderIndex,
-    required this.completed,
+    this.id,
+    this.pageId,
+    this.name = '',
+    this.orderIndex,
+    this.completed = false,
   });
 
   TodoUiModel copyWith({
@@ -18,6 +20,7 @@ class TodoUiModel {
   }) =>
       TodoUiModel(
         id: id,
+        pageId: pageId,
         name: name ?? this.name,
         orderIndex: orderIndex,
         completed: completed ?? this.completed,
@@ -29,13 +32,17 @@ class TodoUiModel {
       other is TodoUiModel &&
           runtimeType == other.runtimeType &&
           id == other.id &&
+          pageId == other.pageId &&
           name == other.name &&
           orderIndex == other.orderIndex &&
           completed == other.completed;
 
   @override
-  int get hashCode => id.hashCode ^ name.hashCode ^ orderIndex.hashCode ^ completed.hashCode;
+  int get hashCode =>
+      id.hashCode ^ pageId.hashCode ^ name.hashCode ^ orderIndex.hashCode ^ completed.hashCode;
 
   @override
-  String toString() => 'Todo{id: $id, name: $name, orderIndex: $orderIndex, completed: $completed}';
+  String toString() {
+    return 'TodoUiModel{id: $id, pageId: $pageId, name: $name, orderIndex: $orderIndex, completed: $completed}';
+  }
 }

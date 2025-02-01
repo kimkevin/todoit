@@ -5,6 +5,7 @@ import 'package:local/database/database.dart';
 extension TodoEntityExtension on TodoEntity {
   TodosCompanion toCompanion() => TodosCompanion(
         id: id > 0 ? Value(id) : const Value.absent(),
+        pageId: pageId > 0 ? Value(id) : const Value.absent(),
         name: Value(name),
         orderIndex: Value(orderIndex),
         completed: Value(completed),
@@ -12,9 +13,10 @@ extension TodoEntityExtension on TodoEntity {
       );
 }
 
-extension TodoTableExtension on TodoTable {
+extension TodoTableExtension on Todo {
   TodoEntity toEntity() => TodoEntity(
         id: id,
+        pageId: pageId,
         name: name,
         orderIndex: orderIndex,
         completed: completed,

@@ -19,7 +19,7 @@ class PageDataSourceImpl extends PageDataSource {
   Future<PageEntity?> getPage(int id) async {
     final page = await database.pagesDao.getPage(id);
     if (page == null) return null;
-    final todoCount = (await database.pageTodosDao.getTodoIdsByPageId(id)).length;
+    final todoCount = (await database.todosDao.getTodosByPageId(id)).length;
     return PageEntity(
         id: page.id, name: page.name, orderIndex: page.orderIndex, todoCount: todoCount);
   }
@@ -32,14 +32,14 @@ class PageDataSourceImpl extends PageDataSource {
   }
 
   @override
-  Future<bool> deletePage(int id) => database.pagesDao.deletePageAndTodos(id);
+  Future<bool> deletePage(int id) => database.pagesDao.deletePage(id);
 
   @override
   Future<List<PageEntity>> getAllPages() async {
     final pages = await database.pagesDao.getAllPage();
 
     return await Future.wait(pages.map((page) async {
-      final totalCount = (await database.pageTodosDao.getTodoIdsByPageId(page.id)).length;
+      final totalCount = (await database.todosDao.getTodosByPageId(page.id)).length;
       return PageEntity(
           id: page.id, name: page.name, todoCount: totalCount, orderIndex: page.orderIndex);
     }));

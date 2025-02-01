@@ -44,7 +44,20 @@ class TodoListNotifier with ChangeNotifier {
 
   Future<int> addTodo(String name) => todoRepository.createTodo(_pageId, name);
 
-  void updateName(int id, String name) async {
+  void addOrUpdateName(int index, int? id, String name) async {
+    print('addOrUpdateName 1111 $name');
+    if (index == _todos.length - 1 && name.length <= 1) {
+      // await todoRepository.createTodo(_pageId, name);
+      print('addOrUpdateName 2222');
+      addTodo('');
+      loadTodoList(_pageId);
+    }
+    updateName(id, name);
+  }
+
+  void updateName(int? id, String name) async {
+    if (id == null) return;
+
     final updated = await todoRepository.updateTodoName(id, name);
     // 이름은 스테이트풀하게 관리하고 있음
     if (!updated) {
@@ -53,7 +66,10 @@ class TodoListNotifier with ChangeNotifier {
   }
 
   void toggleTodo(TodoUiModel todo) async {
-    final updated = await todoRepository.updateTodoCompleted(todo.id, !todo.completed);
+    final todoId = todo.id;
+    if (todoId == null) return;
+
+    final updated = await todoRepository.updateTodoCompleted(todoId, !todo.completed);
     if (updated) {
       loadTodoList(_pageId);
     }
@@ -68,11 +84,13 @@ class TodoListNotifier with ChangeNotifier {
     _todos.insert(newIndex, item);
     notifyListeners();
 
-    await todoRepository.reorderTodos(oldIndex, newIndex);
+    await todoRepository.reorderTodos(_pageId, oldIndex, newIndex);
     loadTodoList(_pageId);
   }
 
-  void deleteTodo(int id) async {
+  void deleteTodo(int? id) async {
+    if (id == null) return;
+
     await todoRepository.deleteTodo(id);
     loadTodoList(_pageId);
   }

@@ -4,7 +4,6 @@ import 'package:data/model/entity/todo_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:local/database/database.dart';
 import 'package:local/datasource/page_data_source_impl.dart';
-import 'package:local/datasource/page_todo_data_source_impl.dart';
 import 'package:local/datasource/todo_data_source_impl.dart';
 import 'package:local/exceptions/basic_page_deletion_exception.dart';
 
@@ -12,7 +11,6 @@ void main() {
   AppDatabase database = AppDatabase(true);
   TodoDataSource todoDataSource = TodoDataSourceImpl(database: database);
   PageDataSource pageDataSource = PageDataSourceImpl(database: database);
-  PageTodoDataSourceImpl pageTodoDataSource = PageTodoDataSourceImpl(database: database);
 
   int basicPageId = 0;
   int page2Id = 0;
@@ -60,12 +58,21 @@ void main() {
     });
 
     test('변경', () async {
-      final nameResult = await todoDataSource
-          .updateTodo(TodoEntity(id: todo1Id, name: newTodoName, completed: false));
+      final nameResult = await todoDataSource.updateTodo(TodoEntity(
+        id: todo1Id,
+        pageId: page2Id,
+        name: newTodoName,
+        completed: false,
+      ));
       expect(nameResult, true, reason: '이름이 변경되지 않았습니다');
 
       final completeResult = await todoDataSource.updateTodo(
-        TodoEntity(id: todo1Id, name: newTodoName, completed: true),
+        TodoEntity(
+          id: todo1Id,
+          pageId: page2Id,
+          name: newTodoName,
+          completed: true,
+        ),
       );
       expect(completeResult, true, reason: '투두가 완료되지 않았습니다');
     });
@@ -113,9 +120,9 @@ void main() {
       expect(result1, null, reason: '투두1 삭제되지 않았습니다');
       expect(result2, null, reason: '투두2 삭제되지 않았습니다');
     });
-    test('페이지투두  빈상태', () async {
-      final result1 = await pageTodoDataSource.getAllPageTodo();
-      expect(result1.isEmpty, true, reason: '페이지투두가 비어있지 않습니다');
-    });
+    // test('페이지투두  빈상태', () async {
+    //   final result1 = await todoDataSource.getAllPageTodo();
+    //   expect(result1.isEmpty, true, reason: '페이지투두가 비어있지 않습니다');
+    // });
   });
 }

@@ -1,8 +1,8 @@
 import 'dart:ui';
 
 class FutureUtils {
-  static Future<void> runDelayed(VoidCallback action) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    action();
-  }
+  static Future<void> runDelayed(VoidCallback action, {int millis = 300}) =>
+      Future.delayed(Duration(milliseconds: millis), () {
+        action();
+      });
 }

@@ -137,7 +137,7 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
             child: Padding(
               padding: const EdgeInsets.only(right: 16.0),
               child: DsImage(
-                path: Assets.svg.icEdit.path,
+                Assets.svg.icEdit.path,
                 width: 24,
                 height: 24,
               ),
@@ -181,7 +181,7 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
         ),
       ),
       floatingActionButton: RoundedTextFloatingActionButton(
-        icon: DsImage(path: Assets.svg.icPlus.path, width: 24, height: 24),
+        icon: DsImage(Assets.svg.icPlus.path, width: 24, height: 24),
         onPressed: () {
           context.navigator
               .push(MaterialPageRoute(builder: (context) => NewPage()))

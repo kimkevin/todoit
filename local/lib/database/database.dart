@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:local/database/dao/page_todos_dao.dart';
+import 'package:local/database/dao/page_relations_dao.dart';
 import 'package:local/database/dao/pages_dao.dart';
 import 'package:local/database/dao/todos_dao.dart';
-import 'package:local/database/models/page_todos_table.dart';
+import 'package:local/database/models/page_relations_table.dart';
 import 'package:local/database/models/pages_table.dart';
 import 'package:local/database/models/todos_table.dart';
 import 'package:path/path.dart' as p;
@@ -13,7 +13,7 @@ import 'package:path_provider/path_provider.dart';
 
 part 'database.g.dart';
 
-@DriftDatabase(tables: [Pages, Todos, PageTodos], daos: [PagesDao, TodosDao, PageTodosDao])
+@DriftDatabase(tables: [Pages, Todos, PageRelations], daos: [PagesDao, TodosDao, PageRelationsDao])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(bool isTest) : super(_openConnections());
 
@@ -22,15 +22,15 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-    onCreate: (Migrator m) {
-      return m.createAllTables().then((_) {
-        customStatement('PRAGMA foreign_keys = ON'); // 외래키 제약 조건 활성화
-      });
-    },
-    onUpgrade: (migrator, from, to) async {
-      // if from < to, perform migration. You can execute special migration steps here if needed.
-    },
-  );
+        onCreate: (Migrator m) {
+          return m.createAllTables().then((_) {
+            customStatement('PRAGMA foreign_keys = ON'); // 외래키 제약 조건 활성화
+          });
+        },
+        onUpgrade: (migrator, from, to) async {
+          // if from < to, perform migration. You can execute special migration steps here if needed.
+        },
+      );
 }
 
 LazyDatabase _openConnections() {

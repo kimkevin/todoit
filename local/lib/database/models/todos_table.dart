@@ -1,8 +1,10 @@
 import 'package:drift/drift.dart';
 
-@DataClassName("TodoTable")
+@DataClassName("Todo")
 class Todos extends Table {
   IntColumn get id => integer().autoIncrement()();
+  IntColumn get pageId =>
+      integer().customConstraint('REFERENCES Pages(id) ON DELETE CASCADE NOT NULL')();
   TextColumn get name => text().withLength(max: 30)();
   BoolColumn get completed => boolean().withDefault(Constant(false))();
   IntColumn get orderIndex => integer()();

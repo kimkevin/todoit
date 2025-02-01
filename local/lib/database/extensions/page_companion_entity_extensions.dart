@@ -2,7 +2,7 @@ import 'package:data/model/entity/page_entity.dart';
 import 'package:drift/drift.dart';
 import 'package:local/database/database.dart';
 
-extension PageTableExtension on PageTable {
+extension PageTableExtension on Page {
   PageEntity toEntity() => PageEntity(
         id: id,
         name: name,
