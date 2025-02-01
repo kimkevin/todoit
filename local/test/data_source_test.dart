@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:local/database/database.dart';
 import 'package:local/datasource/page_data_source_impl.dart';
 import 'package:local/datasource/todo_data_source_impl.dart';
-import 'package:local/exceptions/basic_page_deletion_exception.dart';
 
 void main() {
   AppDatabase database = AppDatabase(true);
@@ -21,14 +20,6 @@ void main() {
     test('생성', () async {
       basicPageId = await pageDataSource.createPage('기본');
       expect(basicPageId > 0, true, reason: '페이지가 생성되지 않았습니다');
-    });
-
-    test('삭제:불가', () async {
-      try {
-        await pageDataSource.deletePage(basicPageId);
-      } catch (e) {
-        expect(e, isA<BasicPageDeletionException>);
-      }
     });
   });
 

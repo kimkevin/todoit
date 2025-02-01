@@ -2,10 +2,8 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:local/database/dao/page_relations_dao.dart';
 import 'package:local/database/dao/pages_dao.dart';
 import 'package:local/database/dao/todos_dao.dart';
-import 'package:local/database/models/page_relations_table.dart';
 import 'package:local/database/models/pages_table.dart';
 import 'package:local/database/models/todos_table.dart';
 import 'package:path/path.dart' as p;
@@ -13,7 +11,13 @@ import 'package:path_provider/path_provider.dart';
 
 part 'database.g.dart';
 
-@DriftDatabase(tables: [Pages, Todos, PageRelations], daos: [PagesDao, TodosDao, PageRelationsDao])
+@DriftDatabase(tables: [
+  Pages,
+  Todos,
+], daos: [
+  PagesDao,
+  TodosDao,
+])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(bool isTest) : super(_openConnections());
 

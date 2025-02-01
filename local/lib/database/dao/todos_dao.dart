@@ -17,17 +17,13 @@ class TodosDao extends DatabaseAccessor<AppDatabase> with _$TodosDaoMixin {
   Future<int> deleteTodo(int id) => (delete(todos)..where((t) => t.id.equals(id))).go();
 
   Future<int> createTodo(TodosCompanion todo) => transaction(() async {
-        try {
-          int pageId = todo.pageId.value;
-          final int? maxOrderIndex = await _getTodoMaxOrderIndexOfPage(pageId);
-          final newTodo = todo.copyWith(
-            pageId: Value(pageId),
-            orderIndex: Value(maxOrderIndex == null ? 0 : maxOrderIndex + 1),
-          );
-          return await _createTodo(newTodo);
-        } catch (e) {
-          return 0;
-        }
+        int pageId = todo.pageId.value;
+        final int? maxOrderIndex = await _getTodoMaxOrderIndexOfPage(pageId);
+        final newTodo = todo.copyWith(
+          pageId: Value(pageId),
+          orderIndex: Value(maxOrderIndex == null ? 0 : maxOrderIndex + 1),
+        );
+        return await _createTodo(newTodo);
       });
 
   Future<List<Todo>> getTodosByPageId(int pageId) => (select(todos)
@@ -68,9 +64,9 @@ class TodosDao extends DatabaseAccessor<AppDatabase> with _$TodosDaoMixin {
       });
 
   Future<int?> _getTodoMaxOrderIndexOfPage(int pageId) async => (await (select(todos)
-            ..where((tbl) => tbl.pageId.equals(pageId))
-            ..orderBy([(tbl) => OrderingTerm(expression: tbl.orderIndex, mode: OrderingMode.desc)]))
-          .map((row) => row.orderIndex)
-          .get())
-      .firstOrNull;
+        ..where((tbl) => tbl.pageId.equals(pageId))
+        ..orderBy([(tbl) => OrderingTerm(expression: tbl.orderIndex, mode: OrderingMode.desc)]))
+      .map((row) => row.orderIndex)
+      .getSingleOrNull());
+  // .firstOrNull;
 }

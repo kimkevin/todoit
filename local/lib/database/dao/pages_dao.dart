@@ -64,17 +64,12 @@ class PagesDao extends DatabaseAccessor<AppDatabase> with _$PagesDaoMixin {
     List<List<TodosCompanion>> newTodosByPage,
   ) =>
       transaction(() async {
-        try {
-          for (int i = 0; i < newPages.length; i++) {
-            final pageId = await createPage(newPages[i]);
-            for (final todo in newTodosByPage[i]) {
-              final id = await db.todosDao.createTodo(todo.copyWith(pageId: Value(pageId)));
-              print('todo id= $id');
-            }
+        for (int i = 0; i < newPages.length; i++) {
+          final pageId = await createPage(newPages[i]);
+          for (final todo in newTodosByPage[i]) {
+            await db.todosDao.createTodo(todo.copyWith(pageId: Value(pageId)));
           }
-          return true;
-        } catch (e) {
-          return false;
         }
+        return true;
       });
 }
