@@ -31,15 +31,19 @@ class PageListItem extends StatelessWidget {
           children: [
             Expanded(
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
                     page.name,
                     style: DsTextStyles.item,
                   ),
                   SizedBox(width: 12),
-                  Text(
-                    page.todoCount.toString(),
-                    style: DsTextStyles.pageInfo.copyWith(color: Color(0xFF9E9FA0)),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      page.todoCount.toString(),
+                      style: DsTextStyles.pageInfo.copyWith(color: Color(0xFF9E9FA0)),
+                    ),
                   ),
                 ],
               ),
