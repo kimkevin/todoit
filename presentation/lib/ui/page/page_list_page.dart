@@ -144,18 +144,12 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
             ),
           ),
         ],
-        // title: Text(widget.title),
       ),
       body: SafeArea(
         child: Stack(
           children: [
             Column(
               children: [
-                // InputItem(
-                //   name: '페이지',
-                //   onSubmit: pageNotifier.addPage,
-                //   fromPage: true,
-                // ),
                 Expanded(
                   child: ReorderableListView(
                     onReorder: pageNotifier.reorderPages,
