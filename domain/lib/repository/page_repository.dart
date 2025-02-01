@@ -8,5 +8,7 @@ abstract class PageRepository {
 
   Future<List<PageModel>> getAllPages();
 
+  Future<bool> deletePage(int id);
+
   Future<bool> reorderTodos(int oldIndex, int newIndex);
 }

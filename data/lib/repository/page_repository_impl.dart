@@ -18,6 +18,9 @@ class PageRepositoryImpl extends PageRepository {
       (await pageDataSource.getAllPages()).map((e) => e.toModel()).toList();
 
   @override
+  Future<bool> deletePage(int id) => pageDataSource.deletePage(id);
+
+  @override
   Future<bool> reorderTodos(int oldIndex, int newIndex) =>
       pageDataSource.reorderPages(oldIndex, newIndex);
 

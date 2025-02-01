@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +12,7 @@ import 'package:presentation/notifier/page_list_notifier.dart';
 import 'package:presentation/parser/page_todo_parser.dart';
 import 'package:presentation/ui/model/new_page_item_model.dart';
 import 'package:presentation/ui/model/new_todo_item_model.dart';
+import 'package:presentation/ui/model/page.dart';
 import 'package:presentation/ui/page/new_page.dart';
 import 'package:presentation/ui/page/new_parsed_page.dart';
 import 'package:presentation/ui/page/todo_list_page.dart';
@@ -124,20 +126,38 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
     );
   }
 
+  void onPageClick(PageUiModel page) {
+    if (!mounted) return;
+
+    context.navigator.push(MaterialPageRoute(builder: (context) => TodoListPage(page: page)));
+  }
+
+  void onNewPageClick(PageListNotifier notifier) {
+    if (!mounted) return;
+
+    context.navigator.push(MaterialPageRoute(builder: (context) => NewPage())).then(
+      (isUpdated) {
+        if (isUpdated is bool && isUpdated) {
+          notifier.loadPageList();
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final pageNotifier = ref.watch(pageListProvider);
+    final notifier = ref.watch(pageListProvider);
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           GestureDetector(
-            onTap: () {},
+            onTap: notifier.toggleEditMode,
             child: Padding(
               padding: const EdgeInsets.only(right: 16.0),
               child: DsImage(
-                Assets.svg.icEdit.path,
+                notifier.isEditMode ? Assets.svg.icCheck.path : Assets.svg.icEdit.path,
                 width: 24,
                 height: 24,
               ),
@@ -146,53 +166,34 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
         ],
       ),
       body: SafeArea(
-        child: Stack(
+        child: ReorderableListView(
+          onReorder: notifier.reorderPages,
           children: [
-            Column(
-              children: [
-                Expanded(
-                  child: ReorderableListView(
-                    onReorder: pageNotifier.reorderPages,
-                    children: [
-                      ...pageNotifier.pages.map(
-                        (page) => PageListItem(
-                          key: ValueKey(page),
-                          page: page,
-                          onClick: (page) {
-                            if (!mounted) return;
-
-                            context.navigator.push(
-                                MaterialPageRoute(builder: (context) => TodoListPage(page: page)));
-                          },
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ],
+            ...notifier.pages.mapIndexed(
+              (index, page) => PageListItem(
+                key: ValueKey(page),
+                page: page,
+                orderIndex: index,
+                isEditMode: notifier.isEditMode,
+                onDeleteClick: () {
+                  notifier.deletePage(page.id);
+                },
+                onClick: () {
+                  onPageClick(page);
+                },
+              ),
             ),
+            SizedBox(key: ValueKey("bottom_padding"), height: 96),
           ],
         ),
       ),
       floatingActionButton: RoundedTextFloatingActionButton(
         icon: DsImage(Assets.svg.icPlus.path, width: 24, height: 24),
         onPressed: () {
-          context.navigator
-              .push(MaterialPageRoute(builder: (context) => NewPage()))
-              .then((isUpdated) {
-            if (isUpdated is bool && isUpdated) {
-              pageNotifier.loadPageList();
-            }
-          });
+          onNewPageClick(notifier);
         },
         text: '새로 만들기',
-        // elevation: 20,
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {},
-      //   tooltip: 'Create Todo',
-      //   child: const Icon(Icons.add),
-      // ),
     );
   }
 }

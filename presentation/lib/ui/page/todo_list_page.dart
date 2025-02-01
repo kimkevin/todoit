@@ -61,19 +61,19 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final todoNotifier = ref.watch(todoListProvider);
+    final notifier = ref.watch(todoListProvider);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           GestureDetector(
             onTap: () {
-              todoNotifier.toggleEditMode();
+              notifier.toggleEditMode();
             },
             child: Padding(
               padding: const EdgeInsets.only(right: 16.0),
               child: DsImage(
-                todoNotifier.isEditMode ? Assets.svg.icCheck.path : Assets.svg.icEdit.path,
+                notifier.isEditMode ? Assets.svg.icCheck.path : Assets.svg.icEdit.path,
                 width: 24,
                 height: 24,
               ),
@@ -97,23 +97,23 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                   ),
                 ),
                 AnimatedOpacity(
-                  opacity: todoNotifier.isEditMode ? 0.0 : 1.0,
+                  opacity: notifier.isEditMode ? 0.0 : 1.0,
                   duration: Duration(milliseconds: 100),
                   child: Padding(
                     padding: EdgeInsets.only(top: 8, right: 32, bottom: 5),
                     child: Align(
                       alignment: Alignment.centerRight,
-                      child: Text('${(todoNotifier.completeRate * 100).round()}%'),
+                      child: Text('${(notifier.completeRate * 100).round()}%'),
                     ),
                   ),
                 ),
                 AnimatedOpacity(
-                  opacity: todoNotifier.isEditMode ? 0.0 : 1.0,
+                  opacity: notifier.isEditMode ? 0.0 : 1.0,
                   duration: Duration(milliseconds: 100),
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 32),
                     child: Stack(
-                      key: ValueKey(todoNotifier.completeRate),
+                      key: ValueKey(notifier.completeRate),
                       children: [
                         Container(
                           width: double.infinity,
@@ -124,7 +124,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                           ),
                         ),
                         FractionallySizedBox(
-                          widthFactor: todoNotifier.completeRate,
+                          widthFactor: notifier.completeRate,
                           child: Container(
                             width: double.infinity,
                             height: 16,
@@ -148,22 +148,22 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                   child: ReorderableListView(
                     // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                     scrollController: _scrollController,
-                    onReorder: todoNotifier.reorderTodos,
+                    onReorder: notifier.reorderTodos,
                     children: [
-                      ...todoNotifier.todos.mapIndexed(
+                      ...notifier.todos.mapIndexed(
                         (index, todo) => TodoListItem(
                           key: ValueKey(todo),
                           reorderIndex: index,
                           text: todo.name,
-                          isEditMode: todoNotifier.isEditMode,
+                          isEditMode: notifier.isEditMode,
                           actionClick: () {
-                            todoNotifier.toggleTodo(todo);
+                            notifier.toggleTodo(todo);
                           },
                           deleteClick: () {
-                            todoNotifier.deleteTodo(todo.id);
+                            notifier.deleteTodo(todo.id);
                           },
                           onTap: () {
-                            if (index == todoNotifier.todos.length - 1) {
+                            if (index == notifier.todos.length - 1) {
                               FutureUtils.runDelayed(() {
                                 _scrollController.animateTo(
                                   _scrollController.position.maxScrollExtent,
@@ -174,7 +174,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                             }
                           },
                           onTextChanged: (text) {
-                            todoNotifier.addOrUpdateName(index, todo.id, text);
+                            notifier.addOrUpdateName(index, todo.id, text);
                           },
                           // onNewTodoFocused: onNewTodoFocused,
                           isNew: todo.id == newTodoId,

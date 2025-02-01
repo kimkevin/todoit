@@ -12,6 +12,10 @@ class PageListNotifier with ChangeNotifier {
   final PageRepository pageRepository;
   final AppRepository appRepository;
 
+  var _isEditMode = false;
+
+  bool get isEditMode => _isEditMode;
+
   List<PageUiModel> _pages = <PageUiModel>[];
 
   List<PageUiModel> get pages => UnmodifiableListView(_pages);
@@ -32,6 +36,11 @@ class PageListNotifier with ChangeNotifier {
     loadPageList();
   }
 
+  void deletePage(int id) async {
+    await pageRepository.deletePage(id);
+    loadPageList();
+  }
+
   void reorderPages(int oldIndex, int newIndex) async {
     // UI 먼저 보여줌
     if (oldIndex < newIndex) {
@@ -49,6 +58,11 @@ class PageListNotifier with ChangeNotifier {
 
   Future<bool> setLastClipboardHash(String clipboardHash) =>
       appRepository.setLastClipboardHash(clipboardHash);
+
+  void toggleEditMode() {
+    _isEditMode = !_isEditMode;
+    notifyListeners();
+  }
 }
 
 // Finally, we are using ChangeNotifierProvider to allow the UI to interact with our TodosNotifier class.
