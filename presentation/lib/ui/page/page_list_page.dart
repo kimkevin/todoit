@@ -5,6 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_core/extensions/context_extensions.dart';
+import 'package:flutter_ds/foundation/color/ds_color_palete.dart';
 import 'package:flutter_ds/ui/widgets/ds_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:presentation/gen/assets.gen.dart';
@@ -175,6 +176,7 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
                 page: page,
                 orderIndex: index,
                 isEditMode: notifier.isEditMode,
+                hasBottomBorder: index != notifier.pages.length - 1,
                 onDeleteClick: () {
                   notifier.deletePage(page.id);
                 },
@@ -188,7 +190,12 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
         ),
       ),
       floatingActionButton: RoundedTextFloatingActionButton(
-        icon: DsImage(Assets.svg.icPlus.path, width: 24, height: 24),
+        icon: DsImage(
+          Assets.svg.icPlus.path,
+          width: 24,
+          height: 24,
+          color: DsColorPalette.white,
+        ),
         onPressed: () {
           onNewPageClick(notifier);
         },

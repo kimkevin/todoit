@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ds/foundation/color/ds_color_palete.dart';
 import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
-import 'package:presentation/temp_ds.dart';
 
 class RoundedTextFloatingActionButton extends StatelessWidget {
   final Widget icon;
@@ -35,6 +34,7 @@ class RoundedTextFloatingActionButton extends StatelessWidget {
       backgroundColor: DsColorPalette.gray700,
       foregroundColor: Colors.white,
       elevation: 2,
+      extendedPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
     );
   }
 }
