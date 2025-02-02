@@ -68,11 +68,12 @@ class _PageListItemState extends State<PageListItem> {
 
   @override
   Widget build(BuildContext context) {
-    if (_controller.text.isEmpty) {
-      _controller = TextEditingController(
-        text: LocalizationUtils.getDefaultName(context),
-      );
+    if (!widget.isEditMode && widget.page.name.isEmpty) {
+      _controller = TextEditingController(text: LocalizationUtils.getDefaultName(context));
+    } else {
+      _controller = TextEditingController(text: widget.page.name);
     }
+
     return DsRow(
       onClick: onItemClick,
       padding: EdgeInsets.only(left: 32),
