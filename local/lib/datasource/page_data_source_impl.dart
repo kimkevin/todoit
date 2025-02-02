@@ -25,11 +25,8 @@ class PageDataSourceImpl extends PageDataSource {
   }
 
   @override
-  Future<bool> updatePage(int id, String name) async {
-    final newPage = PageEntity(id: id, name: name);
-    final result = await database.pagesDao.updatePage(newPage.toCompanion());
-    return result;
-  }
+  Future<bool> updatePage(int id, {String? name}) =>
+      database.pagesDao.updatePageWith(id, name: name);
 
   @override
   Future<bool> deletePage(int id) => database.pagesDao.deletePage(id);

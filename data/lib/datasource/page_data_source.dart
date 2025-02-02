@@ -8,7 +8,7 @@ abstract class PageDataSource {
 
   Future<PageEntity?> getPage(int id);
 
-  Future<bool> updatePage(int id, String title);
+  Future<bool> updatePage(int id, {String? name});
 
   Future<bool> deletePage(int id);
 

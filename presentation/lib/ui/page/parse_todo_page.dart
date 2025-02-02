@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:presentation/parser/page_todo_parser.dart';
 import 'package:presentation/ui/model/paeg_todo_parse_result.dart';
 import 'package:presentation/ui/widgets/parse_result_page_todo_content.dart';
+import 'package:presentation/utils/localization_utils.dart';
 
 class ParseTodoPage extends ConsumerStatefulWidget {
   const ParseTodoPage({super.key});
@@ -28,7 +29,10 @@ class _ParseTodoPageState extends ConsumerState<ParseTodoPage> {
 
   void onTodoSubmitted(String text) {
     setState(() {
-      _parseResult = parser.parse(text);
+      _parseResult = parser.parse(
+        text,
+        LocalizationUtils.getDefaultName(context),
+      );
     });
   }
 

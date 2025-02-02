@@ -1,7 +1,7 @@
 import 'package:presentation/ui/model/paeg_todo_parse_result.dart';
 
 class PageTodoParser {
-  PageTodoParseResult? parse(String inputText) {
+  PageTodoParseResult? parse(String inputText, String defaultPageName) {
     final lines = inputText.split('\n').toList();
     List<ParsedPageTodo> result = [];
     String? currentPageTitle;
@@ -36,7 +36,7 @@ class PageTodoParser {
       }
       result.clear();
       result.add(ParsedPageTodo(
-        pageName: 'Untitled',
+        pageName: defaultPageName,
         todoNames: todoNames,
       ));
     }

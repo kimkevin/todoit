@@ -27,4 +27,7 @@ class PageRepositoryImpl extends PageRepository {
   @override
   Future<bool> createPageTodos(List<NewPageModel> newPages) =>
       pageDataSource.createPageTodos(newPages.map((model) => model.toEntity()).toList());
+
+  @override
+  Future<bool> updatePage(int id, {String? name}) => pageDataSource.updatePage(id, name: name);
 }

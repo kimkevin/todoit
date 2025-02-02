@@ -30,7 +30,7 @@ void main() {
     });
 
     test('변경', () async {
-      final result = await pageDataSource.updatePage(page2Id, '테스트');
+      final result = await pageDataSource.updatePage(page2Id, name: '테스트');
       expect(result, true, reason: '이름이 변경되지 않았습니다');
     });
 

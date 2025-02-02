@@ -11,4 +11,6 @@ abstract class PageRepository {
   Future<bool> deletePage(int id);
 
   Future<bool> reorderTodos(int oldIndex, int newIndex);
+
+  Future<bool> updatePage(int id, {String? name});
 }

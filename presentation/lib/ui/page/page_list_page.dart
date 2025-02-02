@@ -20,6 +20,7 @@ import 'package:presentation/ui/page/todo_list_page.dart';
 import 'package:presentation/ui/widgets/page_list_item.dart';
 import 'package:presentation/ui/widgets/rounded_text_floating_action_button.dart';
 import 'package:presentation/utils/future_utils.dart';
+import 'package:presentation/utils/localization_utils.dart';
 
 class PageListPage extends ConsumerStatefulWidget {
   const PageListPage({super.key, required this.title});
@@ -83,6 +84,8 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
     Function(String) onClipboardHashUpdated,
     VoidCallback onPageChanged,
   ) async {
+    if (!mounted) return;
+
     ClipboardData? clipboardData = await Clipboard.getData(Clipboard.kTextPlain);
     String? clipboardText = clipboardData?.text;
 
@@ -94,7 +97,10 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
 
     if (!mounted || newClipboardHash == lastClipboardHash) return;
 
-    final result = PageTodoParser().parse(clipboardText);
+    final result = PageTodoParser().parse(
+      clipboardText,
+      LocalizationUtils.getDefaultName(context),
+    );
     if (result == null) return;
 
     onClipboardHashUpdated(newClipboardHash);
@@ -182,6 +188,9 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
                 },
                 onClick: () {
                   onPageClick(page);
+                },
+                onTextChanged: (text) {
+                  notifier.updateName(page.id, text);
                 },
               ),
             ),

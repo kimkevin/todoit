@@ -19,7 +19,7 @@ class PagesDao extends DatabaseAccessor<AppDatabase> with _$PagesDaoMixin {
 
   Future<Page?> getPage(int id) => (select(pages)..where((p) => p.id.equals(id))).getSingleOrNull();
 
-  Future<bool> updatePage(PagesCompanion page) => update(pages).replace(page);
+  Future<bool> _updatePage(PagesCompanion page) => update(pages).replace(page);
 
   Future<List<Page>> getAllPage() => (select(pages)
         ..orderBy([(t) => OrderingTerm(expression: t.orderIndex, mode: OrderingMode.asc)]))
@@ -28,14 +28,6 @@ class PagesDao extends DatabaseAccessor<AppDatabase> with _$PagesDaoMixin {
   Future<bool> deletePage(int id) async {
     final result = await (delete(pages)..where((p) => p.id.equals(id))).go();
     return result > 0;
-  }
-
-  Future<int> _getMinOrderIndex() async {
-    final result = await (select(pages)
-          ..orderBy([(e) => OrderingTerm(expression: e.orderIndex, mode: OrderingMode.asc)]))
-        .get();
-
-    return result.firstOrNull?.orderIndex ?? 0;
   }
 
   Future<bool> reorderTodos(int oldIndex, int newIndex) => transaction(() async {
@@ -72,4 +64,19 @@ class PagesDao extends DatabaseAccessor<AppDatabase> with _$PagesDaoMixin {
         }
         return true;
       });
+
+  Future<bool> updatePageWith(int id, {String? name}) async {
+    final oldPage = await getPage(id);
+    if (oldPage == null) return false;
+
+    return await _updatePage(oldPage.copyWith(name: name).toCompanion(true));
+  }
+
+  Future<int> _getMinOrderIndex() async {
+    final result = await (select(pages)
+          ..orderBy([(e) => OrderingTerm(expression: e.orderIndex, mode: OrderingMode.asc)]))
+        .get();
+
+    return result.firstOrNull?.orderIndex ?? 0;
+  }
 }

@@ -41,6 +41,14 @@ class PageListNotifier with ChangeNotifier {
     loadPageList();
   }
 
+  void updateName(int id, String name) async {
+    final updated = await pageRepository.updatePage(id, name: name);
+
+    if (!updated) {
+      loadPageList();
+    }
+  }
+
   void reorderPages(int oldIndex, int newIndex) async {
     // UI 먼저 보여줌
     if (oldIndex < newIndex) {
@@ -61,7 +69,12 @@ class PageListNotifier with ChangeNotifier {
 
   void toggleEditMode() {
     _isEditMode = !_isEditMode;
-    notifyListeners();
+
+    if (!_isEditMode) {
+      loadPageList();
+    } else {
+      notifyListeners();
+    }
   }
 }
 
