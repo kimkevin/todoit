@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dash/flutter_dash.dart';
 import 'package:flutter_ds/foundation/color/ds_color_palete.dart';
 import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
 import 'package:flutter_ds/ui/widgets/ds_image.dart';
 import 'package:presentation/gen/assets.gen.dart';
+import 'package:presentation/ui/widgets/dash_divider.dart';
 
 class TodoListItem extends StatefulWidget {
   final int? reorderIndex;
@@ -192,13 +192,7 @@ class _TodoListItemState extends State<TodoListItem> {
               bottom: 0,
               left: 32,
               right: 32,
-              child: Dash(
-                length: screenWidth - 64,
-                dashLength: 5,
-                dashGap: 3,
-                dashThickness: 1,
-                dashColor: Color(0x9E9FA080),
-              ),
+              child: DashDivider(horizontalPadding: 32),
             ),
           ],
         ),
