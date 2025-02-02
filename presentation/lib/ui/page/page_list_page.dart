@@ -198,18 +198,20 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
           ],
         ),
       ),
-      floatingActionButton: RoundedTextFloatingActionButton(
-        icon: DsImage(
-          Assets.svg.icPlus.path,
-          width: 24,
-          height: 24,
-          color: DsColorPalette.white,
-        ),
-        onPressed: () {
-          onNewPageClick(notifier);
-        },
-        text: '새로 만들기',
-      ),
+      floatingActionButton: notifier.isEditMode
+          ? null
+          : RoundedTextFloatingActionButton(
+              icon: DsImage(
+                Assets.svg.icPlus.path,
+                width: 24,
+                height: 24,
+                color: DsColorPalette.white,
+              ),
+              onPressed: () {
+                onNewPageClick(notifier);
+              },
+              text: '새로 만들기',
+            ),
     );
   }
 }

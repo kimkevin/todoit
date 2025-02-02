@@ -1,6 +1,5 @@
 import 'package:data/datasource/page_data_source.dart';
 import 'package:data/datasource/todo_data_source.dart';
-import 'package:data/model/entity/todo_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:local/database/database.dart';
 import 'package:local/datasource/page_data_source_impl.dart';
@@ -49,21 +48,15 @@ void main() {
     });
 
     test('변경', () async {
-      final nameResult = await todoDataSource.updateTodo(TodoEntity(
-        id: todo1Id,
-        pageId: page2Id,
+      final nameResult = await todoDataSource.updateTodoWith(
+        todo1Id,
         name: newTodoName,
-        completed: false,
-      ));
+      );
       expect(nameResult, true, reason: '이름이 변경되지 않았습니다');
 
-      final completeResult = await todoDataSource.updateTodo(
-        TodoEntity(
-          id: todo1Id,
-          pageId: page2Id,
-          name: newTodoName,
-          completed: true,
-        ),
+      final completeResult = await todoDataSource.updateTodoWith(
+        todo1Id,
+        completed: true,
       );
       expect(completeResult, true, reason: '투두가 완료되지 않았습니다');
     });

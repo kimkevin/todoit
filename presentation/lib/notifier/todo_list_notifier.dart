@@ -58,7 +58,7 @@ class TodoListNotifier with ChangeNotifier {
   void updateName(int? id, String name) async {
     if (id == null) return;
 
-    final updated = await todoRepository.updateTodoName(id, name);
+    final updated = await todoRepository.updateTodoWith(id, name: name);
     // 이름은 스테이트풀하게 관리하고 있음
     if (!updated) {
       loadTodoList(_pageId);
@@ -69,7 +69,10 @@ class TodoListNotifier with ChangeNotifier {
     final todoId = todo.id;
     if (todoId == null) return;
 
-    final updated = await todoRepository.updateTodoCompleted(todoId, !todo.completed);
+    final updated = await todoRepository.updateTodoWith(
+      todoId,
+      completed: !todo.completed,
+    );
     if (updated) {
       loadTodoList(_pageId);
     }

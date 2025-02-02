@@ -20,10 +20,6 @@ class TodoDataSourceImpl extends TodoDataSource {
   Future<TodoEntity?> getTodo(int id) async => (await database.todosDao.getTodo(id))?.toEntity();
 
   @override
-  Future<bool> updateTodo(TodoEntity newTodo) =>
-      database.todosDao.updateTodo(newTodo.toCompanion());
-
-  @override
   Future<int> deleteTodo(int id) => database.todosDao.deleteTodo(id);
 
   @override
@@ -39,16 +35,6 @@ class TodoDataSourceImpl extends TodoDataSource {
       database.todosDao.reorderTodos(pageId, oldIndex, newIndex);
 
   @override
-  Future<bool> updateTodoName(int id, String name) async {
-    final oldTodo = await database.todosDao.getTodo(id);
-    if (oldTodo == null) return false;
-    return await database.todosDao.updateTodo(oldTodo.copyWith(name: name).toCompanion(true));
-  }
-
-  @override
-  Future<bool> updateTodoCompleted(int id, bool completed) async {
-    final oldTodo = await database.todosDao.getTodo(id);
-    if (oldTodo == null) return false;
-    return await updateTodo(oldTodo.copyWith(completed: completed).toEntity());
-  }
+  Future<bool> updateTodoWith(int id, {String? name, bool? completed}) =>
+      database.todosDao.updateTodoWith(id, name: name, completed: completed);
 }

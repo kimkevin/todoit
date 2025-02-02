@@ -12,7 +12,7 @@ class TodosDao extends DatabaseAccessor<AppDatabase> with _$TodosDaoMixin {
 
   Future<Todo?> getTodo(int id) => (select(todos)..where((t) => t.id.equals(id))).getSingleOrNull();
 
-  Future<bool> updateTodo(TodosCompanion todo) => update(todos).replace(todo);
+  Future<bool> _updateTodo(TodosCompanion todo) => update(todos).replace(todo);
 
   Future<int> deleteTodo(int id) => (delete(todos)..where((t) => t.id.equals(id))).go();
 
@@ -30,6 +30,18 @@ class TodosDao extends DatabaseAccessor<AppDatabase> with _$TodosDaoMixin {
         ..where((t) => t.pageId.equals(pageId))
         ..orderBy([(e) => OrderingTerm(expression: e.orderIndex)]))
       .get();
+
+  Future<bool> updateTodoWith(int id, {String? name, bool? completed}) async {
+    final oldTodo = await getTodo(id);
+    if (oldTodo == null) return false;
+
+    return await _updateTodo(oldTodo
+        .copyWith(
+          name: name,
+          completed: completed,
+        )
+        .toCompanion(true));
+  }
 
   Future<bool> reorderTodos(
     int pageId,
@@ -63,10 +75,11 @@ class TodosDao extends DatabaseAccessor<AppDatabase> with _$TodosDaoMixin {
         }
       });
 
-  Future<int?> _getTodoMaxOrderIndexOfPage(int pageId) async => (await (select(todos)
-        ..where((tbl) => tbl.pageId.equals(pageId))
-        ..orderBy([(tbl) => OrderingTerm(expression: tbl.orderIndex, mode: OrderingMode.desc)]))
-      .map((row) => row.orderIndex)
-      .getSingleOrNull());
-  // .firstOrNull;
+  Future<int?> _getTodoMaxOrderIndexOfPage(int pageId) async {
+    final result = await (select(todos)
+          ..where((tbl) => tbl.pageId.equals(pageId))
+          ..orderBy([(tbl) => OrderingTerm(expression: tbl.orderIndex, mode: OrderingMode.desc)]))
+        .get();
+    return result.firstOrNull?.orderIndex;
+  }
 }
