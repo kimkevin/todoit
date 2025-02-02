@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_core/extensions/context_extensions.dart';
-import 'package:flutter_ds/foundation/color/ds_color_palete.dart';
+import 'package:flutter_ds/foundation/color/ds_color_palette.dart';
 import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
 import 'package:flutter_ds/ui/widgets/ds_bottom_sheet_content.dart';
 import 'package:flutter_ds/ui/widgets/ds_image.dart';

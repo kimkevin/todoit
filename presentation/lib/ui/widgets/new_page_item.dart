@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ds/foundation/color/ds_color_palete.dart';
+import 'package:flutter_ds/foundation/color/ds_color_palette.dart';
 import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
 import 'package:presentation/ui/model/new_page_item_model.dart';
 import 'package:presentation/ui/widgets/new_todo_item.dart';

@@ -12,12 +12,15 @@ class DashDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    return Dash(
-      length: screenWidth - horizontalPadding * 2,
-      dashLength: 5,
-      dashGap: 3,
-      dashThickness: 1,
-      dashColor: Color(0x66C8C8C8),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 32),
+      child: Dash(
+        length: screenWidth - horizontalPadding * 2,
+        dashLength: 5,
+        dashGap: 3,
+        dashThickness: 1,
+        dashColor: Color(0x66C8C8C8),
+      ),
     );
   }
 }

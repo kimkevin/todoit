@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_core/extensions/context_extensions.dart';
-import 'package:flutter_ds/foundation/color/ds_color_palete.dart';
+import 'package:flutter_ds/foundation/color/ds_color_palette.dart';
 import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
 import 'package:flutter_ds/ui/widgets/ds_image.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
@@ -139,12 +139,6 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                     ),
                   ),
                 ),
-                // InputItem(
-                //   key: ValueKey('투두'),
-                //   name: '투두',
-                //   onSubmit: todoNotifier.addTodo,
-                //   fromPage: false,
-                // ),
                 Expanded(
                   child: ReorderableListView(
                     // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
