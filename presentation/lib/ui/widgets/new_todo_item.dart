@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
+import 'package:flutter_ds/foundation/color/ds_color_palete.dart';
+import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:presentation/gen/assets.gen.dart';
-import 'package:presentation/temp_ds.dart';
 import 'package:presentation/ui/model/new_todo_item_model.dart';
 
 class NewTodoItem extends StatefulWidget {
@@ -52,7 +53,7 @@ class _NewTodoItemState extends State<NewTodoItem> {
   }
 
   Widget _buildTextField() {
-    TextStyle textStyle = DsTextStyles.todo.copyWith(color: Color(0xFF242B34));
+    TextStyle textStyle = DsTextStyles.b1.copyWith(color: DsColorPalette.gray800);
 
     return TextField(
       controller: _textController,
@@ -64,7 +65,7 @@ class _NewTodoItemState extends State<NewTodoItem> {
       onChanged: onTextChanged,
       decoration: InputDecoration(
         hintText: '할일 입력',
-        hintStyle: DsTextStyles.todo.copyWith(color: Color(0xFFC8C8C8)),
+        hintStyle: textStyle.copyWith(color: DsColorPalette.gray300),
         border: InputBorder.none,
       ),
     );

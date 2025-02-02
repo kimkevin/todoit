@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_core/extensions/context_extensions.dart';
-import 'package:flutter_ds/ds_bottom_sheet_content.dart';
-import 'package:flutter_ds/ds_image.dart';
+import 'package:flutter_ds/foundation/color/ds_color_palete.dart';
+import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
+import 'package:flutter_ds/ui/widgets/ds_bottom_sheet_content.dart';
+import 'package:flutter_ds/ui/widgets/ds_image.dart';
 import 'package:presentation/gen/assets.gen.dart';
-import 'package:presentation/temp_ds.dart';
 import 'package:presentation/utils/future_utils.dart';
 
 class TextInputBottomSheet extends StatefulWidget {
@@ -55,10 +56,13 @@ class _TextInputBottomSheetState extends State<TextInputBottomSheet> {
           child: TextField(
             focusNode: _focusNode,
             controller: _controller,
-            style: DsTextStyles.todo.copyWith(height: 1.5),
+            style: DsTextStyles.b1.copyWith(height: 1.5),
             decoration: InputDecoration(
               hintText: '할일 입력\n할일 입력...',
-              hintStyle: DsTextStyles.todo.copyWith(color: Color(0xFFC8C8C8), height: 1.5),
+              hintStyle: DsTextStyles.b1.copyWith(
+                color: DsColorPalette.gray300,
+                height: 1.5,
+              ),
               border: InputBorder.none,
             ),
             maxLines: null,

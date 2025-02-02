@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_core/extensions/context_extensions.dart';
+import 'package:flutter_ds/foundation/color/ds_color_palete.dart';
+import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
 import 'package:presentation/temp_ds.dart';
 
 class RoundedTextFloatingActionButton extends StatelessWidget {
@@ -24,17 +25,14 @@ class RoundedTextFloatingActionButton extends StatelessWidget {
           const SizedBox(width: 10.0),
           Text(
             text,
-            style: TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-            ).copyWith(color: DsTextColors.primary),
+            style: DsTextStyles.b2.copyWith(color: DsColorPalette.white),
           ),
         ],
       ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(30.0),
       ),
-      backgroundColor: context.theme.primaryColor,
+      backgroundColor: DsColorPalette.gray700,
       foregroundColor: Colors.white,
       elevation: 2,
     );

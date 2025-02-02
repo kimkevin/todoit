@@ -5,7 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_core/extensions/context_extensions.dart';
-import 'package:flutter_ds/ds_image.dart';
+import 'package:flutter_ds/ui/widgets/ds_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:presentation/gen/assets.gen.dart';
 import 'package:presentation/notifier/page_list_notifier.dart';

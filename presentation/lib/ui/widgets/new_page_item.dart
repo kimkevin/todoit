@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:presentation/temp_ds.dart';
+import 'package:flutter_ds/foundation/color/ds_color_palete.dart';
+import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
 import 'package:presentation/ui/model/new_page_item_model.dart';
 import 'package:presentation/ui/widgets/new_todo_item.dart';
 
@@ -58,10 +59,10 @@ class _NewPageItemState extends State<NewPageItem> {
           child: TextField(
             controller: _nameController,
             focusNode: nameFocusNode,
-            style: DsTextStyles.title.copyWith(color: Color(0xFF242B34)),
+            style: DsTextStyles.headline.copyWith(color: DsColorPalette.gray900),
             decoration: InputDecoration(
               hintText: '페이지 입력',
-              hintStyle: DsTextStyles.title.copyWith(color: Color(0xFFC8C8C8)),
+              hintStyle: DsTextStyles.headline.copyWith(color: DsColorPalette.gray300),
               border: InputBorder.none,
             ),
             onChanged: widget.onPageNameChanged,

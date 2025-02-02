@@ -3,12 +3,13 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_core/extensions/context_extensions.dart';
-import 'package:flutter_ds/ds_image.dart';
+import 'package:flutter_ds/foundation/color/ds_color_palete.dart';
+import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
+import 'package:flutter_ds/ui/widgets/ds_image.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:presentation/gen/assets.gen.dart';
 import 'package:presentation/notifier/todo_list_notifier.dart';
-import 'package:presentation/temp_ds.dart';
 import 'package:presentation/ui/model/page.dart';
 import 'package:presentation/ui/widgets/todo_list_item.dart';
 import 'package:presentation/utils/future_utils.dart';
@@ -92,7 +93,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     widget.page.name,
-                    style: DsTextStyles.title,
+                    style: DsTextStyles.headline.copyWith(color: DsColorPalette.gray900),
                     textAlign: TextAlign.left,
                   ),
                 ),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dash/flutter_dash.dart';
-import 'package:flutter_ds/ds_image.dart';
+import 'package:flutter_ds/foundation/color/ds_color_palete.dart';
+import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
+import 'package:flutter_ds/ui/widgets/ds_image.dart';
 import 'package:presentation/gen/assets.gen.dart';
-import 'package:presentation/temp_ds.dart';
 
 class TodoListItem extends StatefulWidget {
   final int? reorderIndex;
@@ -72,11 +73,11 @@ class _TodoListItemState extends State<TodoListItem> {
   Widget _buildTextField(bool isEditMode) {
     TextStyle textStyle;
     if (widget.isCompleted && _textController.text.isNotEmpty == true) {
-      textStyle = DsTextStyles.todo.copyWith(
+      textStyle = DsTextStyles.b1.copyWith(
         decoration: TextDecoration.lineThrough,
-        decorationColor: Color(0xFF9E9FA0),
+        decorationColor: DsColorPalette.gray400,
         decorationThickness: 2.0,
-        color: Color(0xFF9E9FA0),
+        color: DsColorPalette.gray400,
       );
       // TextStyle(
       //   decoration: TextDecoration.lineThrough, // 취소선
@@ -84,7 +85,7 @@ class _TodoListItemState extends State<TodoListItem> {
       //   decorationThickness: 2.0,               // 취소선 두께 (선택 사항)
       // )
     } else {
-      textStyle = DsTextStyles.todo.copyWith(color: Color(0xFF242B34));
+      textStyle = DsTextStyles.b1.copyWith(color: DsColorPalette.gray800);
     }
 
     return TextField(
@@ -98,7 +99,7 @@ class _TodoListItemState extends State<TodoListItem> {
       onChanged: onTextChanged,
       decoration: InputDecoration(
         hintText: '할일 입력',
-        hintStyle: DsTextStyles.todo.copyWith(color: Color(0xFFC8C8C8)),
+        hintStyle: DsTextStyles.b1.copyWith(color: DsColorPalette.gray300),
         border: InputBorder.none,
       ),
     );

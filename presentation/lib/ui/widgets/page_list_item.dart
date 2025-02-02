@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ds/ds_image.dart';
+import 'package:flutter_ds/foundation/color/ds_color_palete.dart';
+import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
+import 'package:flutter_ds/ui/widgets/ds_image.dart';
 import 'package:presentation/gen/assets.gen.dart';
-import 'package:presentation/temp_ds.dart';
 import 'package:presentation/ui/model/page.dart';
 
 class PageListItem extends StatelessWidget {
@@ -35,14 +36,22 @@ class PageListItem extends StatelessWidget {
                 children: [
                   Text(
                     page.name,
-                    style: DsTextStyles.item,
+                    style: DsTextStyles.headline,
                   ),
-                  SizedBox(width: 12),
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 3),
-                    child: Text(
-                      page.todoCount.toString(),
-                      style: DsTextStyles.pageInfo.copyWith(color: Color(0xFF9E9FA0)),
+                  AnimatedOpacity(
+                    opacity: isEditMode ? 0 : 1,
+                    duration: Duration(milliseconds: 300),
+                    child: SizedBox(width: 12),
+                  ),
+                  AnimatedOpacity(
+                    opacity: isEditMode ? 0 : 1,
+                    duration: Duration(milliseconds: 300),
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 3),
+                      child: Text(
+                        page.todoCount.toString(),
+                        style: DsTextStyles.b3.copyWith(color: DsColorPalette.gray400),
+                      ),
                     ),
                   ),
                 ],
