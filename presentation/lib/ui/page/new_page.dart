@@ -24,7 +24,7 @@ class NewPage extends ConsumerStatefulWidget {
 class _NewPageState extends ConsumerState<NewPage> {
   final ScrollController _scrollController = ScrollController();
   final double _bottomHeight = 96;
-  final double _unscrollableHeight = 300;
+  final double _unscrollableHeight = 200;
 
   final List<TextEditingController> _pageNameControllers = [];
   final List<List<TextEditingController>> _todoNameControllersList = [];
