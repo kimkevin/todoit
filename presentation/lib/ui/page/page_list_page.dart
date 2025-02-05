@@ -12,7 +12,6 @@ import 'package:presentation/gen/assets.gen.dart';
 import 'package:presentation/notifier/page_list_notifier.dart';
 import 'package:presentation/parser/page_todo_parser.dart';
 import 'package:presentation/ui/model/new_page_item_model.dart';
-import 'package:presentation/ui/model/new_todo_item_model.dart';
 import 'package:presentation/ui/model/page.dart';
 import 'package:presentation/ui/page/new_page.dart';
 import 'package:presentation/ui/page/new_parsed_page.dart';
@@ -113,9 +112,9 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
           onPressed: () {
             List<NewPageItemUiModel> newPageItems = [];
             for (final pageTodo in result.pageTodos) {
-              final items =
-                  pageTodo.todoNames.map((name) => NewTodoItemUiModel(name: name)).toList();
-              newPageItems.add(NewPageItemUiModel(name: pageTodo.pageName, todoItemModels: items));
+              // final items =
+              //     pageTodo.todoNames.map((name) => NewTodoItemUiModel(name: name)).toList();
+              // newPageItems.add(NewPageItemUiModel(name: pageTodo.pageName, todoItemModels: items));
             }
 
             context.navigator

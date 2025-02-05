@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_core/extensions/context_extensions.dart';
 import 'package:flutter_ds/ui/widgets/ds_image.dart';
@@ -5,6 +8,7 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:presentation/gen/assets.gen.dart';
 import 'package:presentation/notifier/new_page_notifier.dart';
+import 'package:presentation/ui/model/new_page_item_model.dart';
 import 'package:presentation/ui/widgets/new_page_item.dart';
 import 'package:presentation/ui/widgets/text_input_bottom_sheet.dart';
 import 'package:presentation/utils/future_utils.dart';
@@ -19,13 +23,41 @@ class NewPage extends ConsumerStatefulWidget {
 
 class _NewPageState extends ConsumerState<NewPage> {
   final ScrollController _scrollController = ScrollController();
-  final List<TextEditingController> _todoNameControllers = [];
+  final double _bottomHeight = 96;
+  final double _unscrollableHeight = 300;
+
+  final List<TextEditingController> _pageNameControllers = [];
+  final List<List<TextEditingController>> _todoNameControllersList = [];
+  final List<NewPageItemUiModel> _pages = [];
+
+  final FocusNode _pageNameFocusNode = FocusNode();
+  final FocusNode _firstTodoNameFocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
 
-    _todoNameControllers.add(TextEditingController());
+    _pages.add(NewPageItemUiModel(name: '', todoNames: ['']));
+
+    for (var page in _pages) {
+      _pageNameControllers.add(TextEditingController(text: page.name));
+      _todoNameControllersList
+          .add(page.todoNames.map((name) => TextEditingController(text: name)).toList());
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    for (var controller in _pageNameControllers) {
+      controller.dispose();
+    }
+    for (var todoControllers in _todoNameControllersList) {
+      for (var controller in todoControllers) {
+        controller.dispose();
+      }
+    }
   }
 
   void _dismissKeyboard() {
@@ -35,22 +67,24 @@ class _NewPageState extends ConsumerState<NewPage> {
     }
   }
 
-  void onActionClicked(NewPageNotifier notifier, bool isKeyboardVisible) {
-    print('isKeyboardVisible= $isKeyboardVisible');
-    if (isKeyboardVisible) {
-      _dismissKeyboard();
-      // TODO: 투두가 1개이고 아무것도 미입력이면 포커스를 옮겨준다
-    } else {
-      notifier.addTodo();
+  void _onLastItemChanged(int pageIndex) {
+    setState(() {
+      _todoNameControllersList[pageIndex].add(TextEditingController());
 
       FutureUtils.runDelayed(() {
         _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
+          max(0, _scrollController.position.maxScrollExtent - _unscrollableHeight),
           duration: Duration(milliseconds: 300),
           curve: Curves.easeInOut,
         );
       });
-    }
+    });
+  }
+
+  void _deleteTodo(int pageIndex, int todoIndex) {
+    setState(() {
+      _todoNameControllersList[pageIndex].removeAt(todoIndex);
+    });
   }
 
   @override
@@ -69,7 +103,9 @@ class _NewPageState extends ConsumerState<NewPage> {
                   builder: (context) => TextInputBottomSheet(),
                 ).then((text) {
                   if (text is String) {
-                    newPageNotifier.addTodos(text.split('\n'));
+                    _todoNameControllersList[0].addAll(
+                      text.split('\n').map((t) => TextEditingController(text: t)),
+                    );
                   }
                 });
               },
@@ -86,8 +122,11 @@ class _NewPageState extends ConsumerState<NewPage> {
             GestureDetector(
               onTap: () async {
                 if (!mounted) return;
-                final result =
-                    await newPageNotifier.save(LocalizationUtils.getDefaultName(context));
+
+                final result = await newPageNotifier.save(
+                    _pageNameControllers.map((e) => e.text).toList(),
+                    _todoNameControllersList.map((l) => l.map((e) => e.text).toList()).toList(),
+                    LocalizationUtils.getDefaultName(context));
                 context.navigator.pop(result);
               },
               child: Padding(
@@ -102,32 +141,33 @@ class _NewPageState extends ConsumerState<NewPage> {
             controller: _scrollController,
             child: Column(
               children: [
-                NewPageItem(
-                  key: ValueKey(newPageNotifier.pageItemModel),
-                  newPage: newPageNotifier.pageItemModel,
-                  onPageNameChanged: newPageNotifier.changePageName,
-                  onTodoNameChanged: newPageNotifier.changeTodoName,
-                  onTodoDeleted: newPageNotifier.deleteTodo,
+                ..._pages.mapIndexed(
+                  (index, page) => NewPageItem(
+                    key: ValueKey(page),
+                    pageNameController: _pageNameControllers[index],
+                    todoNameControllers: _todoNameControllersList[index],
+                    pageNameFocusNode: _pageNameFocusNode,
+                    firstTodoNameFocusNode: _firstTodoNameFocusNode,
+                    onLastItemChanged: () {
+                      _onLastItemChanged(index);
+                    },
+                    onTodoDeleted: (todoIndex) {
+                      _deleteTodo(index, todoIndex);
+                    },
+                    onPageNameSubmitted: (text) {
+                      _firstTodoNameFocusNode.requestFocus();
+                    },
+                  ),
                 ),
-                SizedBox(height: 96),
+                GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: _dismissKeyboard,
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: _unscrollableHeight + _bottomHeight,
+                  ),
+                )
               ],
-            ),
-          ),
-        ),
-        floatingActionButton: SizedBox(
-          width: isKeyboardVisible ? 44.0 : 64.0,
-          height: isKeyboardVisible ? 44.0 : 64.0,
-          child: FloatingActionButton(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(32.0),
-            ),
-            onPressed: () {
-              onActionClicked(newPageNotifier, isKeyboardVisible);
-            },
-            child: DsImage(
-              isKeyboardVisible ? Assets.svg.icCheck.path : Assets.svg.icPlus.path,
-              width: 24,
-              height: 24,
             ),
           ),
         ),

@@ -4,18 +4,21 @@ import 'package:flutter_ds/foundation/color/ds_color_palette.dart';
 import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:presentation/gen/assets.gen.dart';
-import 'package:presentation/ui/model/new_todo_item_model.dart';
 
 class NewTodoItem extends StatefulWidget {
-  final NewTodoItemUiModel newTodo;
+  final TextEditingController controller;
+  final FocusNode? focusNode;
+  final bool deletable;
   final Function(String) onTextChanged;
   final VoidCallback onDeleteClick;
 
   const NewTodoItem({
     super.key,
-    required this.newTodo,
+    required this.controller,
+    this.focusNode,
     required this.onTextChanged,
     required this.onDeleteClick,
+    this.deletable = false,
   });
 
   @override
@@ -23,31 +26,6 @@ class NewTodoItem extends StatefulWidget {
 }
 
 class _NewTodoItemState extends State<NewTodoItem> {
-  late TextEditingController _textController;
-  final FocusNode _focusNode = FocusNode();
-
-  @override
-  void initState() {
-    super.initState();
-
-    _textController = TextEditingController(text: widget.newTodo.name);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // if (isNew) {
-      //   _focusNode.requestFocus();
-      // widget.onNewTodoFocused?.call();
-      // isNew = false;
-      // }
-    });
-  }
-
-  @override
-  void dispose() {
-    _textController.dispose();
-    _focusNode.dispose();
-    super.dispose();
-  }
-
   void onTextChanged(String text) {
     widget.onTextChanged(text);
   }
@@ -56,12 +34,11 @@ class _NewTodoItemState extends State<NewTodoItem> {
     TextStyle textStyle = DsTextStyles.b1.copyWith(color: DsColorPalette.gray800);
 
     return TextField(
-      controller: _textController,
+      controller: widget.controller,
+      focusNode: widget.focusNode,
       style: textStyle,
-      focusNode: _focusNode,
       maxLines: null,
       keyboardType: TextInputType.multiline,
-      // textInputAction: TextInputAction.done,
       onChanged: onTextChanged,
       decoration: InputDecoration(
         hintText: '할일 입력',
@@ -88,14 +65,15 @@ class _NewTodoItemState extends State<NewTodoItem> {
                     Expanded(
                       child: _buildTextField(),
                     ),
-                    InkWell(
-                      onTap: widget.onDeleteClick,
-                      child: SvgPicture.asset(
-                        Assets.svg.icTrash.path,
-                        width: 24,
-                        height: 24,
+                    if (widget.deletable)
+                      InkWell(
+                        onTap: widget.onDeleteClick,
+                        child: SvgPicture.asset(
+                          Assets.svg.icTrash.path,
+                          width: 24,
+                          height: 24,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),

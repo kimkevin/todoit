@@ -1,23 +1,21 @@
 class NewTodoItemUiModel {
   final String name;
-  final bool autoFocus;
+  final bool deletable;
 
   NewTodoItemUiModel({
     this.name = '',
-    this.autoFocus = false,
+    this.deletable = true,
   });
 
   NewTodoItemUiModel copyWith({
     String? name,
-    bool? autoFocus,
   }) =>
       NewTodoItemUiModel(
         name: name ?? this.name,
-        autoFocus: autoFocus ?? this.autoFocus,
       );
 
   @override
   String toString() {
-    return 'NewTodoItemModel{name: $name, autoFocus: $autoFocus}';
+    return 'NewTodoItemModel{name: $name}';
   }
 }

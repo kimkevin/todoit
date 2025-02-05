@@ -1,94 +1,31 @@
+import 'package:collection/collection.dart';
 import 'package:di/injection_container.dart';
 import 'package:domain/model/new_page_model.dart';
 import 'package:domain/model/new_todo_model.dart';
 import 'package:domain/repository/page_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:presentation/ui/model/new_page_item_model.dart';
-import 'package:presentation/ui/model/new_todo_item_model.dart';
 
 class NewPageNotifier with ChangeNotifier {
   final PageRepository pageRepository;
 
-  NewPageItemUiModel pageItemModel = NewPageItemUiModel(
-    todoItemModels: [NewTodoItemUiModel(autoFocus: true)],
-    autoFocus: true,
-  );
-
   NewPageNotifier({required this.pageRepository});
 
-  void changePageName(String name) {
-    pageItemModel = pageItemModel.copyWith(
-      name: name,
-      autoFocus: false,
-    );
-  }
-
-  void changeTodoName(int index, String name) {
-    final newTodoItemModels = [...pageItemModel.todoItemModels];
-    newTodoItemModels[index] = NewTodoItemUiModel(name: name);
-    pageItemModel = pageItemModel.copyWith(
-      autoFocus: false,
-      todoItemModels: newTodoItemModels,
-    );
-  }
-
-  void addTodos(List<String> names) {
-    final newTodoItemModels = List<NewTodoItemUiModel>.from(pageItemModel.todoItemModels);
-    for (int i = 0; i < names.length; i++) {
-      if (newTodoItemModels.isEmpty) break;
-
-      if (newTodoItemModels.last.name.isEmpty) {
-        newTodoItemModels.remove(newTodoItemModels.last);
-      }
-    }
-
-    pageItemModel = pageItemModel.copyWith(
-      autoFocus: false,
-      todoItemModels: [
-        ...newTodoItemModels,
-        ...names.map((name) => NewTodoItemUiModel(name: name)),
-      ],
-    );
-    notifyListeners();
-  }
-
-  void addTodo() {
-    pageItemModel = pageItemModel.copyWith(
-      autoFocus: false,
-      todoItemModels: [...pageItemModel.todoItemModels, NewTodoItemUiModel()],
-    );
-    notifyListeners();
-  }
-
-  void deleteTodo(int index) {
-    final newTodoItemModels = [...pageItemModel.todoItemModels];
-    newTodoItemModels.removeAt(index);
-
-    pageItemModel = pageItemModel.copyWith(
-      autoFocus: false,
-      todoItemModels: newTodoItemModels,
-    );
-    notifyListeners();
-  }
-
-  Future<bool> save(String defaultName) async {
-    String name = pageItemModel.name;
-    if (name.isEmpty) {
-      name = defaultName;
-    }
-    
-    print('pageItemModel.todoItemModels= ${pageItemModel.todoItemModels}');
-    
-    return await pageRepository.createPageTodos(
-      [
-        NewPageModel(
-          name: name,
-          todos: pageItemModel.todoItemModels.map((e) => NewTodoModel(name: e.name)).toList(),
-        )
-      ],
-    );
-  }
+  Future<bool> save(
+    List<String> pageNames,
+    List<List<String>> todoNamesList,
+    String defaultName,
+  ) =>
+      pageRepository.createPageTodos(
+        pageNames
+            .mapIndexed(
+              (index, name) => NewPageModel(
+                name: name.isEmpty ? defaultName : name,
+                todos: todoNamesList[index].map((name) => NewTodoModel(name: name)).toList(),
+              ),
+            )
+            .toList(),
+      );
 }
 
 // Finally, we are using ChangeNotifierProvider to allow the UI to interact with our TodosNotifier class.

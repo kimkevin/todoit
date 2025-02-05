@@ -2,21 +2,26 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ds/foundation/color/ds_color_palette.dart';
 import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
-import 'package:presentation/ui/model/new_page_item_model.dart';
 import 'package:presentation/ui/widgets/new_todo_item.dart';
 
 class NewPageItem extends StatefulWidget {
-  final NewPageItemUiModel newPage;
-  final Function(String) onPageNameChanged;
-  final Function(int, String) onTodoNameChanged;
+  final TextEditingController pageNameController;
+  final List<TextEditingController> todoNameControllers;
+  final FocusNode? pageNameFocusNode;
+  final FocusNode? firstTodoNameFocusNode;
+  final VoidCallback onLastItemChanged;
   final Function(int) onTodoDeleted;
+  final Function(String)? onPageNameSubmitted;
 
   const NewPageItem({
     super.key,
-    required this.newPage,
-    required this.onPageNameChanged,
-    required this.onTodoNameChanged,
+    required this.pageNameController,
+    required this.todoNameControllers,
+    this.pageNameFocusNode,
+    this.firstTodoNameFocusNode,
+    required this.onLastItemChanged,
     required this.onTodoDeleted,
+    this.onPageNameSubmitted,
   });
 
   @override
@@ -24,30 +29,13 @@ class NewPageItem extends StatefulWidget {
 }
 
 class _NewPageItemState extends State<NewPageItem> {
-  late NewPageItemUiModel pageItemModel;
-  late TextEditingController _nameController;
-  final FocusNode nameFocusNode = FocusNode();
-
   @override
   void initState() {
     super.initState();
 
-    print('new_page_item= ${widget.newPage}');
-
-    pageItemModel = widget.newPage;
-    _nameController = TextEditingController(text: widget.newPage.name);
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (pageItemModel.autoFocus) {
-        nameFocusNode.requestFocus();
-      }
+      widget.pageNameFocusNode?.requestFocus();
     });
-  }
-
-  @override
-  void dispose() {
-    nameFocusNode.dispose();
-    super.dispose();
   }
 
   @override
@@ -57,22 +45,27 @@ class _NewPageItemState extends State<NewPageItem> {
         Padding(
           padding: EdgeInsets.only(left: 32, top: 16, right: 32, bottom: 16),
           child: TextField(
-            controller: _nameController,
-            focusNode: nameFocusNode,
+            controller: widget.pageNameController,
+            focusNode: widget.pageNameFocusNode,
             style: DsTextStyles.headline.copyWith(color: DsColorPalette.gray900),
             decoration: InputDecoration(
               hintText: '페이지 입력',
               hintStyle: DsTextStyles.headline.copyWith(color: DsColorPalette.gray300),
               border: InputBorder.none,
             ),
-            onChanged: widget.onPageNameChanged,
+            onSubmitted: widget.onPageNameSubmitted,
           ),
         ),
-        ...pageItemModel.todoItemModels.mapIndexed(
+        ...widget.todoNameControllers.mapIndexed(
           (index, item) => NewTodoItem(
-            newTodo: item,
+            controller: widget.todoNameControllers[index],
+            focusNode: index == 0 ? widget.firstTodoNameFocusNode : null,
+            deletable: index != widget.todoNameControllers.length - 1,
             onTextChanged: (text) {
-              widget.onTodoNameChanged(index, text);
+              final isLastItem = index == widget.todoNameControllers.length - 1;
+              if (isLastItem && text.isNotEmpty) {
+                widget.onLastItemChanged();
+              }
             },
             onDeleteClick: () {
               widget.onTodoDeleted(index);
