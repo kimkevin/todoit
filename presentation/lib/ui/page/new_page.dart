@@ -70,14 +70,42 @@ class _NewPageState extends ConsumerState<NewPage> {
   void _onLastItemChanged(int pageIndex) {
     setState(() {
       _todoNameControllersList[pageIndex].add(TextEditingController());
+      _scrollToBottom();
+    });
+  }
 
-      FutureUtils.runDelayed(() {
-        _scrollController.animateTo(
-          max(0, _scrollController.position.maxScrollExtent - _unscrollableHeight),
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
+  void _scrollToBottom() {
+    FutureUtils.runDelayed(() {
+      _scrollController.animateTo(
+        max(0, _scrollController.position.maxScrollExtent - _unscrollableHeight),
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  void _addTodos(List<String> todoNames) {
+    if (todoNames.isEmpty) return;
+
+    setState(() {
+      final todoNameControllers = _todoNameControllersList[0];
+      final lastIndex = todoNameControllers.length - 1;
+      if (todoNameControllers[lastIndex].text.isEmpty) {
+        todoNames.forEachIndexed((index, name) {
+          final controller = TextEditingController(text: name);
+          if (index == 0) {
+            todoNameControllers[lastIndex] = controller;
+          } else {
+            todoNameControllers.add(controller);
+          }
+        });
+        todoNameControllers.add(TextEditingController());
+      } else {
+        todoNameControllers.addAll(
+          todoNames.map((name) => TextEditingController(text: name)),
         );
-      });
+      }
+      _scrollToBottom();
     });
   }
 
@@ -103,9 +131,7 @@ class _NewPageState extends ConsumerState<NewPage> {
                   builder: (context) => TextInputBottomSheet(),
                 ).then((text) {
                   if (text is String) {
-                    _todoNameControllersList[0].addAll(
-                      text.split('\n').map((t) => TextEditingController(text: t)),
-                    );
+                    _addTodos(text.split('\n'));
                   }
                 });
               },
