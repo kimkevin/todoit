@@ -22,12 +22,17 @@ class TodoListNotifier with ChangeNotifier {
   List<TodoUiModel> get todos => UnmodifiableListView(_todos);
 
   double get completeRate {
-    final completeCount = todos.where((e) => e.completed).length;
+    final completeCount = todos.where((e) => e.completed == true).length;
     if (todos.isEmpty) return 0.0;
     return completeCount / todos.length;
   }
 
   TodoListNotifier({required this.todoRepository});
+
+  void clear() {
+    _todos = [];
+    notifyListeners();
+  }
 
   void loadTodoList(int pageId) async {
     if (pageId <= 0) return;
@@ -71,7 +76,7 @@ class TodoListNotifier with ChangeNotifier {
 
     final updated = await todoRepository.updateTodoWith(
       todoId,
-      completed: !todo.completed,
+      completed: todo.completed != null ? !todo.completed! : null,
     );
     if (updated) {
       loadTodoList(_pageId);

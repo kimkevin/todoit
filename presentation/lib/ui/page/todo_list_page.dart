@@ -1,16 +1,15 @@
-import 'dart:async';
-
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_core/extensions/context_extensions.dart';
 import 'package:flutter_ds/foundation/color/ds_color_palette.dart';
 import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
 import 'package:flutter_ds/ui/widgets/ds_image.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:presentation/gen/assets.gen.dart';
 import 'package:presentation/notifier/todo_list_notifier.dart';
 import 'package:presentation/ui/model/page.dart';
+import 'package:presentation/ui/model/todo.dart';
 import 'package:presentation/ui/widgets/todo_list_item.dart';
 import 'package:presentation/utils/future_utils.dart';
 
@@ -25,35 +24,27 @@ class TodoListPage extends ConsumerStatefulWidget {
 
 class _TodoListPageState extends ConsumerState<TodoListPage> {
   final ScrollController _scrollController = ScrollController();
+  late TextEditingController _pageNameController;
+  final List<TextEditingController> _todoNameControllers = [];
   int? newTodoId;
-  late StreamSubscription<bool> keyboardSubscription;
 
   @override
   void initState() {
     super.initState();
 
-    var keyboardVisibilityController = KeyboardVisibilityController();
-    // Query
-    print('TESTTEST Keyboard visibility direct query: ${keyboardVisibilityController.isVisible}');
-
-    // Subscribe
-    keyboardSubscription = keyboardVisibilityController.onChange.listen((bool visible) {
-      print('TESTTEST Keyboard visibility update. Is visible: $visible');
-    });
+    _pageNameController = TextEditingController(text: widget.page.name);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
     ref.watch(todoListProvider).loadTodoList(widget.page.id);
+    final result = ref.watch(todoListProvider).todos;
   }
 
   @override
   void dispose() {
     super.dispose();
-
-    keyboardSubscription.cancel();
   }
 
   void onNewTodoFocused() {
@@ -62,14 +53,26 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
 
   @override
   Widget build(BuildContext context) {
+    print('build');
     final notifier = ref.watch(todoListProvider);
+
+    ref.listen<List<TodoUiModel>>(todoListProvider.select((state) => state.todos),
+        (previous, next) {
+      print('previous: $previous');
+      print('next: $next');
+      if (!listEquals(previous, next)) {
+        print('here');
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           GestureDetector(
             onTap: () {
-              notifier.toggleEditMode();
+              // notifier.toggleEditMode();
+              notifier.clear();
             },
             child: Padding(
               padding: const EdgeInsets.only(right: 16.0),
@@ -149,7 +152,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                         (index, todo) => TodoListItem(
                           key: ValueKey(todo),
                           reorderIndex: index,
-                          text: todo.name,
+                          controller: TextEditingController(),
                           isEditMode: notifier.isEditMode,
                           actionClick: () {
                             notifier.toggleTodo(todo);
@@ -173,7 +176,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                           },
                           // onNewTodoFocused: onNewTodoFocused,
                           isNew: todo.id == newTodoId,
-                          isCompleted: todo.completed,
+                          isCompleted: todo.completed == true,
                         ),
                       ),
                       SizedBox(key: ValueKey("bottom_padding"), height: 96),

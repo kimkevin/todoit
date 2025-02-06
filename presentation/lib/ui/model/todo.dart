@@ -3,14 +3,14 @@ class TodoUiModel {
   final int? pageId;
   final String name;
   final int? orderIndex;
-  final bool completed;
+  final bool? completed;
 
   TodoUiModel({
     this.id,
     this.pageId,
     this.name = '',
     this.orderIndex,
-    this.completed = false,
+    this.completed,
   });
 
   TodoUiModel copyWith({

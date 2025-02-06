@@ -9,7 +9,8 @@ import 'package:presentation/ui/widgets/dash_divider.dart';
 
 class TodoListItem extends StatefulWidget {
   final int? reorderIndex;
-  final String text;
+  final TextEditingController controller;
+  // final String text;
   final VoidCallback actionClick;
   final VoidCallback deleteClick;
   final VoidCallback onTap;
@@ -22,7 +23,7 @@ class TodoListItem extends StatefulWidget {
 
   const TodoListItem({
     super.key,
-    required this.text,
+    required this.controller,
     this.reorderIndex,
     required this.onTap,
     required this.onTextChanged,
@@ -39,15 +40,12 @@ class TodoListItem extends StatefulWidget {
 }
 
 class _TodoListItemState extends State<TodoListItem> {
-  late TextEditingController _textController;
   final FocusNode _focusNode = FocusNode();
   bool isNew = false;
 
   @override
   void initState() {
     super.initState();
-
-    _textController = TextEditingController(text: widget.text);
 
     isNew = widget.isNew;
 
@@ -62,7 +60,6 @@ class _TodoListItemState extends State<TodoListItem> {
 
   @override
   void dispose() {
-    _textController.dispose();
     _focusNode.dispose();
     super.dispose();
   }
@@ -73,7 +70,7 @@ class _TodoListItemState extends State<TodoListItem> {
 
   Widget _buildTextField(bool isEditMode) {
     TextStyle textStyle;
-    if (widget.isCompleted && _textController.text.isNotEmpty == true) {
+    if (widget.isCompleted && widget.controller.text.isNotEmpty == true) {
       textStyle = DsTextStyles.b1.copyWith(
         decoration: TextDecoration.lineThrough,
         decorationColor: DsColorPalette.gray400,
@@ -92,7 +89,7 @@ class _TodoListItemState extends State<TodoListItem> {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 16),
       child: TextField(
-        controller: _textController,
+        controller: widget.controller,
         style: textStyle,
         focusNode: _focusNode,
         maxLines: null,
