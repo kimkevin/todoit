@@ -34,6 +34,14 @@ class TodoListNotifier with ChangeNotifier {
     notifyListeners();
   }
 
+  TodoUiModel? getTodo(int index) {
+    try {
+      return todos[index];
+    } catch (e) {
+      return null;
+    }
+  }
+
   void loadTodoList(int pageId) async {
     if (pageId <= 0) return;
 
@@ -49,15 +57,20 @@ class TodoListNotifier with ChangeNotifier {
 
   Future<int> addTodo(String name) => todoRepository.createTodo(_pageId, name);
 
-  void addOrUpdateName(int index, int? id, String name) async {
-    print('addOrUpdateName 1111 $name');
-    if (index == _todos.length - 1 && name.length <= 1) {
-      // await todoRepository.createTodo(_pageId, name);
-      print('addOrUpdateName 2222');
-      addTodo('');
-      loadTodoList(_pageId);
+  void addOrUpdateName(int index, String name) async {
+    TodoUiModel? todo;
+    try {
+      todo = _todos[index];
+    } catch (e) {
+      todo = null;
     }
-    updateName(id, name);
+
+    if (todo == null) {
+      await todoRepository.createTodo(_pageId, name);
+      loadTodoList(_pageId);
+    } else {
+      updateName(todo.id, name);
+    }
   }
 
   void updateName(int? id, String name) async {
@@ -70,14 +83,14 @@ class TodoListNotifier with ChangeNotifier {
     }
   }
 
-  void toggleTodo(TodoUiModel todo) async {
-    final todoId = todo.id;
-    if (todoId == null) return;
+  void setCompleted(int index, bool completed) async {
+    final todoId = _todos[index].id;
 
     final updated = await todoRepository.updateTodoWith(
       todoId,
-      completed: todo.completed != null ? !todo.completed! : null,
+      completed: completed,
     );
+    print('updated= $updated, completed= $completed');
     if (updated) {
       loadTodoList(_pageId);
     }
@@ -96,11 +109,9 @@ class TodoListNotifier with ChangeNotifier {
     loadTodoList(_pageId);
   }
 
-  void deleteTodo(int? id) async {
-    if (id == null) return;
-
-    await todoRepository.deleteTodo(id);
-    loadTodoList(_pageId);
+  void deleteTodo(int index) async {
+    final todo = _todos[index];
+    await todoRepository.deleteTodo(todo.id);
   }
 
   void toggleEditMode() {

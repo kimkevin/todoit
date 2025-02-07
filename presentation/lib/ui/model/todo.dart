@@ -1,16 +1,16 @@
 class TodoUiModel {
-  final int? id;
-  final int? pageId;
+  final int id;
+  final int pageId;
   final String name;
-  final int? orderIndex;
-  final bool? completed;
+  final int orderIndex;
+  final bool completed;
 
   TodoUiModel({
-    this.id,
-    this.pageId,
-    this.name = '',
-    this.orderIndex,
-    this.completed,
+    required this.id,
+    required this.pageId,
+    required this.name,
+    required this.orderIndex,
+    required this.completed,
   });
 
   TodoUiModel copyWith({

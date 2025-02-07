@@ -10,29 +10,25 @@ import 'package:presentation/ui/widgets/dash_divider.dart';
 class TodoListItem extends StatefulWidget {
   final int? reorderIndex;
   final TextEditingController controller;
-  // final String text;
-  final VoidCallback actionClick;
+  final Function(bool) actionClick;
   final VoidCallback deleteClick;
-  final VoidCallback onTap;
+  final VoidCallback onClick;
   final Function(String) onTextChanged;
-
-  // final VoidCallback? onNewTodoFocused;
   final bool isCompleted;
   final bool isEditMode;
-  final bool isNew;
+  final bool isLastItem;
 
   const TodoListItem({
     super.key,
     required this.controller,
     this.reorderIndex,
-    required this.onTap,
-    required this.onTextChanged,
     this.isCompleted = false,
     this.isEditMode = false,
+    this.isLastItem = false,
+    required this.onClick,
+    required this.onTextChanged,
     required this.deleteClick,
     required this.actionClick,
-    // this.onNewTodoFocused,
-    this.isNew = false,
   });
 
   @override
@@ -40,28 +36,19 @@ class TodoListItem extends StatefulWidget {
 }
 
 class _TodoListItemState extends State<TodoListItem> {
-  final FocusNode _focusNode = FocusNode();
-  bool isNew = false;
+  late bool _isCompleted;
 
   @override
   void initState() {
     super.initState();
 
-    isNew = widget.isNew;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (isNew) {
-        _focusNode.requestFocus();
-        // widget.onNewTodoFocused?.call();
-        isNew = false;
-      }
-    });
+    _isCompleted = widget.isCompleted;
   }
 
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
+  void setCompleted(bool isCompleted) {
+    setState(() {
+      _isCompleted = isCompleted;
+    });
   }
 
   void onTextChanged(String text) {
@@ -70,7 +57,7 @@ class _TodoListItemState extends State<TodoListItem> {
 
   Widget _buildTextField(bool isEditMode) {
     TextStyle textStyle;
-    if (widget.isCompleted && widget.controller.text.isNotEmpty == true) {
+    if (_isCompleted && widget.controller.text.isNotEmpty == true) {
       textStyle = DsTextStyles.b1.copyWith(
         decoration: TextDecoration.lineThrough,
         decorationColor: DsColorPalette.gray400,
@@ -91,10 +78,9 @@ class _TodoListItemState extends State<TodoListItem> {
       child: TextField(
         controller: widget.controller,
         style: textStyle,
-        focusNode: _focusNode,
         maxLines: null,
         keyboardType: TextInputType.multiline,
-        onTap: widget.onTap,
+        onTap: widget.onClick,
         // textInputAction: TextInputAction.done,
         onChanged: onTextChanged,
         decoration: InputDecoration(
@@ -118,7 +104,8 @@ class _TodoListItemState extends State<TodoListItem> {
             : GestureDetector(
                 onTap: () {
                   HapticFeedback.lightImpact();
-                  widget.actionClick();
+                  setCompleted(!_isCompleted);
+                  widget.actionClick(_isCompleted);
                 },
                 child: Container(
                   padding: EdgeInsets.only(
@@ -127,7 +114,7 @@ class _TodoListItemState extends State<TodoListItem> {
                     bottom: 16,
                     right: 16,
                   ),
-                  child: widget.isCompleted
+                  child: _isCompleted
                       ? DsImage(
                           Assets.svg.icCheck.path,
                           width: 24,
@@ -150,6 +137,7 @@ class _TodoListItemState extends State<TodoListItem> {
             ? SizedBox(width: 32)
             : Row(
                 children: [
+                  if (!widget.isLastItem)
                   GestureDetector(
                     behavior: HitTestBehavior.translucent,
                     onTap: widget.deleteClick,
@@ -162,16 +150,17 @@ class _TodoListItemState extends State<TodoListItem> {
                       ),
                     ),
                   ),
-                  if (widget.reorderIndex != null)
+                  if (!widget.isLastItem && widget.reorderIndex != null)
                     ReorderableDragStartListener(
                       index: widget.reorderIndex!,
                       child: Container(
-                          padding: EdgeInsets.only(left: 10, right: 32, top: 10, bottom: 10),
-                          child: DsImage(
-                            Assets.svg.icDragHandle.path,
-                            width: 24,
-                            height: 24,
-                          )),
+                        padding: EdgeInsets.only(left: 10, right: 32, top: 10, bottom: 10),
+                        child: DsImage(
+                          Assets.svg.icDragHandle.path,
+                          width: 24,
+                          height: 24,
+                        ),
+                      ),
                     )
                 ],
               ),

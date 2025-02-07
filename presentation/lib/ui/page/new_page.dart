@@ -192,7 +192,7 @@ class _NewPageState extends ConsumerState<NewPage> {
                     width: double.infinity,
                     height: _unscrollableHeight + _bottomHeight,
                   ),
-                )
+                ),
               ],
             ),
           ),

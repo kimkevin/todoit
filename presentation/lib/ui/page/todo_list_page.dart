@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,7 @@ import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
 import 'package:flutter_ds/ui/widgets/ds_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:presentation/gen/assets.gen.dart';
+import 'package:presentation/notifier/page_list_notifier.dart';
 import 'package:presentation/notifier/todo_list_notifier.dart';
 import 'package:presentation/ui/model/page.dart';
 import 'package:presentation/ui/model/todo.dart';
@@ -24,44 +27,72 @@ class TodoListPage extends ConsumerStatefulWidget {
 
 class _TodoListPageState extends ConsumerState<TodoListPage> {
   final ScrollController _scrollController = ScrollController();
-  late TextEditingController _pageNameController;
   final List<TextEditingController> _todoNameControllers = [];
-  int? newTodoId;
+  final double _unscrollableHeight = 200;
 
   @override
   void initState() {
     super.initState();
-
-    _pageNameController = TextEditingController(text: widget.page.name);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
     ref.watch(todoListProvider).loadTodoList(widget.page.id);
-    final result = ref.watch(todoListProvider).todos;
   }
 
   @override
   void dispose() {
     super.dispose();
+
+    for (final controller in _todoNameControllers) {
+      controller.dispose();
+    }
   }
 
-  void onNewTodoFocused() {
-    newTodoId = null;
+  void _addController() {
+    setState(() {
+      _todoNameControllers.add(TextEditingController());
+    });
+  }
+
+  void _syncControllers(List<TodoUiModel> todos) {
+    setState(() {
+      _todoNameControllers.clear();
+      for (final todo in todos) {
+        _todoNameControllers.add(TextEditingController(text: todo.name));
+      }
+      final lastIndex = _todoNameControllers.length - 1;
+      if (_todoNameControllers[lastIndex].text.isNotEmpty) {
+        _todoNameControllers.add(TextEditingController());
+      }
+    });
+  }
+
+  void _deleteTodo(int index) {
+    setState(() {
+      _todoNameControllers.removeAt(index);
+      ref.watch(todoListProvider).deleteTodo(index);
+    });
+  }
+
+  void _dismissKeyboard() {
+    final currentFocus = FocusManager.instance.primaryFocus;
+    if (currentFocus != null && currentFocus.hasFocus) {
+      currentFocus.unfocus();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    print('build');
     final notifier = ref.watch(todoListProvider);
 
     ref.listen<List<TodoUiModel>>(todoListProvider.select((state) => state.todos),
         (previous, next) {
-      print('previous: $previous');
-      print('next: $next');
       if (!listEquals(previous, next)) {
-        print('here');
+        _syncControllers(next);
+        ref.watch(pageListProvider).loadPageList();
       }
     });
 
@@ -71,8 +102,8 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
         actions: [
           GestureDetector(
             onTap: () {
-              // notifier.toggleEditMode();
-              notifier.clear();
+              notifier.toggleEditMode();
+              _dismissKeyboard();
             },
             child: Padding(
               padding: const EdgeInsets.only(right: 16.0),
@@ -148,38 +179,43 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                     scrollController: _scrollController,
                     onReorder: notifier.reorderTodos,
                     children: [
-                      ...notifier.todos.mapIndexed(
-                        (index, todo) => TodoListItem(
-                          key: ValueKey(todo),
+                      ..._todoNameControllers.mapIndexed(
+                        (index, controller) => TodoListItem(
+                          key: ValueKey(index),
                           reorderIndex: index,
-                          controller: TextEditingController(),
+                          controller: controller,
                           isEditMode: notifier.isEditMode,
-                          actionClick: () {
-                            notifier.toggleTodo(todo);
+                          isCompleted: notifier.getTodo(index)?.completed == true,
+                          isLastItem: index == _todoNameControllers.length - 1,
+                          actionClick: (completed) {
+                            notifier.setCompleted(index, completed);
                           },
                           deleteClick: () {
-                            notifier.deleteTodo(todo.id);
+                            _deleteTodo(index);
                           },
-                          onTap: () {
+                          onClick: () {
                             if (index == notifier.todos.length - 1) {
-                              FutureUtils.runDelayed(() {
-                                _scrollController.animateTo(
-                                  _scrollController.position.maxScrollExtent,
-                                  duration: Duration(milliseconds: 200),
-                                  curve: Curves.easeInOut,
-                                );
-                              }, millis: 500);
+                              _scrollToBottom();
                             }
                           },
                           onTextChanged: (text) {
-                            notifier.addOrUpdateName(index, todo.id, text);
+                            if (index == _todoNameControllers.length - 1 && text.isNotEmpty) {
+                              _addController();
+                              _scrollToBottom();
+                            }
+                            notifier.addOrUpdateName(index, text);
                           },
-                          // onNewTodoFocused: onNewTodoFocused,
-                          isNew: todo.id == newTodoId,
-                          isCompleted: todo.completed == true,
                         ),
                       ),
-                      SizedBox(key: ValueKey("bottom_padding"), height: 96),
+                      GestureDetector(
+                        key: ValueKey('bottom'),
+                        behavior: HitTestBehavior.translucent,
+                        onTap: _dismissKeyboard,
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: _unscrollableHeight,
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -206,5 +242,15 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
         ),
       ),
     );
+  }
+
+  void _scrollToBottom() {
+    FutureUtils.runDelayed(() {
+      _scrollController.animateTo(
+        max(0, _scrollController.position.maxScrollExtent - _unscrollableHeight),
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    });
   }
 }
