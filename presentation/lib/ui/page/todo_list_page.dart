@@ -88,6 +88,8 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
   Widget build(BuildContext context) {
     final notifier = ref.watch(todoListProvider);
 
+    print('TESTTEST build');
+
     ref.listen<List<TodoUiModel>>(todoListProvider.select((state) => state.todos),
         (previous, next) {
       if (!listEquals(previous, next)) {

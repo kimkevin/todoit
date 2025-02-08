@@ -102,32 +102,32 @@ class _TodoListItemState extends State<TodoListItem> {
         child: widget.isEditMode
             ? SizedBox(width: 32)
             : GestureDetector(
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  setCompleted(!_isCompleted);
-                  widget.actionClick(_isCompleted);
-                },
-                child: Container(
-                  padding: EdgeInsets.only(
-                    left: 32,
-                    top: 16,
-                    bottom: 16,
-                    right: 16,
-                  ),
-                  child: _isCompleted
-                      ? DsImage(
-                          Assets.svg.icCheck.path,
-                          width: 24,
-                          height: 24,
-                          color: Color(0xFFFF8794),
-                        )
-                      : DsImage(
-                          Assets.svg.icCircle.path,
-                          width: 24,
-                          height: 24,
-                        ),
-                ),
-              ),
+          onTap: () {
+            HapticFeedback.lightImpact();
+            setCompleted(!_isCompleted);
+            widget.actionClick(_isCompleted);
+          },
+          child: Container(
+            padding: EdgeInsets.only(
+              left: 32,
+              top: 16,
+              bottom: 16,
+              right: 16,
+            ),
+            child: _isCompleted
+                ? DsImage(
+              Assets.svg.icCheck.path,
+              width: 24,
+              height: 24,
+              color: Color(0xFFFF8794),
+            )
+                : DsImage(
+              Assets.svg.icCircle.path,
+              width: 24,
+              height: 24,
+            ),
+          ),
+        ),
       ),
       content: _buildTextField(widget.isEditMode),
       trailing: AnimatedSize(
@@ -136,34 +136,34 @@ class _TodoListItemState extends State<TodoListItem> {
         child: !widget.isEditMode
             ? SizedBox(width: 32)
             : Row(
-                children: [
-                  if (!widget.isLastItem)
-                  GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onTap: widget.deleteClick,
-                    child: Container(
-                      padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
-                      child: DsImage(
-                        Assets.svg.icTrash.path,
-                        width: 24,
-                        height: 24,
-                      ),
-                    ),
+          children: [
+            if (!widget.isLastItem)
+              GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: widget.deleteClick,
+                child: Container(
+                  padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+                  child: DsImage(
+                    Assets.svg.icTrash.path,
+                    width: 24,
+                    height: 24,
                   ),
-                  if (!widget.isLastItem && widget.reorderIndex != null)
-                    ReorderableDragStartListener(
-                      index: widget.reorderIndex!,
-                      child: Container(
-                        padding: EdgeInsets.only(left: 10, right: 32, top: 10, bottom: 10),
-                        child: DsImage(
-                          Assets.svg.icDragHandle.path,
-                          width: 24,
-                          height: 24,
-                        ),
-                      ),
-                    )
-                ],
+                ),
               ),
+            if (!widget.isLastItem && widget.reorderIndex != null)
+              ReorderableDragStartListener(
+                index: widget.reorderIndex!,
+                child: Container(
+                  padding: EdgeInsets.only(left: 10, right: 32, top: 10, bottom: 10),
+                  child: DsImage(
+                    Assets.svg.icDragHandle.path,
+                    width: 24,
+                    height: 24,
+                  ),
+                ),
+              )
+          ],
+        ),
       ),
       bottomDivider: DashDivider(horizontalPadding: 32),
     );

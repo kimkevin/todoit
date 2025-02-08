@@ -23,7 +23,6 @@ class NewPage extends ConsumerStatefulWidget {
 
 class _NewPageState extends ConsumerState<NewPage> {
   final ScrollController _scrollController = ScrollController();
-  final double _bottomHeight = 96;
   final double _unscrollableHeight = 200;
 
   final List<TextEditingController> _pageNameControllers = [];
@@ -151,7 +150,14 @@ class _NewPageState extends ConsumerState<NewPage> {
 
                 final result = await newPageNotifier.save(
                     _pageNameControllers.map((e) => e.text).toList(),
-                    _todoNameControllersList.map((l) => l.map((e) => e.text).toList()).toList(),
+                    _todoNameControllersList
+                        .map(
+                          (list) => list
+                              .sublist(0, list.length - 1)
+                              .mapIndexed((index, controller) => controller.text)
+                              .toList(),
+                        )
+                        .toList(),
                     LocalizationUtils.getDefaultName(context));
                 context.navigator.pop(result);
               },
@@ -190,7 +196,7 @@ class _NewPageState extends ConsumerState<NewPage> {
                   onTap: _dismissKeyboard,
                   child: SizedBox(
                     width: double.infinity,
-                    height: _unscrollableHeight + _bottomHeight,
+                    height: _unscrollableHeight,
                   ),
                 ),
               ],

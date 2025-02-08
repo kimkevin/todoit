@@ -42,7 +42,7 @@ class TodoListNotifier with ChangeNotifier {
     }
   }
 
-  void loadTodoList(int pageId) async {
+  void loadTodoList(int pageId, {bool notifyChanged = true}) async {
     if (pageId <= 0) return;
 
     _pageId = pageId;
@@ -52,7 +52,9 @@ class TodoListNotifier with ChangeNotifier {
       },
     ).toList();
     print('todos= $_todos');
-    notifyListeners();
+    if (notifyChanged) {
+      notifyListeners();
+    }
   }
 
   Future<int> addTodo(String name) => todoRepository.createTodo(_pageId, name);
@@ -67,7 +69,7 @@ class TodoListNotifier with ChangeNotifier {
 
     if (todo == null) {
       await todoRepository.createTodo(_pageId, name);
-      loadTodoList(_pageId);
+      loadTodoList(_pageId, notifyChanged: false);
     } else {
       updateName(todo.id, name);
     }
