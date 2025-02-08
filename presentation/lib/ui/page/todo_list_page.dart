@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_core/extensions/context_extensions.dart';
 import 'package:flutter_ds/foundation/color/ds_color_palette.dart';
 import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
-import 'package:flutter_ds/ui/widgets/ds_image.dart';
+import 'package:flutter_ds/ui/widgets/ds_appbar_action.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:presentation/gen/assets.gen.dart';
 import 'package:presentation/notifier/page_list_notifier.dart';
@@ -88,8 +88,6 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
   Widget build(BuildContext context) {
     final notifier = ref.watch(todoListProvider);
 
-    print('TESTTEST build');
-
     ref.listen<List<TodoUiModel>>(todoListProvider.select((state) => state.todos),
         (previous, next) {
       if (!listEquals(previous, next)) {
@@ -102,19 +100,13 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
-          GestureDetector(
+          DsAppBarAction(
+            type: AppBarActionType.image,
+            imagePath: notifier.isEditMode ? Assets.svg.icCheck.path : Assets.svg.icEdit.path,
             onTap: () {
               notifier.toggleEditMode();
               _dismissKeyboard();
             },
-            child: Padding(
-              padding: const EdgeInsets.only(right: 16.0),
-              child: DsImage(
-                notifier.isEditMode ? Assets.svg.icCheck.path : Assets.svg.icEdit.path,
-                width: 24,
-                height: 24,
-              ),
-            ),
           ),
         ],
       ),

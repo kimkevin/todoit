@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_core/extensions/context_extensions.dart';
-import 'package:flutter_ds/ui/widgets/ds_image.dart';
+import 'package:flutter_ds/ui/widgets/ds_appbar_action.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:presentation/gen/assets.gen.dart';
@@ -121,7 +121,9 @@ class _NewPageState extends ConsumerState<NewPage> {
       builder: (context, isKeyboardVisible) => Scaffold(
         appBar: AppBar(
           actions: [
-            GestureDetector(
+            DsAppBarAction(
+              type: AppBarActionType.text,
+              actionName: 'T',
               onTap: () {
                 showModalBottomSheet(
                   context: context,
@@ -134,17 +136,10 @@ class _NewPageState extends ConsumerState<NewPage> {
                   }
                 });
               },
-              child: Padding(
-                padding: const EdgeInsets.only(right: 36.0),
-                child: Text(
-                  'T',
-                  style: TextStyle(
-                    fontSize: 22,
-                  ),
-                ),
-              ),
             ),
-            GestureDetector(
+            DsAppBarAction(
+              type: AppBarActionType.image,
+              imagePath: Assets.svg.icCheck.path,
               onTap: () async {
                 if (!mounted) return;
 
@@ -161,11 +156,7 @@ class _NewPageState extends ConsumerState<NewPage> {
                     LocalizationUtils.getDefaultName(context));
                 context.navigator.pop(result);
               },
-              child: Padding(
-                padding: const EdgeInsets.only(right: 16.0),
-                child: DsImage(Assets.svg.icCheck.path, width: 24, height: 24),
-              ),
-            )
+            ),
           ],
         ),
         body: SizedBox(

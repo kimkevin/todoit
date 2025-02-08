@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_core/extensions/context_extensions.dart';
 import 'package:flutter_ds/foundation/color/ds_color_palette.dart';
+import 'package:flutter_ds/ui/widgets/ds_appbar_action.dart';
 import 'package:flutter_ds/ui/widgets/ds_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:presentation/gen/assets.gen.dart';
@@ -158,16 +159,10 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
-          GestureDetector(
+          DsAppBarAction(
+            type: AppBarActionType.image,
+            imagePath: notifier.isEditMode ? Assets.svg.icCheck.path : Assets.svg.icEdit.path,
             onTap: notifier.toggleEditMode,
-            child: Padding(
-              padding: const EdgeInsets.only(right: 16.0),
-              child: DsImage(
-                notifier.isEditMode ? Assets.svg.icCheck.path : Assets.svg.icEdit.path,
-                width: 24,
-                height: 24,
-              ),
-            ),
           ),
         ],
       ),
