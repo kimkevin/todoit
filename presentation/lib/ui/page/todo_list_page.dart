@@ -9,7 +9,6 @@ import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
 import 'package:flutter_ds/ui/widgets/ds_appbar_action.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:presentation/gen/assets.gen.dart';
-import 'package:presentation/notifier/page_list_notifier.dart';
 import 'package:presentation/notifier/todo_list_notifier.dart';
 import 'package:presentation/ui/model/page.dart';
 import 'package:presentation/ui/model/todo.dart';
@@ -64,7 +63,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
         _todoNameControllers.add(TextEditingController(text: todo.name));
       }
       final lastIndex = _todoNameControllers.length - 1;
-      if (_todoNameControllers[lastIndex].text.isNotEmpty) {
+      if (_todoNameControllers.isEmpty || _todoNameControllers[lastIndex].text.isNotEmpty) {
         _todoNameControllers.add(TextEditingController());
       }
     });
@@ -90,9 +89,8 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
 
     ref.listen<List<TodoUiModel>>(todoListProvider.select((state) => state.todos),
         (previous, next) {
-      if (!listEquals(previous, next)) {
+      if (previous?.isEmpty == true && next.isEmpty || !listEquals(previous, next)) {
         _syncControllers(next);
-        ref.watch(pageListProvider).loadPageList();
       }
     });
 

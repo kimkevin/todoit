@@ -136,7 +136,11 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
   void onPageClick(PageUiModel page) {
     if (!mounted) return;
 
-    context.navigator.push(MaterialPageRoute(builder: (context) => TodoListPage(page: page)));
+    context.navigator.push(MaterialPageRoute(builder: (context) => TodoListPage(page: page))).then(
+      (_) {
+        ref.watch(pageListProvider).loadPageList();
+      },
+    );
   }
 
   void onNewPageClick(PageListNotifier notifier) {

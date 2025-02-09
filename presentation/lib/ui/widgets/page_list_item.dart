@@ -58,7 +58,6 @@ class _PageListItemState extends State<PageListItem> {
   void onItemClick() {
     if (widget.isEditMode) {
       FutureUtils.runDelayed(() {
-        print('herer');
         _focusNode.requestFocus();
       });
     } else {

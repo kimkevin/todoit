@@ -29,11 +29,6 @@ class TodoListNotifier with ChangeNotifier {
 
   TodoListNotifier({required this.todoRepository});
 
-  void clear() {
-    _todos = [];
-    notifyListeners();
-  }
-
   TodoUiModel? getTodo(int index) {
     try {
       return todos[index];
@@ -57,8 +52,6 @@ class TodoListNotifier with ChangeNotifier {
     }
   }
 
-  Future<int> addTodo(String name) => todoRepository.createTodo(_pageId, name);
-
   void addOrUpdateName(int index, String name) async {
     TodoUiModel? todo;
     try {
@@ -79,7 +72,6 @@ class TodoListNotifier with ChangeNotifier {
     if (id == null) return;
 
     final updated = await todoRepository.updateTodoWith(id, name: name);
-    // 이름은 스테이트풀하게 관리하고 있음
     if (!updated) {
       loadTodoList(_pageId);
     }
@@ -92,7 +84,6 @@ class TodoListNotifier with ChangeNotifier {
       todoId,
       completed: completed,
     );
-    print('updated= $updated, completed= $completed');
     if (updated) {
       loadTodoList(_pageId);
     }
@@ -113,7 +104,8 @@ class TodoListNotifier with ChangeNotifier {
 
   void deleteTodo(int index) async {
     final todo = _todos[index];
-    await todoRepository.deleteTodo(todo.id);
+    _todos.removeAt(index);
+    todoRepository.deleteTodo(todo.id);
   }
 
   void toggleEditMode() {
