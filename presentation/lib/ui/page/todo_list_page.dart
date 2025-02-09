@@ -76,6 +76,30 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
     });
   }
 
+  void _reorderTodos(int oldIndex, int newIndex) {
+    setState(() {
+      final lastIndex = _todoNameControllers.length - 1;
+
+      // 마지막 아이템이면 이동 불가 (oldIndex가 마지막 아이템일 경우)
+      if (oldIndex == lastIndex) return;
+
+      // 마지막 위치로 이동하려고 하면 마지막 아이템 바로 위로 변경
+      if (newIndex >= lastIndex) {
+        newIndex = lastIndex;
+      }
+
+      // 아이템 이동 로직
+      if (oldIndex < newIndex) {
+        newIndex -= 1;
+      }
+
+      final item = _todoNameControllers.removeAt(oldIndex);
+      _todoNameControllers.insert(newIndex, item);
+
+      ref.watch(todoListProvider).reorderTodos(oldIndex, newIndex);
+    });
+  }
+
   void _dismissKeyboard() {
     final currentFocus = FocusManager.instance.primaryFocus;
     if (currentFocus != null && currentFocus.hasFocus) {
@@ -169,7 +193,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                   child: ReorderableListView(
                     // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                     scrollController: _scrollController,
-                    onReorder: notifier.reorderTodos,
+                    onReorder: _reorderTodos,
                     children: [
                       ..._todoNameControllers.mapIndexed(
                         (index, controller) => TodoListItem(

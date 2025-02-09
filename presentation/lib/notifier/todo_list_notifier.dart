@@ -90,16 +90,10 @@ class TodoListNotifier with ChangeNotifier {
   }
 
   void reorderTodos(int oldIndex, int newIndex) async {
-    // UI 먼저 보여줌
-    if (oldIndex < newIndex) {
-      newIndex -= 1;
-    }
     final item = _todos.removeAt(oldIndex);
     _todos.insert(newIndex, item);
-    notifyListeners();
 
     await todoRepository.reorderTodos(_pageId, oldIndex, newIndex);
-    loadTodoList(_pageId);
   }
 
   void deleteTodo(int index) async {
