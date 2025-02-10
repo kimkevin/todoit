@@ -113,9 +113,8 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
           onPressed: () {
             List<NewPageItemUiModel> newPageItems = [];
             for (final pageTodo in result.pageTodos) {
-              // final items =
-              //     pageTodo.todoNames.map((name) => NewTodoItemUiModel(name: name)).toList();
-              // newPageItems.add(NewPageItemUiModel(name: pageTodo.pageName, todoItemModels: items));
+              newPageItems
+                  .add(NewPageItemUiModel(name: pageTodo.pageName, todoNames: pageTodo.todoNames));
             }
 
             context.navigator

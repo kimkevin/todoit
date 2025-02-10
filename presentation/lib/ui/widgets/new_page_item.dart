@@ -9,20 +9,27 @@ class NewPageItem extends StatefulWidget {
   final List<TextEditingController> todoNameControllers;
   final FocusNode? pageNameFocusNode;
   final FocusNode? firstTodoNameFocusNode;
-  final VoidCallback onLastItemChanged;
+  final bool lastItemDeletable;
+  final VoidCallback? onLastItemChanged;
   final Function(int) onTodoDeleted;
+  final Function(String)? onPageNameChanged;
+  final Function(int, String)? onTodoNameChanged;
   final Function(String)? onPageNameSubmitted;
 
-  const NewPageItem({
+  NewPageItem({
     super.key,
-    required this.pageNameController,
-    required this.todoNameControllers,
+    TextEditingController? pageNameController,
+    List<TextEditingController>? todoNameControllers,
     this.pageNameFocusNode,
     this.firstTodoNameFocusNode,
-    required this.onLastItemChanged,
+    this.lastItemDeletable = false,
+    this.onLastItemChanged,
     required this.onTodoDeleted,
+    this.onPageNameChanged,
+    this.onTodoNameChanged,
     this.onPageNameSubmitted,
-  });
+  })  : pageNameController = pageNameController ?? TextEditingController(),
+        todoNameControllers = todoNameControllers ?? [];
 
   @override
   State<StatefulWidget> createState() => _NewPageItemState();
@@ -53,6 +60,7 @@ class _NewPageItemState extends State<NewPageItem> {
               hintStyle: DsTextStyles.headline.copyWith(color: DsColorPalette.gray300),
               border: InputBorder.none,
             ),
+            onChanged: widget.onPageNameChanged,
             onSubmitted: widget.onPageNameSubmitted,
           ),
         ),
@@ -60,12 +68,13 @@ class _NewPageItemState extends State<NewPageItem> {
           (index, item) => NewTodoItem(
             controller: widget.todoNameControllers[index],
             focusNode: index == 0 ? widget.firstTodoNameFocusNode : null,
-            deletable: index != widget.todoNameControllers.length - 1,
+            deletable: widget.lastItemDeletable || index != widget.todoNameControllers.length - 1,
             onTextChanged: (text) {
               final isLastItem = index == widget.todoNameControllers.length - 1;
               if (isLastItem && text.isNotEmpty) {
-                widget.onLastItemChanged();
+                widget.onLastItemChanged?.call();
               }
+              widget.onTodoNameChanged?.call(index, text);
             },
             onDeleteClick: () {
               widget.onTodoDeleted(index);

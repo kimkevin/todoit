@@ -1,4 +1,6 @@
 import 'package:di/injection_container.dart';
+import 'package:domain/model/new_page_model.dart';
+import 'package:domain/model/new_todo_model.dart';
 import 'package:domain/repository/page_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,43 +22,44 @@ class NewParsedPageNotifier with ChangeNotifier {
 
   void changePageName(int pageIndex, String name) {
     final newPage = _newPageItems[pageIndex];
-    // _newPageItems = List<NewPageItemUiModel>.from(_newPageItems)
-    // ..[pageIndex] = newPage.copyWith(name: name);
+    _newPageItems = List<NewPageItemUiModel>.from(_newPageItems)
+      ..[pageIndex] = newPage.copyWith(name: name);
   }
 
   void changeTodoName(int pageIndex, int todoIndex, String name) {
     final newPage = _newPageItems[pageIndex];
-    // final newTodoItemModels = List<NewTodoItemUiModel>.from(newPage.todoItemModels)
-    //   ..[todoIndex] = NewTodoItemUiModel(name: name);
-    //
-    // _newPageItems = List<NewPageItemUiModel>.from(_newPageItems)
-    // ..[pageIndex] = newPage.copyWith(todoItemModels: newTodoItemModels);
+    final newTodoNames = List<String>.from(newPage.todoNames)..[todoIndex] = name;
+
+    _newPageItems = List<NewPageItemUiModel>.from(_newPageItems)
+      ..[pageIndex] = newPage.copyWith(todoNames: newTodoNames);
   }
 
   void deleteTodo(int pageIndex, int todoIndex) {
     final newPage = _newPageItems[pageIndex];
-    // final newTodoItemModels = List<NewTodoItemUiModel>.from(newPage.todoItemModels)
-    //   ..removeAt(todoIndex);
+    final newTodoNames = List<String>.from(newPage.todoNames)..removeAt(todoIndex);
 
-    // _newPageItems = List<NewPageItemUiModel>.from(_newPageItems)
-    //   ..[pageIndex] = newPage.copyWith(todoItemModels: newTodoItemModels);
+    _newPageItems = List<NewPageItemUiModel>.from(_newPageItems)
+      ..[pageIndex] = newPage.copyWith(todoNames: newTodoNames);
     notifyListeners();
   }
 
   Future<bool> save(String defaultName) async {
-    // final newPages = _newPageItems.map((itemModel) {
-    //   String name = itemModel.name;
-    //   if (name.isEmpty) {
-    //     name = defaultName;
-    //   }
-    //   return NewPageModel(
-    //     name: name,
-    //     todos: itemModel.todoItemModels.map((e) => NewTodoModel(name: e.name)).toList(),
-    //   );
-    // }).toList();
+    final newPages = _newPageItems.map((itemModel) {
+      String name = itemModel.name;
+      if (name.isEmpty) {
+        name = defaultName;
+      }
+      return NewPageModel(
+        name: name,
+        todos: itemModel.todoNames
+            .map(
+              (name) => NewTodoModel(name: name),
+            )
+            .toList(),
+      );
+    }).toList();
 
-    // return await pageRepository.createPageTodos(newPages);
-    return true;
+    return await pageRepository.createPageTodos(newPages);
   }
 }
 
