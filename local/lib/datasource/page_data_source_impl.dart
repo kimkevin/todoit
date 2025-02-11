@@ -36,9 +36,20 @@ class PageDataSourceImpl extends PageDataSource {
     final pages = await database.pagesDao.getAllPage();
 
     return await Future.wait(pages.map((page) async {
-      final totalCount = (await database.todosDao.getTodosByPageId(page.id)).length;
+      final todos = await database.todosDao.getTodosByPageId(page.id);
+      final completeCount = todos.where((todo) => todo.completed).length;
+      final totalCount = todos.length;
+      final completionPercent = ((completeCount / totalCount) * 100).toInt();
+
+      print('page= ${page.name}, completionPercent= $completionPercent');
+
       return PageEntity(
-          id: page.id, name: page.name, todoCount: totalCount, orderIndex: page.orderIndex);
+        id: page.id,
+        name: page.name,
+        todoCount: totalCount,
+        completionPercent: completionPercent,
+        orderIndex: page.orderIndex,
+      );
     }));
   }
 

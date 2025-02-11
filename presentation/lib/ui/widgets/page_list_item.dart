@@ -91,7 +91,14 @@ class _PageListItemState extends State<PageListItem> {
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                   controller: _controller,
-                  style: DsTextStyles.headline,
+                  style: widget.page.completed
+                      ? DsTextStyles.headline.copyWith(
+                          color: DsColorPalette.gray400,
+                          decoration: TextDecoration.lineThrough,
+                          decorationColor: DsColorPalette.gray400,
+                          decorationThickness: 2.0,
+                        )
+                      : DsTextStyles.headline,
                   decoration: InputDecoration(
                     hintText: widget.isEditMode ? LocalizationUtils.getDefaultName(context) : '',
                     hintStyle: DsTextStyles.headline.copyWith(color: DsColorPalette.gray300),
