@@ -85,6 +85,7 @@ class _PageListItemState extends State<PageListItem> {
             Flexible(
               child: IntrinsicWidth(
                 child: TextField(
+                  cursorColor: DsColorPalette.black,
                   onTap: onItemClick,
                   focusNode: _focusNode,
                   maxLines: null,

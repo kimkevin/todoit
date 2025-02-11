@@ -34,6 +34,7 @@ class _NewTodoItemState extends State<NewTodoItem> {
     TextStyle textStyle = DsTextStyles.b1.copyWith(color: DsColorPalette.gray800);
 
     return TextField(
+      cursorColor: DsColorPalette.black,
       controller: widget.controller,
       focusNode: widget.focusNode,
       style: textStyle,

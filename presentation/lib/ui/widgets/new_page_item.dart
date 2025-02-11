@@ -53,6 +53,7 @@ class _NewPageItemState extends State<NewPageItem> {
           padding: EdgeInsets.only(left: 32, top: 16, right: 32, bottom: 16),
           child: TextField(
             controller: widget.pageNameController,
+            cursorColor: DsColorPalette.black,
             focusNode: widget.pageNameFocusNode,
             style: DsTextStyles.headline.copyWith(color: DsColorPalette.gray900),
             decoration: InputDecoration(
