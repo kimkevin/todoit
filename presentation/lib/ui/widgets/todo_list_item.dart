@@ -56,21 +56,16 @@ class _TodoListItemState extends State<TodoListItem> {
   }
 
   Widget _buildTextField(bool isEditMode) {
-    TextStyle textStyle;
+    TextStyle textStyle = DsTextStyles.b1;
     if (_isCompleted && widget.controller.text.isNotEmpty == true) {
-      textStyle = DsTextStyles.b1.copyWith(
+      textStyle = textStyle.copyWith(
         decoration: TextDecoration.lineThrough,
         decorationColor: DsColorPalette.gray400,
         decorationThickness: 2.0,
         color: DsColorPalette.gray400,
       );
-      // TextStyle(
-      //   decoration: TextDecoration.lineThrough, // 취소선
-      //   decorationColor: Colors.red,            // 취소선 색상 (선택 사항)
-      //   decorationThickness: 2.0,               // 취소선 두께 (선택 사항)
-      // )
     } else {
-      textStyle = DsTextStyles.b1.copyWith(color: DsColorPalette.gray800);
+      textStyle = textStyle.copyWith(color: DsColorPalette.gray800);
     }
 
     return Container(
@@ -115,18 +110,28 @@ class _TodoListItemState extends State<TodoListItem> {
                     bottom: 16,
                     right: 16,
                   ),
-                  child: _isCompleted
-                      ? DsImage(
-                          Assets.svg.icCheck.path,
-                          width: 24,
-                          height: 24,
-                          color: Color(0xFFFF8794),
-                        )
-                      : DsImage(
-                          Assets.svg.icCircle.path,
-                          width: 24,
-                          height: 24,
-                        ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _isCompleted ? DsColorPalette.gray700 : Colors.transparent,
+                      border: Border.all(
+                        color: DsColorPalette.black,
+                        width: 2.5,
+                      ),
+                    ),
+                    width: 26,
+                    height: 26,
+                    child: AnimatedOpacity(
+                      opacity: _isCompleted ? 1 : 0,
+                      duration: Duration(milliseconds: 200),
+                      child: DsImage(
+                        Assets.svg.icCheck.path,
+                        width: 22,
+                        height: 22,
+                        color: DsColorPalette.white,
+                      ),
+                    ),
+                  ),
                 ),
               ),
       ),
