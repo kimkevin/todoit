@@ -102,6 +102,7 @@ class _TodoListItemState extends State<TodoListItem> {
         child: widget.isEditMode
             ? SizedBox(width: 32)
             : GestureDetector(
+                behavior: HitTestBehavior.translucent,
                 onTap: () {
                   HapticFeedback.lightImpact();
                   setCompleted(!_isCompleted);

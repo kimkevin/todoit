@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_core/extensions/context_extensions.dart';
 import 'package:flutter_ds/foundation/color/ds_color_palette.dart';
 import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
 import 'package:flutter_ds/ui/widgets/ds_appbar_action.dart';
@@ -14,6 +13,7 @@ import 'package:presentation/ui/model/page.dart';
 import 'package:presentation/ui/model/todo.dart';
 import 'package:presentation/ui/widgets/todo_list_item.dart';
 import 'package:presentation/utils/future_utils.dart';
+import 'package:presentation/utils/vibration_utils.dart';
 
 class TodoListPage extends ConsumerStatefulWidget {
   final PageUiModel page;
@@ -118,6 +118,11 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
       }
     });
 
+    if (notifier.completeEvent) {
+      notifier.finishCompleteEvent();
+      triggerStrongVibration();
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -162,26 +167,31 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                   opacity: notifier.isEditMode ? 0.0 : 1.0,
                   duration: Duration(milliseconds: 100),
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 32),
+                    padding: EdgeInsets.only(left: 32, right: 34, bottom: 12),
                     child: Stack(
-                      key: ValueKey(notifier.completeRate),
                       children: [
                         Container(
                           width: double.infinity,
-                          height: 16,
+                          height: 26,
                           decoration: BoxDecoration(
-                            color: Color(0x4DC8C8C8),
+                            color: DsColorPalette.gray200,
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        FractionallySizedBox(
+                        AnimatedFractionallySizedBox(
+                          duration: Duration(milliseconds: 300),
                           widthFactor: notifier.completeRate,
                           child: Container(
                             width: double.infinity,
-                            height: 16,
+                            height: 26,
                             decoration: BoxDecoration(
-                              color: context.theme.colorScheme.primary,
+                              color: DsColorPalette.gray700,
                               borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color:
+                                    notifier.completeRate == 0 ? Colors.transparent : Colors.black,
+                                width: notifier.completeRate == 0 ? 0 : 2,
+                              ),
                             ),
                           ),
                         ),

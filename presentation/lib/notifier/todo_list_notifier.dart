@@ -1,12 +1,23 @@
+import 'dart:async';
 import 'dart:collection';
 
-import 'package:collection/collection.dart';
 import 'package:di/injection_container.dart';
 import 'package:domain/repository/todo_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:presentation/extensions/todo_domain_ui_extensions.dart';
 import 'package:presentation/ui/model/todo.dart';
+
+class _TodoTask {
+  final int index;
+  final String name;
+  final Completer<void> completer;
+
+  _TodoTask({
+    required this.index,
+    required this.name,
+  }) : completer = Completer<void>();
+}
 
 class TodoListNotifier with ChangeNotifier {
   final TodoRepository todoRepository;
@@ -20,6 +31,12 @@ class TodoListNotifier with ChangeNotifier {
   List<TodoUiModel> _todos = <TodoUiModel>[];
 
   List<TodoUiModel> get todos => UnmodifiableListView(_todos);
+
+  final Queue<_TodoTask> _taskQueue = Queue();
+  bool _isProcessing = false;
+
+  bool get completeEvent => _completeEvent;
+  bool _completeEvent = false;
 
   double get completeRate {
     final completeCount = todos.where((e) => e.completed == true).length;
@@ -37,7 +54,7 @@ class TodoListNotifier with ChangeNotifier {
     }
   }
 
-  void loadTodoList(int pageId, {bool notifyChanged = true}) async {
+  Future loadTodoList(int pageId, {bool notifyChanged = true}) async {
     if (pageId <= 0) return;
 
     _pageId = pageId;
@@ -53,22 +70,42 @@ class TodoListNotifier with ChangeNotifier {
   }
 
   void addOrUpdateName(int index, String name) async {
-    TodoUiModel? todo;
-    try {
-      todo = _todos[index];
-    } catch (e) {
-      todo = null;
-    }
-
-    if (todo == null) {
-      await todoRepository.createTodo(_pageId, name);
-      loadTodoList(_pageId, notifyChanged: false);
-    } else {
-      updateName(todo.id, name);
+    _taskQueue.add(_TodoTask(index: index, name: name));
+    if (!_isProcessing) {
+      _processQueue();
     }
   }
 
-  void updateName(int? id, String name) async {
+  void _processQueue() async {
+    if (_isProcessing || _taskQueue.isEmpty) return;
+    _isProcessing = true;
+
+    while (_taskQueue.isNotEmpty) {
+      final task = _taskQueue.removeFirst();
+      final index = task.index;
+      final name = task.name;
+
+      TodoUiModel? todo;
+      try {
+        todo = _todos[index];
+      } catch (e) {
+        todo = null;
+      }
+
+      if (todo == null) {
+        await todoRepository.createTodo(_pageId, name);
+        await loadTodoList(_pageId, notifyChanged: false);
+      } else {
+        await updateName(todo.id, name);
+      }
+
+      task.completer.complete();
+    }
+
+    _isProcessing = false;
+  }
+
+  Future updateName(int? id, String name) async {
     if (id == null) return;
 
     final updated = await todoRepository.updateTodoWith(id, name: name);
@@ -85,8 +122,13 @@ class TodoListNotifier with ChangeNotifier {
       completed: completed,
     );
     if (updated) {
-      loadTodoList(_pageId);
+      await loadTodoList(_pageId);
+      _completeEvent = _todos.every((todo) => todo.completed);
     }
+  }
+
+  void finishCompleteEvent() {
+    _completeEvent = false;
   }
 
   void reorderTodos(int oldIndex, int newIndex) async {
