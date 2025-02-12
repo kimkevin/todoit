@@ -122,6 +122,16 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
     }
   }
 
+  void _scrollToBottom() {
+    FutureUtils.runDelayed(() {
+      _scrollController.animateTo(
+        max(0, _scrollController.position.maxScrollExtent - _unscrollableHeight),
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final notifier = ref.watch(todoListProvider);
@@ -159,7 +169,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
               children: [
                 Container(
                   key: ValueKey(widget.page.name),
-                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  padding: EdgeInsets.only(left: 32, right: 32, top: 16),
                   alignment: Alignment.centerLeft,
                   child: Text(
                     widget.page.name,
@@ -274,36 +284,9 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                 ),
               ],
             ),
-            // Align(
-            //   alignment: Alignment.bottomCenter,
-            //   child: ActionButton(
-            //     buttonName: '+ 할일 추가하기',
-            //     onClick: () async {
-            //       newTodoId = await todoNotifier.addTodo('');
-            //       todoNotifier.loadTodoList(widget.page.id);
-            //       // FutureUtils.runDelayed(() {
-            //       //   _scrollController.animateTo(
-            //       //     _scrollController.position.maxScrollExtent,
-            //       //     duration: Duration(milliseconds: 300),
-            //       //     curve: Curves.easeInOut,
-            //       //   );
-            //       // });
-            //     },
-            //   ),
-            // )
           ],
         ),
       ),
     );
-  }
-
-  void _scrollToBottom() {
-    FutureUtils.runDelayed(() {
-      _scrollController.animateTo(
-        max(0, _scrollController.position.maxScrollExtent - _unscrollableHeight),
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    });
   }
 }
