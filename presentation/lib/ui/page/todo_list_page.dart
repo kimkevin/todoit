@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:animated_digit/animated_digit.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -28,10 +29,15 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
   final ScrollController _scrollController = ScrollController();
   final List<TextEditingController> _todoNameControllers = [];
   final double _unscrollableHeight = 200;
+  bool _startAnimation = false;
 
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startDelayedAnimation();
+    });
   }
 
   @override
@@ -47,6 +53,15 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
 
     for (final controller in _todoNameControllers) {
       controller.dispose();
+    }
+  }
+
+  void _startDelayedAnimation() async {
+    await Future.delayed(Duration(milliseconds: 200));
+    if (mounted) {
+      setState(() {
+        _startAnimation = true;
+      });
     }
   }
 
@@ -157,9 +172,18 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                   duration: Duration(milliseconds: 100),
                   child: Padding(
                     padding: EdgeInsets.only(top: 8, right: 32, bottom: 5),
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Text('${(notifier.completeRate * 100).round()}%'),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        AnimatedDigitWidget(
+                          value: (notifier.completeRate * 100).round(),
+                          textStyle: DsTextStyles.b3.copyWith(color: DsColorPalette.gray900),
+                        ),
+                        Text(
+                          '%',
+                          style: DsTextStyles.b3.copyWith(color: DsColorPalette.gray900),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -168,34 +192,37 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                   duration: Duration(milliseconds: 100),
                   child: Padding(
                     padding: EdgeInsets.only(left: 32, right: 34, bottom: 12),
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          height: 26,
-                          decoration: BoxDecoration(
-                            color: DsColorPalette.gray200,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        AnimatedFractionallySizedBox(
-                          duration: Duration(milliseconds: 300),
-                          widthFactor: notifier.completeRate,
-                          child: Container(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Stack(
+                        children: [
+                          Container(
                             width: double.infinity,
                             height: 26,
                             decoration: BoxDecoration(
-                              color: DsColorPalette.gray700,
+                              color: DsColorPalette.gray200,
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color:
-                                    notifier.completeRate == 0 ? Colors.transparent : Colors.black,
-                                width: notifier.completeRate == 0 ? 0 : 2,
+                            ),
+                          ),
+                          AnimatedFractionallySizedBox(
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                            widthFactor: _startAnimation ? notifier.completeRate : 0.0,
+                            child: Container(
+                              width: double.infinity,
+                              height: 26,
+                              decoration: BoxDecoration(
+                                color: DsColorPalette.gray700,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: notifier.completeRate == 0 ? 0 : 2,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
