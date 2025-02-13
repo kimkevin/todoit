@@ -6,6 +6,7 @@ extension PageDomainExtension on PageModel {
         id: id,
         name: name,
         todoCount: todoCount,
+        completionCount: completionCount,
         completionPercent: completionPercent,
       );
 }
@@ -15,6 +16,7 @@ extension PageUiExtension on PageUiModel {
         id: id,
         name: name,
         todoCount: todoCount,
+        completionCount: completionCount,
         completionPercent: completionPercent,
       );
 }

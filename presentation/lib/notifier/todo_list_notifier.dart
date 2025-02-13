@@ -38,10 +38,14 @@ class TodoListNotifier with ChangeNotifier {
   bool get completeEvent => _completeEvent;
   bool _completeEvent = false;
 
-  double get completeRate {
-    final completeCount = todos.where((e) => e.completed == true).length;
+  int get completionCount => todos.where((e) => e.completed == true).length;
+
+  int get todoCount => todos.length;
+
+  double get completionRate {
+    final completionCount = todos.where((e) => e.completed == true).length;
     if (todos.isEmpty) return 0.0;
-    return completeCount / todos.length;
+    return completionCount / todos.length;
   }
 
   TodoListNotifier({required this.todoRepository});

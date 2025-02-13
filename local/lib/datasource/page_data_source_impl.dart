@@ -37,9 +37,9 @@ class PageDataSourceImpl extends PageDataSource {
 
     return await Future.wait(pages.map((page) async {
       final todos = await database.todosDao.getTodosByPageId(page.id);
-      final completeCount = todos.where((todo) => todo.completed).length;
+      final completionCount = todos.where((todo) => todo.completed).length;
       final totalCount = todos.length;
-      final completionPercent = ((completeCount / totalCount) * 100).toInt();
+      final completionPercent = ((completionCount / totalCount) * 100).toInt();
 
       print('page= ${page.name}, completionPercent= $completionPercent');
 
@@ -47,6 +47,7 @@ class PageDataSourceImpl extends PageDataSource {
         id: page.id,
         name: page.name,
         todoCount: totalCount,
+        completionCount: completionCount,
         completionPercent: completionPercent,
         orderIndex: page.orderIndex,
       );

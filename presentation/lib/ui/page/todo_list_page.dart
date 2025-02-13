@@ -190,11 +190,23 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                 Container(
                   key: ValueKey(widget.page.name),
                   padding: EdgeInsets.only(left: 32, right: 32, top: 16),
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    widget.page.name,
-                    style: DsTextStyles.headline.copyWith(color: DsColorPalette.gray900),
-                    textAlign: TextAlign.left,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        widget.page.name,
+                        style: DsTextStyles.headline.copyWith(color: DsColorPalette.gray900),
+                        textAlign: TextAlign.left,
+                      ),
+                      SizedBox(width: 8),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 3),
+                        child: Text(
+                          '${notifier.completionCount}/${notifier.todoCount}',
+                          style: DsTextStyles.b3.copyWith(color: DsColorPalette.gray400),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 AnimatedOpacity(
@@ -206,7 +218,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         AnimatedDigitWidget(
-                          value: (notifier.completeRate * 100).round(),
+                          value: (notifier.completionRate * 100).round(),
                           textStyle: DsTextStyles.b3.copyWith(color: DsColorPalette.gray900),
                         ),
                         Text(
@@ -237,7 +249,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                           AnimatedFractionallySizedBox(
                             duration: Duration(milliseconds: 300),
                             curve: Curves.easeInOut,
-                            widthFactor: _startAnimation ? notifier.completeRate : 0.0,
+                            widthFactor: _startAnimation ? notifier.completionRate : 0.0,
                             child: Container(
                               width: double.infinity,
                               height: 26,
@@ -246,7 +258,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
                                   color: Colors.black,
-                                  width: notifier.completeRate == 0 ? 0 : 2,
+                                  width: notifier.completionRate == 0 ? 0 : 2,
                                 ),
                               ),
                             ),

@@ -2,12 +2,14 @@ class PageUiModel {
   final int id;
   final String name;
   final int todoCount;
+  final int completionCount;
   final int completionPercent;
 
   PageUiModel({
     required this.id,
     required this.name,
     required this.todoCount,
+    required this.completionCount,
     required this.completionPercent,
   });
 
@@ -17,6 +19,7 @@ class PageUiModel {
         id: id,
         name: name ?? this.name,
         todoCount: todoCount,
+        completionCount: completionCount,
         completionPercent: completionPercent,
       );
 

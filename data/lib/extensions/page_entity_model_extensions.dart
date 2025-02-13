@@ -6,6 +6,7 @@ extension PageEntityExtension on PageEntity {
         id: id,
         name: name,
         todoCount: todoCount,
+        completionCount: completionCount,
         completionPercent: completionPercent,
       );
 }
@@ -15,6 +16,7 @@ extension PageModelExtension on PageModel {
         id: id,
         name: name,
         todoCount: todoCount,
+        completionCount: completionCount,
         completionPercent: completionPercent,
       );
 }

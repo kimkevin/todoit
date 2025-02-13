@@ -113,7 +113,7 @@ class _PageListItemState extends State<PageListItem> {
               Padding(
                 padding: EdgeInsets.only(left: 12, bottom: 3),
                 child: Text(
-                  widget.page.todoCount.toString(),
+                  '${widget.page.completionCount.toString()}/${widget.page.todoCount.toString()}',
                   style: DsTextStyles.b3.copyWith(color: DsColorPalette.gray400),
                 ),
               )
