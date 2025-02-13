@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_core/extensions/context_extensions.dart';
 import 'package:flutter_ds/foundation/color/ds_color_palette.dart';
+import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
 import 'package:flutter_ds/ui/widgets/ds_appbar_action.dart';
 import 'package:flutter_ds/ui/widgets/ds_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,7 +19,6 @@ import 'package:presentation/ui/page/new_page.dart';
 import 'package:presentation/ui/page/new_parsed_page.dart';
 import 'package:presentation/ui/page/todo_list_page.dart';
 import 'package:presentation/ui/widgets/page_list_item.dart';
-import 'package:presentation/ui/widgets/rounded_text_floating_action_button.dart';
 import 'package:presentation/utils/future_utils.dart';
 import 'package:presentation/utils/localization_utils.dart';
 
@@ -195,20 +195,37 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
           ],
         ),
       ),
-      floatingActionButton: notifier.isEditMode
-          ? null
-          : RoundedTextFloatingActionButton(
-              icon: DsImage(
+      floatingActionButton: Visibility(
+        visible: !notifier.isEditMode,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50),
+            shape: BoxShape.rectangle,
+            color: DsColorPalette.gray700,
+            border: Border.all(
+              color: DsColorPalette.black,
+              width: 2.5,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DsImage(
                 Assets.svg.icPlus.path,
                 width: 24,
                 height: 24,
                 color: DsColorPalette.white,
               ),
-              onPressed: () {
-                onNewPageClick(notifier);
-              },
-              text: '새로 만들기',
-            ),
+              const SizedBox(width: 10.0),
+              Text(
+                '새로 만들기',
+                style: DsTextStyles.b2.copyWith(color: DsColorPalette.white),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

@@ -41,8 +41,6 @@ class PageDataSourceImpl extends PageDataSource {
       final totalCount = todos.length;
       final completionPercent = ((completionCount / totalCount) * 100).toInt();
 
-      print('page= ${page.name}, completionPercent= $completionPercent');
-
       return PageEntity(
         id: page.id,
         name: page.name,
