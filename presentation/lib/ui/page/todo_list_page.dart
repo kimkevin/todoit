@@ -27,9 +27,11 @@ class TodoListPage extends ConsumerStatefulWidget {
 
 class _TodoListPageState extends ConsumerState<TodoListPage> {
   final ScrollController _scrollController = ScrollController();
-  final List<TextEditingController> _todoNameControllers = [];
+  final List<TodoTextInputState> _todoNameTextInputStates = [];
   final double _unscrollableHeight = 200;
   bool _startAnimation = false;
+
+  // 여기에 퍼센트가 있고 중간중간 업데이트 할 수 있도록 해야할듯... Notifier랑 엮으면 안되는듯
 
   @override
   void initState() {
@@ -49,11 +51,11 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
 
   @override
   void dispose() {
-    super.dispose();
-
-    for (final controller in _todoNameControllers) {
-      controller.dispose();
+    for (final state in _todoNameTextInputStates) {
+      state.controller.dispose();
+      state.focusNode.dispose();
     }
+    super.dispose();
   }
 
   void _startDelayedAnimation() async {
@@ -65,35 +67,53 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
     }
   }
 
-  void _addController() {
+  void _addAndSetTodoNameInputState() {
     setState(() {
-      _todoNameControllers.add(TextEditingController());
+      _addTodoNameInputState();
+      _scrollToBottom();
     });
   }
 
-  void _syncControllers(List<TodoUiModel> todos) {
+  void _addTodoNameInputState({String? name}) {
+    final inputState = TodoTextInputState(name: name);
+    inputState.addListener((focus) {
+      if (!focus) {}
+    });
+    _todoNameTextInputStates.add(inputState);
+  }
+
+  void _syncTodoInput(List<TodoUiModel> todos) {
     setState(() {
-      _todoNameControllers.clear();
-      for (final todo in todos) {
-        _todoNameControllers.add(TextEditingController(text: todo.name));
+      for (int i = 0; i < todos.length; i++) {
+        if (i <= _todoNameTextInputStates.length - 1) {
+          final todoNameTextInputState = _todoNameTextInputStates[i];
+          final oldName = todoNameTextInputState.controller.text;
+          final newName = todos[i].name;
+          if (oldName != newName) {
+            todoNameTextInputState.controller.text = newName;
+          }
+        } else {
+          _addTodoNameInputState(name: todos[i].name);
+        }
       }
-      final lastIndex = _todoNameControllers.length - 1;
-      if (_todoNameControllers.isEmpty || _todoNameControllers[lastIndex].text.isNotEmpty) {
-        _todoNameControllers.add(TextEditingController());
+
+      final lastIndex = _todoNameTextInputStates.length - 1;
+      if (todos.isEmpty || todos[lastIndex].name.isNotEmpty || todos[lastIndex].completed) {
+        _addTodoNameInputState();
       }
     });
   }
 
   void _deleteTodo(int index) {
     setState(() {
-      _todoNameControllers.removeAt(index);
+      _todoNameTextInputStates.removeAt(index);
       ref.watch(todoListProvider).deleteTodo(index);
     });
   }
 
   void _reorderTodos(int oldIndex, int newIndex) {
     setState(() {
-      final lastIndex = _todoNameControllers.length - 1;
+      final lastIndex = _todoNameTextInputStates.length - 1;
 
       // 마지막 아이템이면 이동 불가 (oldIndex가 마지막 아이템일 경우)
       if (oldIndex == lastIndex) return;
@@ -108,8 +128,8 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
         newIndex -= 1;
       }
 
-      final item = _todoNameControllers.removeAt(oldIndex);
-      _todoNameControllers.insert(newIndex, item);
+      final item = _todoNameTextInputStates.removeAt(oldIndex);
+      _todoNameTextInputStates.insert(newIndex, item);
 
       ref.watch(todoListProvider).reorderTodos(oldIndex, newIndex);
     });
@@ -139,7 +159,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
     ref.listen<List<TodoUiModel>>(todoListProvider.select((state) => state.todos),
         (previous, next) {
       if (previous?.isEmpty == true && next.isEmpty || !listEquals(previous, next)) {
-        _syncControllers(next);
+        _syncTodoInput(next);
       }
     });
 
@@ -242,15 +262,18 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                     scrollController: _scrollController,
                     onReorder: _reorderTodos,
                     children: [
-                      ..._todoNameControllers.mapIndexed(
-                        (index, controller) => TodoListItem(
+                      ..._todoNameTextInputStates.mapIndexed(
+                        (index, inputState) => TodoListItem(
                           key: ValueKey(index),
                           reorderIndex: index,
-                          controller: controller,
+                          inputState: inputState,
                           isEditMode: notifier.isEditMode,
                           isCompleted: notifier.getTodo(index)?.completed == true,
-                          isLastItem: index == _todoNameControllers.length - 1,
+                          isLastItem: index == _todoNameTextInputStates.length - 1,
                           actionClick: (completed) {
+                            if (index == _todoNameTextInputStates.length - 1) {
+                              _addAndSetTodoNameInputState();
+                            }
                             notifier.setCompleted(index, completed);
                           },
                           deleteClick: () {
@@ -262,8 +285,8 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                             }
                           },
                           onTextChanged: (text) {
-                            if (index == _todoNameControllers.length - 1 && text.isNotEmpty) {
-                              _addController();
+                            if (index == _todoNameTextInputStates.length - 1 && text.isNotEmpty) {
+                              _addAndSetTodoNameInputState();
                               _scrollToBottom();
                             }
                             notifier.addOrUpdateName(index, text);

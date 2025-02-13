@@ -94,10 +94,10 @@ class TodoListNotifier with ChangeNotifier {
 
       if (todo == null) {
         await todoRepository.createTodo(_pageId, name);
-        await loadTodoList(_pageId, notifyChanged: false);
       } else {
         await updateName(todo.id, name);
       }
+      await loadTodoList(_pageId, notifyChanged: todo == null);
 
       task.completer.complete();
     }
@@ -115,13 +115,25 @@ class TodoListNotifier with ChangeNotifier {
   }
 
   void setCompleted(int index, bool completed) async {
-    final todoId = _todos[index].id;
+    TodoUiModel? todo;
+    try {
+      todo = _todos[index];
+    } catch (e) {
+      todo = null;
+    }
 
-    final updated = await todoRepository.updateTodoWith(
-      todoId,
-      completed: completed,
-    );
-    if (updated) {
+    int todoId;
+    if (todo == null) {
+      todoId = await todoRepository.createTodo(_pageId, '');
+    } else {
+      todoId = _todos[index].id;
+    }
+
+    if (todoId > 0) {
+      await todoRepository.updateTodoWith(
+        todoId,
+        completed: completed,
+      );
       await loadTodoList(_pageId);
       _completeEvent = _todos.every((todo) => todo.completed);
     }

@@ -7,9 +7,30 @@ import 'package:flutter_ds/ui/widgets/ds_row.dart';
 import 'package:presentation/gen/assets.gen.dart';
 import 'package:presentation/ui/widgets/dash_divider.dart';
 
+class TodoTextInputState {
+  final TextEditingController controller;
+  final FocusNode focusNode;
+
+  TodoTextInputState({
+    String? name,
+  })  : controller = TextEditingController(text: name ?? ''),
+        focusNode = FocusNode();
+
+  void addListener(Function(bool) onFocusChange) {
+    focusNode.addListener(() {
+      onFocusChange(focusNode.hasFocus);
+    });
+  }
+
+  void dispose() {
+    controller.dispose();
+    focusNode.dispose();
+  }
+}
+
 class TodoListItem extends StatefulWidget {
   final int? reorderIndex;
-  final TextEditingController controller;
+  final TodoTextInputState inputState;
   final Function(bool) actionClick;
   final VoidCallback deleteClick;
   final VoidCallback onClick;
@@ -20,7 +41,7 @@ class TodoListItem extends StatefulWidget {
 
   const TodoListItem({
     super.key,
-    required this.controller,
+    required this.inputState,
     this.reorderIndex,
     this.isCompleted = false,
     this.isEditMode = false,
@@ -57,7 +78,7 @@ class _TodoListItemState extends State<TodoListItem> {
 
   Widget _buildTextField(bool isEditMode) {
     TextStyle textStyle = DsTextStyles.b1;
-    if (_isCompleted && widget.controller.text.isNotEmpty == true) {
+    if (_isCompleted && widget.inputState.controller.text.isNotEmpty == true) {
       textStyle = textStyle.copyWith(
         decoration: TextDecoration.lineThrough,
         decorationColor: DsColorPalette.gray400,
@@ -72,7 +93,8 @@ class _TodoListItemState extends State<TodoListItem> {
       padding: EdgeInsets.symmetric(vertical: 16),
       child: TextField(
         cursorColor: DsColorPalette.black,
-        controller: widget.controller,
+        controller: widget.inputState.controller,
+        focusNode: widget.inputState.focusNode,
         style: textStyle,
         maxLines: null,
         keyboardType: TextInputType.multiline,
