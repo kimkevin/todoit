@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:animated_digit/animated_digit.dart';
@@ -36,6 +37,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
   double _titleHeight = 0.0;
   double _progressHeight = 0.0;
   bool _startAnimation = false;
+  Timer? _throttle;
 
   @override
   void initState() {
@@ -44,20 +46,19 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
     _scrollController.addListener(_updateOpacity);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final RenderBox? titleRenderBox = _titleKey.currentContext?.findRenderObject() as RenderBox?;
-      if (titleRenderBox != null) {
-        setState(() {
+      setState(() {
+        final RenderBox? titleRenderBox =
+            _titleKey.currentContext?.findRenderObject() as RenderBox?;
+        if (titleRenderBox != null) {
           _titleHeight = titleRenderBox.size.height;
-        });
-      }
+        }
 
-      final RenderBox? progressRenderBox =
-          _progressKey.currentContext?.findRenderObject() as RenderBox?;
-      if (progressRenderBox != null) {
-        setState(() {
+        final RenderBox? progressRenderBox =
+            _progressKey.currentContext?.findRenderObject() as RenderBox?;
+        if (progressRenderBox != null) {
           _progressHeight = progressRenderBox.size.height;
-        });
-      }
+        }
+      });
 
       _startDelayedAnimation();
     });
@@ -72,6 +73,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
 
   @override
   void dispose() {
+    _throttle?.cancel();
     _scrollController.removeListener(_updateOpacity);
     _scrollController.dispose();
     for (final state in _todoNameTextInputStates) {
@@ -82,13 +84,17 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
   }
 
   void _updateOpacity() {
-    double offset = _scrollController.offset;
-    if (_titleHeight > 0) {
-      setState(() {
-        _isAppBarTitleVisible = offset >= _titleHeight;
-        _isAppBarProgressVisible = offset >= _titleHeight + _progressHeight;
-      });
-    }
+    if (_throttle?.isActive ?? false) return;
+
+    _throttle = Timer(Duration(milliseconds: 200), () {
+      double offset = _scrollController.offset;
+      if (_titleHeight > 0) {
+        setState(() {
+          _isAppBarTitleVisible = offset >= _titleHeight;
+          _isAppBarProgressVisible = offset >= _titleHeight + _progressHeight;
+        });
+      }
+    });
   }
 
   void _startDelayedAnimation() async {
