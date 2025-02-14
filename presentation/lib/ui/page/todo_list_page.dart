@@ -29,15 +29,36 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
   final ScrollController _scrollController = ScrollController();
   final List<TodoTextInputState> _todoNameTextInputStates = [];
   final double _unscrollableHeight = 200;
+  final GlobalKey _titleKey = GlobalKey();
+  final GlobalKey _progressKey = GlobalKey();
+  bool _isAppBarTitleVisible = false;
+  bool _isAppBarProgressVisible = false;
+  double _titleHeight = 0.0;
+  double _progressHeight = 0.0;
   bool _startAnimation = false;
-
-  // 여기에 퍼센트가 있고 중간중간 업데이트 할 수 있도록 해야할듯... Notifier랑 엮으면 안되는듯
 
   @override
   void initState() {
     super.initState();
 
+    _scrollController.addListener(_updateOpacity);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final RenderBox? titleRenderBox = _titleKey.currentContext?.findRenderObject() as RenderBox?;
+      if (titleRenderBox != null) {
+        setState(() {
+          _titleHeight = titleRenderBox.size.height;
+        });
+      }
+
+      final RenderBox? progressRenderBox =
+          _progressKey.currentContext?.findRenderObject() as RenderBox?;
+      if (progressRenderBox != null) {
+        setState(() {
+          _progressHeight = progressRenderBox.size.height;
+        });
+      }
+
       _startDelayedAnimation();
     });
   }
@@ -51,6 +72,8 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
 
   @override
   void dispose() {
+    _scrollController.removeListener(_updateOpacity);
+    _scrollController.dispose();
     for (final state in _todoNameTextInputStates) {
       state.controller.dispose();
       state.focusNode.dispose();
@@ -58,8 +81,18 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
     super.dispose();
   }
 
+  void _updateOpacity() {
+    double offset = _scrollController.offset;
+    if (_titleHeight > 0) {
+      setState(() {
+        _isAppBarTitleVisible = offset >= _titleHeight;
+        _isAppBarProgressVisible = offset >= _titleHeight + _progressHeight;
+      });
+    }
+  }
+
   void _startDelayedAnimation() async {
-    await Future.delayed(Duration(milliseconds: 200));
+    await Future.delayed(Duration(milliseconds: 300));
     if (mounted) {
       setState(() {
         _startAnimation = true;
@@ -97,8 +130,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
         }
       }
 
-      final lastIndex = _todoNameTextInputStates.length - 1;
-      if (todos.isEmpty || todos[lastIndex].name.isNotEmpty || todos[lastIndex].completed) {
+      if (_todoNameTextInputStates.isEmpty || todos.length == _todoNameTextInputStates.length) {
         _addTodoNameInputState();
       }
     });
@@ -170,8 +202,35 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
 
     return Scaffold(
       appBar: AppBar(
+        titleSpacing: 0,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Align(
+            alignment: Alignment.centerLeft,
+            child: AnimatedOpacity(
+              duration: Duration(milliseconds: 300),
+              opacity: _isAppBarTitleVisible ? 1 : 0,
+              child: Text(
+                widget.page.name,
+                style: DsTextStyles.b2.copyWith(color: DsColorPalette.gray900),
+              ),
+            )),
         actions: [
+          AnimatedOpacity(
+            duration: Duration(milliseconds: 100),
+            opacity: _isAppBarProgressVisible ? 1 : 0,
+            child: Row(
+              children: [
+                AnimatedDigitWidget(
+                  value: (notifier.completionRate * 100).round(),
+                  textStyle: DsTextStyles.b3.copyWith(color: DsColorPalette.gray900),
+                ),
+                Text(
+                  '%',
+                  style: DsTextStyles.b3.copyWith(color: DsColorPalette.gray900),
+                )
+              ],
+            ),
+          ),
           DsAppBarAction(
             type: AppBarActionType.image,
             imagePath: notifier.isEditMode ? Assets.svg.icCheck.path : Assets.svg.icEdit.path,
@@ -187,93 +246,99 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
           children: [
             Column(
               children: [
-                Container(
-                  key: ValueKey(widget.page.name),
-                  padding: EdgeInsets.only(left: 32, right: 32, top: 16),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        widget.page.name,
-                        style: DsTextStyles.headline.copyWith(color: DsColorPalette.gray900),
-                        textAlign: TextAlign.left,
-                      ),
-                      SizedBox(width: 8),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 3),
-                        child: Text(
-                          '${notifier.completionCount}/${notifier.todoCount}',
-                          style: DsTextStyles.b3.copyWith(color: DsColorPalette.gray400),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                AnimatedOpacity(
-                  opacity: notifier.isEditMode ? 0.0 : 1.0,
-                  duration: Duration(milliseconds: 100),
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 8, right: 32, bottom: 5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        AnimatedDigitWidget(
-                          value: (notifier.completionRate * 100).round(),
-                          textStyle: DsTextStyles.b3.copyWith(color: DsColorPalette.gray900),
-                        ),
-                        Text(
-                          '%',
-                          style: DsTextStyles.b3.copyWith(color: DsColorPalette.gray900),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                AnimatedOpacity(
-                  opacity: notifier.isEditMode ? 0.0 : 1.0,
-                  duration: Duration(milliseconds: 100),
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 32, right: 34, bottom: 12),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Stack(
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            height: 26,
-                            decoration: BoxDecoration(
-                              color: DsColorPalette.gray200,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                          AnimatedFractionallySizedBox(
-                            duration: Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                            widthFactor: _startAnimation ? notifier.completionRate : 0.0,
-                            child: Container(
-                              width: double.infinity,
-                              height: 26,
-                              decoration: BoxDecoration(
-                                color: DsColorPalette.gray700,
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: Colors.black,
-                                  width: notifier.completionRate == 0 ? 0 : 2,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
                 Expanded(
                   child: ReorderableListView(
                     // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                     scrollController: _scrollController,
                     onReorder: _reorderTodos,
                     children: [
+                      Container(
+                        key: _titleKey,
+                        padding: EdgeInsets.only(left: 32, right: 32, top: 16),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              widget.page.name,
+                              style: DsTextStyles.headline.copyWith(color: DsColorPalette.gray900),
+                              textAlign: TextAlign.left,
+                            ),
+                            SizedBox(width: 8),
+                            Padding(
+                              padding: EdgeInsets.only(bottom: 3),
+                              child: Text(
+                                '${notifier.completionCount}/${notifier.todoCount}',
+                                style: DsTextStyles.b3.copyWith(color: DsColorPalette.gray400),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Column(
+                        key: _progressKey,
+                        children: [
+                          AnimatedOpacity(
+                            opacity: notifier.isEditMode ? 0.0 : 1.0,
+                            duration: Duration(milliseconds: 100),
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 8, right: 32, bottom: 5),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  AnimatedDigitWidget(
+                                    value: (notifier.completionRate * 100).round(),
+                                    textStyle:
+                                        DsTextStyles.b3.copyWith(color: DsColorPalette.gray900),
+                                  ),
+                                  Text(
+                                    '%',
+                                    style: DsTextStyles.b3.copyWith(color: DsColorPalette.gray900),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          AnimatedOpacity(
+                            opacity: notifier.isEditMode ? 0.0 : 1.0,
+                            duration: Duration(milliseconds: 100),
+                            child: Padding(
+                              padding: EdgeInsets.only(left: 32, right: 34, bottom: 12),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      width: double.infinity,
+                                      height: 26,
+                                      decoration: BoxDecoration(
+                                        color: DsColorPalette.gray200,
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                    ),
+                                    AnimatedFractionallySizedBox(
+                                      duration: Duration(milliseconds: 300),
+                                      curve: Curves.easeInOut,
+                                      widthFactor: _startAnimation ? notifier.completionRate : 0.0,
+                                      child: Container(
+                                        width: double.infinity,
+                                        height: 26,
+                                        decoration: BoxDecoration(
+                                          color: DsColorPalette.gray700,
+                                          borderRadius: BorderRadius.circular(16),
+                                          border: Border.all(
+                                            color: Colors.black,
+                                            width: notifier.completionRate == 0 ? 0 : 2,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                       ..._todoNameTextInputStates.mapIndexed(
                         (index, inputState) => TodoListItem(
                           key: ValueKey(index),
@@ -299,7 +364,6 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                           onTextChanged: (text) {
                             if (index == _todoNameTextInputStates.length - 1 && text.isNotEmpty) {
                               _addAndSetTodoNameInputState();
-                              _scrollToBottom();
                             }
                             notifier.addOrUpdateName(index, text);
                           },

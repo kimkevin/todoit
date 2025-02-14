@@ -73,6 +73,14 @@ class _PageListItemState extends State<PageListItem> {
       _controller = TextEditingController(text: widget.page.name);
     }
 
+    String countInfoText;
+    if (widget.page.completionCount == widget.page.todoCount) {
+      countInfoText = widget.page.completionCount.toString();
+    } else {
+      countInfoText =
+          '${widget.page.completionCount.toString()}/${widget.page.todoCount.toString()}';
+    }
+
     return DsRow(
       onClick: onItemClick,
       padding: EdgeInsets.only(left: 32),
@@ -113,7 +121,7 @@ class _PageListItemState extends State<PageListItem> {
               Padding(
                 padding: EdgeInsets.only(left: 12, bottom: 3),
                 child: Text(
-                  '${widget.page.completionCount.toString()}/${widget.page.todoCount.toString()}',
+                  countInfoText,
                   style: DsTextStyles.b3.copyWith(color: DsColorPalette.gray400),
                 ),
               )

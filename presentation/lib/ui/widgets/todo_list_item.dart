@@ -73,7 +73,9 @@ class _TodoListItemState extends State<TodoListItem> {
   }
 
   void onTextChanged(String text) {
-    widget.onTextChanged(text);
+    setState(() {
+      widget.onTextChanged(text);
+    });
   }
 
   Widget _buildTextField(bool isEditMode) {

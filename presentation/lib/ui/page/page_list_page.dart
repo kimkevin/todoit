@@ -197,32 +197,37 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
       ),
       floatingActionButton: Visibility(
         visible: !notifier.isEditMode,
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
-            shape: BoxShape.rectangle,
-            color: DsColorPalette.gray700,
-            border: Border.all(
-              color: DsColorPalette.black,
-              width: 2.5,
+        child: GestureDetector(
+          onTap: () {
+            onNewPageClick(notifier);
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              shape: BoxShape.rectangle,
+              color: DsColorPalette.gray700,
+              border: Border.all(
+                color: DsColorPalette.black,
+                width: 2.5,
+              ),
             ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              DsImage(
-                Assets.svg.icPlus.path,
-                width: 24,
-                height: 24,
-                color: DsColorPalette.white,
-              ),
-              const SizedBox(width: 10.0),
-              Text(
-                '새로 만들기',
-                style: DsTextStyles.b2.copyWith(color: DsColorPalette.white),
-              ),
-            ],
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DsImage(
+                  Assets.svg.icPlus.path,
+                  width: 24,
+                  height: 24,
+                  color: DsColorPalette.white,
+                ),
+                const SizedBox(width: 10.0),
+                Text(
+                  '새로 만들기',
+                  style: DsTextStyles.b2.copyWith(color: DsColorPalette.white),
+                ),
+              ],
+            ),
           ),
         ),
       ),

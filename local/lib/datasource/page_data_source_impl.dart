@@ -39,7 +39,8 @@ class PageDataSourceImpl extends PageDataSource {
       final todos = await database.todosDao.getTodosByPageId(page.id);
       final completionCount = todos.where((todo) => todo.completed).length;
       final totalCount = todos.length;
-      final completionPercent = ((completionCount / totalCount) * 100).toInt();
+      final completionPercent =
+          totalCount == 0 ? 0 : ((completionCount / totalCount) * 100).toInt();
 
       return PageEntity(
         id: page.id,
