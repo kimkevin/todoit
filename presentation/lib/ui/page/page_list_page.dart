@@ -202,7 +202,7 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
             onNewPageClick(notifier);
           },
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            padding: EdgeInsets.only(top: 16, bottom: 16, left: 16, right: 24),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50),
               shape: BoxShape.rectangle,
