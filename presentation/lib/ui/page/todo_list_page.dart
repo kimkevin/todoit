@@ -42,13 +42,13 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         final RenderBox? titleRenderBox =
-            _titleKey.currentContext?.findRenderObject() as RenderBox?;
+        _titleKey.currentContext?.findRenderObject() as RenderBox?;
         if (titleRenderBox != null) {
           _titleHeight = titleRenderBox.size.height;
         }
 
         final RenderBox? progressRenderBox =
-            _progressKey.currentContext?.findRenderObject() as RenderBox?;
+        _progressKey.currentContext?.findRenderObject() as RenderBox?;
         if (progressRenderBox != null) {
           _progressHeight = progressRenderBox.size.height;
         }
@@ -101,7 +101,6 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
   }
 
   void _syncTodoInput(List<TodoUiModel> todos) {
-    // setState(() {
     for (int i = 0; i < todos.length; i++) {
       if (i <= _todoNameTextInputStates.length - 1) {
         final todoNameTextInputState = _todoNameTextInputStates[i];
@@ -118,7 +117,6 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
     if (_todoNameTextInputStates.isEmpty || todos.length == _todoNameTextInputStates.length) {
       _addTodoNameInputState();
     }
-    // });
   }
 
   void _deleteTodo(int index) {
@@ -169,19 +167,107 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
     });
   }
 
+  Container _buildTitle(int completionCount, int todoCount) {
+    return Container(
+      key: _titleKey,
+      padding: EdgeInsets.only(left: 32, right: 32, top: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            widget.page.name,
+            style: DsTextStyles.headline.copyWith(color: DsColorPalette.gray900),
+            textAlign: TextAlign.left,
+          ),
+          SizedBox(width: 8),
+          Padding(
+            padding: EdgeInsets.only(bottom: 3),
+            child: Text(
+              '$completionCount/$todoCount',
+              style: DsTextStyles.b3.copyWith(color: DsColorPalette.gray400),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProgressBar(double completionRate, bool isEditMode,) {
+    return Column(
+      key: ValueKey(completionRate),
+      children: [
+        AnimatedOpacity(
+          opacity: isEditMode ? 0.0 : 1.0,
+          duration: Duration(milliseconds: 100),
+          child: Padding(
+            padding: EdgeInsets.only(top: 8, right: 32, bottom: 5),
+            child: Row(
+              key: _progressKey,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                AnimatedDigitWidget(
+                  value: (completionRate * 100).round(),
+                  textStyle:
+                  DsTextStyles.b3.copyWith(color: DsColorPalette.gray900),
+                ),
+                Text(
+                  '%',
+                  style: DsTextStyles.b3.copyWith(color: DsColorPalette.gray900),
+                ),
+              ],
+            ),
+          ),
+        ),
+        AnimatedOpacity(
+          opacity: isEditMode ? 0.0 : 1.0,
+          duration: Duration(milliseconds: 100),
+          child: Padding(
+            padding: EdgeInsets.only(left: 32, right: 34, bottom: 12),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Stack(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height: 26,
+                    decoration: BoxDecoration(
+                      color: DsColorPalette.gray200,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  AnimatedFractionallySizedBox(
+                    duration: Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    widthFactor: _startAnimation ? completionRate : 0.0,
+                    child: Container(
+                      width: double.infinity,
+                      height: 26,
+                      decoration: BoxDecoration(
+                        color: DsColorPalette.gray700,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.black,
+                          width: completionRate == 0 ? 0 : 2,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    print('TESTTEST TodoListPage build!');
+
     final notifier = ref.watch(todoListProvider);
 
-    print('TESTTEST TodoListPage build!');
     _syncTodoInput(notifier.todos);
-
-    // ref.listen<List<TodoUiModel>>(todoListProvider.select((state) => state.todos),
-    //     (previous, next) {
-    //   if (previous?.isEmpty == true && next.isEmpty || !listEquals(previous, next)) {
-    //     _syncTodoInput(next);
-    //   }
-    // });
 
     if (notifier.completeEvent) {
       notifier.finishCompleteEvent();
@@ -212,122 +298,41 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                     scrollController: _scrollController,
                     onReorder: _reorderTodos,
                     children: [
-                      Container(
-                        key: _titleKey,
-                        padding: EdgeInsets.only(left: 32, right: 32, top: 16),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              widget.page.name,
-                              style: DsTextStyles.headline.copyWith(color: DsColorPalette.gray900),
-                              textAlign: TextAlign.left,
-                            ),
-                            SizedBox(width: 8),
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 3),
-                              child: Text(
-                                '${notifier.completionCount}/${notifier.todoCount}',
-                                style: DsTextStyles.b3.copyWith(color: DsColorPalette.gray400),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Column(
-                        key: _progressKey,
-                        children: [
-                          AnimatedOpacity(
-                            opacity: notifier.isEditMode ? 0.0 : 1.0,
-                            duration: Duration(milliseconds: 100),
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 8, right: 32, bottom: 5),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  AnimatedDigitWidget(
-                                    value: (notifier.completionRate * 100).round(),
-                                    textStyle:
-                                        DsTextStyles.b3.copyWith(color: DsColorPalette.gray900),
-                                  ),
-                                  Text(
-                                    '%',
-                                    style: DsTextStyles.b3.copyWith(color: DsColorPalette.gray900),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          AnimatedOpacity(
-                            opacity: notifier.isEditMode ? 0.0 : 1.0,
-                            duration: Duration(milliseconds: 100),
-                            child: Padding(
-                              padding: EdgeInsets.only(left: 32, right: 34, bottom: 12),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
-                                child: Stack(
-                                  children: [
-                                    Container(
-                                      width: double.infinity,
-                                      height: 26,
-                                      decoration: BoxDecoration(
-                                        color: DsColorPalette.gray200,
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                    ),
-                                    AnimatedFractionallySizedBox(
-                                      duration: Duration(milliseconds: 300),
-                                      curve: Curves.easeInOut,
-                                      widthFactor: _startAnimation ? notifier.completionRate : 0.0,
-                                      child: Container(
-                                        width: double.infinity,
-                                        height: 26,
-                                        decoration: BoxDecoration(
-                                          color: DsColorPalette.gray700,
-                                          borderRadius: BorderRadius.circular(16),
-                                          border: Border.all(
-                                            color: Colors.black,
-                                            width: notifier.completionRate == 0 ? 0 : 2,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      _buildTitle(notifier.completionCount, notifier.todoCount),
+                      _buildProgressBar(notifier.completionRate, notifier.isEditMode),
                       ..._todoNameTextInputStates.mapIndexed(
-                        (index, inputState) => TodoListItem(
-                          key: ValueKey(index),
-                          reorderIndex: index,
-                          inputState: inputState,
-                          isEditMode: notifier.isEditMode,
-                          isCompleted: notifier.getTodo(index)?.completed == true,
-                          isLastItem: index == _todoNameTextInputStates.length - 1,
-                          actionClick: (completed) {
-                            if (index == _todoNameTextInputStates.length - 1) {
-                              _addAndSetTodoNameInputState();
-                            }
-                            notifier.setCompleted(index, completed);
-                          },
-                          deleteClick: () {
-                            _deleteTodo(index);
-                          },
-                          onClick: () {
-                            if (index == notifier.todos.length - 1) {
-                              _scrollToBottom();
-                            }
-                          },
-                          onTextChanged: (text) {
-                            if (index == _todoNameTextInputStates.length - 1 && text.isNotEmpty) {
-                              _addAndSetTodoNameInputState();
-                            }
-                            notifier.addOrUpdateName(index, text);
-                          },
-                        ),
+                            (index, inputState) =>
+                            TodoListItem(
+                              key: ValueKey(index),
+                              reorderIndex: index,
+                              inputState: inputState,
+                              isEditMode: notifier.isEditMode,
+                              isCompleted: notifier
+                                  .getTodo(index)
+                                  ?.completed == true,
+                              isLastItem: index == _todoNameTextInputStates.length - 1,
+                              actionClick: (completed) {
+                                if (index == _todoNameTextInputStates.length - 1) {
+                                  _addAndSetTodoNameInputState();
+                                }
+                                notifier.setCompleted(index, completed);
+                              },
+                              deleteClick: () {
+                                _deleteTodo(index);
+                              },
+                              onClick: () {
+                                if (index == notifier.todos.length - 1) {
+                                  _scrollToBottom();
+                                }
+                              },
+                              onTextChanged: (text) {
+                                if (index == _todoNameTextInputStates.length - 1 &&
+                                    text.isNotEmpty) {
+                                  _addAndSetTodoNameInputState();
+                                }
+                                notifier.addOrUpdateName(index, text);
+                              },
+                            ),
                       ),
                       GestureDetector(
                         key: ValueKey('bottom'),
