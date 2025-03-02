@@ -3,16 +3,14 @@ import 'dart:math';
 
 import 'package:animated_digit/animated_digit.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ds/foundation/color/ds_color_palette.dart';
 import 'package:flutter_ds/foundation/typography/ds_text_styles.dart';
-import 'package:flutter_ds/ui/widgets/ds_appbar_action.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:presentation/gen/assets.gen.dart';
 import 'package:presentation/notifier/todo_list_notifier.dart';
 import 'package:presentation/ui/model/page.dart';
 import 'package:presentation/ui/model/todo.dart';
+import 'package:presentation/ui/widgets/todo_list_app_bar.dart';
 import 'package:presentation/ui/widgets/todo_list_item.dart';
 import 'package:presentation/utils/future_utils.dart';
 import 'package:presentation/utils/vibration_utils.dart';
@@ -32,8 +30,6 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
   final double _unscrollableHeight = 200;
   final GlobalKey _titleKey = GlobalKey();
   final GlobalKey _progressKey = GlobalKey();
-  bool _isAppBarTitleVisible = false;
-  bool _isAppBarProgressVisible = false;
   double _titleHeight = 0.0;
   double _progressHeight = 0.0;
   bool _startAnimation = false;
@@ -42,8 +38,6 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
   @override
   void initState() {
     super.initState();
-
-    _scrollController.addListener(_updateOpacity);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
@@ -74,27 +68,12 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
   @override
   void dispose() {
     _throttle?.cancel();
-    _scrollController.removeListener(_updateOpacity);
     _scrollController.dispose();
     for (final state in _todoNameTextInputStates) {
       state.controller.dispose();
       state.focusNode.dispose();
     }
     super.dispose();
-  }
-
-  void _updateOpacity() {
-    if (_throttle?.isActive ?? false) return;
-
-    _throttle = Timer(Duration(milliseconds: 200), () {
-      double offset = _scrollController.offset;
-      if (_titleHeight > 0) {
-        setState(() {
-          _isAppBarTitleVisible = offset >= _titleHeight;
-          _isAppBarProgressVisible = offset >= _titleHeight + _progressHeight;
-        });
-      }
-    });
   }
 
   void _startDelayedAnimation() async {
@@ -122,24 +101,24 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
   }
 
   void _syncTodoInput(List<TodoUiModel> todos) {
-    setState(() {
-      for (int i = 0; i < todos.length; i++) {
-        if (i <= _todoNameTextInputStates.length - 1) {
-          final todoNameTextInputState = _todoNameTextInputStates[i];
-          final oldName = todoNameTextInputState.controller.text;
-          final newName = todos[i].name;
-          if (oldName != newName) {
-            todoNameTextInputState.controller.text = newName;
-          }
-        } else {
-          _addTodoNameInputState(name: todos[i].name);
+    // setState(() {
+    for (int i = 0; i < todos.length; i++) {
+      if (i <= _todoNameTextInputStates.length - 1) {
+        final todoNameTextInputState = _todoNameTextInputStates[i];
+        final oldName = todoNameTextInputState.controller.text;
+        final newName = todos[i].name;
+        if (oldName != newName) {
+          todoNameTextInputState.controller.text = newName;
         }
+      } else {
+        _addTodoNameInputState(name: todos[i].name);
       }
+    }
 
-      if (_todoNameTextInputStates.isEmpty || todos.length == _todoNameTextInputStates.length) {
-        _addTodoNameInputState();
-      }
-    });
+    if (_todoNameTextInputStates.isEmpty || todos.length == _todoNameTextInputStates.length) {
+      _addTodoNameInputState();
+    }
+    // });
   }
 
   void _deleteTodo(int index) {
@@ -194,12 +173,15 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
   Widget build(BuildContext context) {
     final notifier = ref.watch(todoListProvider);
 
-    ref.listen<List<TodoUiModel>>(todoListProvider.select((state) => state.todos),
-        (previous, next) {
-      if (previous?.isEmpty == true && next.isEmpty || !listEquals(previous, next)) {
-        _syncTodoInput(next);
-      }
-    });
+    print('TESTTEST TodoListPage build!');
+    _syncTodoInput(notifier.todos);
+
+    // ref.listen<List<TodoUiModel>>(todoListProvider.select((state) => state.todos),
+    //     (previous, next) {
+    //   if (previous?.isEmpty == true && next.isEmpty || !listEquals(previous, next)) {
+    //     _syncTodoInput(next);
+    //   }
+    // });
 
     if (notifier.completeEvent) {
       notifier.finishCompleteEvent();
@@ -207,45 +189,17 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        titleSpacing: 0,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Align(
-            alignment: Alignment.centerLeft,
-            child: AnimatedOpacity(
-              duration: Duration(milliseconds: 300),
-              opacity: _isAppBarTitleVisible ? 1 : 0,
-              child: Text(
-                widget.page.name,
-                style: DsTextStyles.b2.copyWith(color: DsColorPalette.gray900),
-              ),
-            )),
-        actions: [
-          AnimatedOpacity(
-            duration: Duration(milliseconds: 100),
-            opacity: _isAppBarProgressVisible ? 1 : 0,
-            child: Row(
-              children: [
-                AnimatedDigitWidget(
-                  value: (notifier.completionRate * 100).round(),
-                  textStyle: DsTextStyles.b3.copyWith(color: DsColorPalette.gray900),
-                ),
-                Text(
-                  '%',
-                  style: DsTextStyles.b3.copyWith(color: DsColorPalette.gray900),
-                )
-              ],
-            ),
-          ),
-          DsAppBarAction(
-            type: AppBarActionType.image,
-            imagePath: notifier.isEditMode ? Assets.svg.icCheck.path : Assets.svg.icEdit.path,
-            onTap: () {
-              notifier.toggleEditMode();
-              _dismissKeyboard();
-            },
-          ),
-        ],
+      appBar: TodoListAppBar(
+        pageName: widget.page.name,
+        titleHeight: _titleHeight,
+        progressHeight: _progressHeight,
+        completionRate: notifier.completionRate,
+        isEditMode: notifier.isEditMode,
+        scrollController: _scrollController,
+        onEditModeClick: () {
+          notifier.toggleEditMode();
+          _dismissKeyboard();
+        },
       ),
       body: SafeArea(
         child: Stack(
