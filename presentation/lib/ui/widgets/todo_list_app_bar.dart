@@ -74,6 +74,7 @@ class _TodoListAppBarState extends State<TodoListAppBar> {
 
   @override
   Widget build(BuildContext context) {
+    print('TESTTEST TodoListAppBar build');
     return AppBar(
       titleSpacing: 0,
       backgroundColor: Theme.of(context).colorScheme.inversePrimary,

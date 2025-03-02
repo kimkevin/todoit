@@ -167,7 +167,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
     });
   }
 
-  Container _buildTitle(int completionCount, int todoCount) {
+  Widget _buildTitle(int completionCount, int todoCount) {
     return Container(
       key: _titleKey,
       padding: EdgeInsets.only(left: 32, right: 32, top: 16),
