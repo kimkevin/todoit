@@ -121,22 +121,22 @@ class _NewPageState extends ConsumerState<NewPage> {
       builder: (context, isKeyboardVisible) => Scaffold(
         appBar: AppBar(
           actions: [
-            DsAppBarAction(
-              type: AppBarActionType.text,
-              actionName: 'T',
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.white,
-                  builder: (context) => TextInputBottomSheet(),
-                ).then((text) {
-                  if (text is String) {
-                    _addTodos(text.split('\n'));
-                  }
-                });
-              },
-            ),
+            // DsAppBarAction(
+            //   type: AppBarActionType.image,
+            //   imagePath: Assets.svg.icFastType.path,
+            //   onTap: () {
+            //     showModalBottomSheet(
+            //       context: context,
+            //       isScrollControlled: true,
+            //       backgroundColor: Colors.white,
+            //       builder: (context) => TextInputBottomSheet(),
+            //     ).then((text) {
+            //       if (text is String) {
+            //         _addTodos(text.split('\n'));
+            //       }
+            //     });
+            //   },
+            // ),
             DsAppBarAction(
               type: AppBarActionType.image,
               imagePath: Assets.svg.icCheck.path,

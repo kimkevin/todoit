@@ -51,18 +51,36 @@ class _NewPageItemState extends State<NewPageItem> {
       children: [
         Padding(
           padding: EdgeInsets.only(left: 32, top: 16, right: 32, bottom: 16),
-          child: TextField(
-            controller: widget.pageNameController,
-            cursorColor: DsColorPalette.black,
-            focusNode: widget.pageNameFocusNode,
-            style: DsTextStyles.headline.copyWith(color: DsColorPalette.gray900),
-            decoration: InputDecoration(
-              hintText: '페이지 입력',
-              hintStyle: DsTextStyles.headline.copyWith(color: DsColorPalette.gray300),
-              border: InputBorder.none,
-            ),
-            onChanged: widget.onPageNameChanged,
-            onSubmitted: widget.onPageNameSubmitted,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Flexible(
+                child: IntrinsicWidth(
+                  child: TextField(
+                    controller: widget.pageNameController,
+                    cursorColor: DsColorPalette.black,
+                    focusNode: widget.pageNameFocusNode,
+                    style: DsTextStyles.headline.copyWith(color: DsColorPalette.gray900),
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null, // 제한 없이 여러 줄 입력 가능
+                    decoration: InputDecoration(
+                      hintText: '페이지 입력',
+                      hintStyle: DsTextStyles.headline.copyWith(color: DsColorPalette.gray300),
+                      border: InputBorder.none,
+                    ),
+                    onChanged: widget.onPageNameChanged,
+                    onSubmitted: widget.onPageNameSubmitted,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 8, bottom: 5),
+                child: Text(
+                  '${widget.todoNameControllers.length - 1}',
+                  style: DsTextStyles.b3.copyWith(color: DsColorPalette.gray400),
+                ),
+              ),
+            ],
           ),
         ),
         ...widget.todoNameControllers.mapIndexed(
