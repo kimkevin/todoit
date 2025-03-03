@@ -28,6 +28,10 @@ class TodoListNotifier with ChangeNotifier {
 
   bool get isEditMode => _isEditMode;
 
+  var _isFirstLoaded = false;
+
+  bool get isFirstLoaded => _isFirstLoaded;
+
   List<TodoUiModel> _todos = <TodoUiModel>[];
 
   List<TodoUiModel> get todos => UnmodifiableListView(_todos);
@@ -38,12 +42,17 @@ class TodoListNotifier with ChangeNotifier {
   bool get completeEvent => _completeEvent;
   bool _completeEvent = false;
 
-  int get completionCount => todos.where((e) => e.completed == true).length;
+  int get completionCount =>
+      todos
+          .where((e) => e.completed == true)
+          .length;
 
   int get todoCount => todos.length;
 
   double get completionRate {
-    final completionCount = todos.where((e) => e.completed == true).length;
+    final completionCount = todos
+        .where((e) => e.completed == true)
+        .length;
     if (todos.isEmpty) return 0.0;
     return completionCount / todos.length;
   }
@@ -63,11 +72,14 @@ class TodoListNotifier with ChangeNotifier {
 
     _pageId = pageId;
     _todos = (await todoRepository.getTodosByPageId(pageId)).map(
-      (e) {
+          (e) {
         return e.toUiModel();
       },
     ).toList();
     print('todos= $_todos');
+    if (!_isFirstLoaded) {
+      _isFirstLoaded = true;
+    }
     if (notifyChanged) {
       notifyListeners();
     }
@@ -168,5 +180,5 @@ class TodoListNotifier with ChangeNotifier {
 
 // Finally, we are using ChangeNotifierProvider to allow the UI to interact with our TodosNotifier class.
 final todoListProvider = ChangeNotifierProvider.autoDispose<TodoListNotifier>(
-  (ref) => TodoListNotifier(todoRepository: getIt<TodoRepository>()),
+      (ref) => TodoListNotifier(todoRepository: getIt<TodoRepository>()),
 );

@@ -13,7 +13,8 @@ class TodoTextInputState {
 
   TodoTextInputState({
     String? name,
-  })  : controller = TextEditingController(text: name ?? ''),
+  })
+      : controller = TextEditingController(text: name ?? ''),
         focusNode = FocusNode();
 
   void addListener(Function(bool) onFocusChange) {
@@ -64,6 +65,8 @@ class _TodoListItemState extends State<TodoListItem> {
     super.initState();
 
     _isCompleted = widget.isCompleted;
+
+    print('index= ${widget.reorderIndex}, _isCompleted= $_isCompleted');
   }
 
   void setCompleted(bool isCompleted) {
@@ -72,15 +75,11 @@ class _TodoListItemState extends State<TodoListItem> {
     });
   }
 
-  void onTextChanged(String text) {
-    setState(() {
-      widget.onTextChanged(text);
-    });
-  }
-
   Widget _buildTextField(bool isEditMode) {
     TextStyle textStyle = DsTextStyles.b1;
-    if (_isCompleted && widget.inputState.controller.text.isNotEmpty == true) {
+    if (!widget.isEditMode &&
+        _isCompleted &&
+        widget.inputState.controller.text.isNotEmpty == true) {
       textStyle = textStyle.copyWith(
         decoration: TextDecoration.lineThrough,
         decorationColor: DsColorPalette.gray400,
@@ -101,7 +100,7 @@ class _TodoListItemState extends State<TodoListItem> {
         maxLines: null,
         keyboardType: TextInputType.multiline,
         onTap: widget.onClick,
-        onChanged: onTextChanged,
+        onChanged: widget.onTextChanged,
         decoration: InputDecoration(
           hintText: '할일 입력',
           hintStyle: DsTextStyles.b1.copyWith(color: DsColorPalette.gray300),
@@ -121,43 +120,43 @@ class _TodoListItemState extends State<TodoListItem> {
         child: widget.isEditMode
             ? SizedBox(width: 32)
             : GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  setCompleted(!_isCompleted);
-                  widget.actionClick(_isCompleted);
-                },
-                child: Container(
-                  padding: EdgeInsets.only(
-                    left: 32,
-                    top: 16,
-                    bottom: 16,
-                    right: 16,
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _isCompleted ? DsColorPalette.gray700 : Colors.transparent,
-                      border: Border.all(
-                        color: DsColorPalette.black,
-                        width: 2.5,
-                      ),
-                    ),
-                    width: 26,
-                    height: 26,
-                    child: AnimatedOpacity(
-                      opacity: _isCompleted ? 1 : 0,
-                      duration: Duration(milliseconds: 200),
-                      child: DsImage(
-                        Assets.svg.icCheck.path,
-                        width: 22,
-                        height: 22,
-                        color: DsColorPalette.white,
-                      ),
-                    ),
-                  ),
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            HapticFeedback.lightImpact();
+            setCompleted(!_isCompleted);
+            widget.actionClick(_isCompleted);
+          },
+          child: Container(
+            padding: EdgeInsets.only(
+              left: 32,
+              top: 16,
+              bottom: 16,
+              right: 16,
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: _isCompleted ? DsColorPalette.gray700 : Colors.transparent,
+                border: Border.all(
+                  color: DsColorPalette.black,
+                  width: 2.5,
                 ),
               ),
+              width: 26,
+              height: 26,
+              child: AnimatedOpacity(
+                opacity: _isCompleted ? 1 : 0,
+                duration: Duration(milliseconds: 200),
+                child: DsImage(
+                  Assets.svg.icCheck.path,
+                  width: 22,
+                  height: 22,
+                  color: DsColorPalette.white,
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
       content: _buildTextField(widget.isEditMode),
       trailing: AnimatedSize(
@@ -166,34 +165,34 @@ class _TodoListItemState extends State<TodoListItem> {
         child: !widget.isEditMode
             ? SizedBox(width: 32)
             : Row(
-                children: [
-                  if (!widget.isLastItem)
-                    GestureDetector(
-                      behavior: HitTestBehavior.translucent,
-                      onTap: widget.deleteClick,
-                      child: Container(
-                        padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
-                        child: DsImage(
-                          Assets.svg.icTrash.path,
-                          width: 24,
-                          height: 24,
-                        ),
-                      ),
-                    ),
-                  if (!widget.isLastItem && widget.reorderIndex != null)
-                    ReorderableDragStartListener(
-                      index: widget.reorderIndex!,
-                      child: Container(
-                        padding: EdgeInsets.only(left: 10, right: 32, top: 10, bottom: 10),
-                        child: DsImage(
-                          Assets.svg.icDragHandle.path,
-                          width: 24,
-                          height: 24,
-                        ),
-                      ),
-                    )
-                ],
+          children: [
+            if (!widget.isLastItem)
+              GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: widget.deleteClick,
+                child: Container(
+                  padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+                  child: DsImage(
+                    Assets.svg.icTrash.path,
+                    width: 24,
+                    height: 24,
+                  ),
+                ),
               ),
+            if (!widget.isLastItem && widget.reorderIndex != null)
+              ReorderableDragStartListener(
+                index: widget.reorderIndex!,
+                child: Container(
+                  padding: EdgeInsets.only(left: 10, right: 32, top: 10, bottom: 10),
+                  child: DsImage(
+                    Assets.svg.icDragHandle.path,
+                    width: 24,
+                    height: 24,
+                  ),
+                ),
+              )
+          ],
+        ),
       ),
       bottomDivider: DashDivider(horizontalPadding: 32),
     );

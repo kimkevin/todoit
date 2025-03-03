@@ -42,13 +42,13 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         final RenderBox? titleRenderBox =
-        _titleKey.currentContext?.findRenderObject() as RenderBox?;
+            _titleKey.currentContext?.findRenderObject() as RenderBox?;
         if (titleRenderBox != null) {
           _titleHeight = titleRenderBox.size.height;
         }
 
         final RenderBox? progressRenderBox =
-        _progressKey.currentContext?.findRenderObject() as RenderBox?;
+            _progressKey.currentContext?.findRenderObject() as RenderBox?;
         if (progressRenderBox != null) {
           _progressHeight = progressRenderBox.size.height;
         }
@@ -192,68 +192,63 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
     );
   }
 
-  Widget _buildProgressBar(double completionRate, bool isEditMode,) {
+  Widget _buildProgressBar(
+    double completionRate,
+    bool isEditMode,
+  ) {
     return Column(
-      key: ValueKey(completionRate),
+      key: ValueKey('todo-list-progress-bar'),
       children: [
-        AnimatedOpacity(
-          opacity: isEditMode ? 0.0 : 1.0,
-          duration: Duration(milliseconds: 100),
-          child: Padding(
-            padding: EdgeInsets.only(top: 8, right: 32, bottom: 5),
-            child: Row(
-              key: _progressKey,
-              mainAxisAlignment: MainAxisAlignment.end,
+        Padding(
+          padding: EdgeInsets.only(left: 32, top: 16, right: 34, bottom: 12),
+          child: ClipRRect(
+            // borderRadius: BorderRadius.circular(),
+            child: Stack(
               children: [
-                AnimatedDigitWidget(
-                  value: (completionRate * 100).round(),
-                  textStyle:
-                  DsTextStyles.b3.copyWith(color: DsColorPalette.gray900),
+                Container(
+                  width: double.infinity,
+                  height: 26,
+                  decoration: BoxDecoration(
+                    color: DsColorPalette.gray200,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
-                Text(
-                  '%',
-                  style: DsTextStyles.b3.copyWith(color: DsColorPalette.gray900),
-                ),
-              ],
-            ),
-          ),
-        ),
-        AnimatedOpacity(
-          opacity: isEditMode ? 0.0 : 1.0,
-          duration: Duration(milliseconds: 100),
-          child: Padding(
-            padding: EdgeInsets.only(left: 32, right: 34, bottom: 12),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Stack(
-                children: [
-                  Container(
+                AnimatedFractionallySizedBox(
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  widthFactor: _startAnimation ? completionRate : 0.0,
+                  child: Container(
                     width: double.infinity,
                     height: 26,
                     decoration: BoxDecoration(
-                      color: DsColorPalette.gray200,
+                      color: DsColorPalette.gray700,
                       borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  AnimatedFractionallySizedBox(
-                    duration: Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    widthFactor: _startAnimation ? completionRate : 0.0,
-                    child: Container(
-                      width: double.infinity,
-                      height: 26,
-                      decoration: BoxDecoration(
-                        color: DsColorPalette.gray700,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.black,
-                          width: completionRate == 0 ? 0 : 2,
-                        ),
+                      border: Border.all(
+                        color: completionRate == 0 ? Colors.transparent : Colors.black,
+                        width: completionRate == 0 ? 0 : 2.5,
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+                Container(
+                  height: 26,
+                  padding: EdgeInsets.only(left: 12),
+                  child: Row(
+                    key: _progressKey,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      AnimatedDigitWidget(
+                        value: (completionRate * 100).round(),
+                        textStyle: DsTextStyles.b3.copyWith(color: DsColorPalette.white),
+                      ),
+                      Text(
+                        '%',
+                        style: DsTextStyles.b3.copyWith(color: DsColorPalette.white),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -263,11 +258,11 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
 
   @override
   Widget build(BuildContext context) {
-    print('TESTTEST TodoListPage build!');
-
     final notifier = ref.watch(todoListProvider);
 
-    _syncTodoInput(notifier.todos);
+    if (notifier.isFirstLoaded) {
+      _syncTodoInput(notifier.todos);
+    }
 
     if (notifier.completeEvent) {
       notifier.finishCompleteEvent();
@@ -294,48 +289,52 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
               children: [
                 Expanded(
                   child: ReorderableListView(
-                    // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                     scrollController: _scrollController,
                     onReorder: _reorderTodos,
                     children: [
                       _buildTitle(notifier.completionCount, notifier.todoCount),
                       _buildProgressBar(notifier.completionRate, notifier.isEditMode),
                       ..._todoNameTextInputStates.mapIndexed(
-                            (index, inputState) =>
-                            TodoListItem(
-                              key: ValueKey(index),
-                              reorderIndex: index,
-                              inputState: inputState,
-                              isEditMode: notifier.isEditMode,
-                              isCompleted: notifier
-                                  .getTodo(index)
-                                  ?.completed == true,
-                              isLastItem: index == _todoNameTextInputStates.length - 1,
-                              actionClick: (completed) {
-                                if (index == _todoNameTextInputStates.length - 1) {
-                                  _addAndSetTodoNameInputState();
-                                }
-                                notifier.setCompleted(index, completed);
-                              },
-                              deleteClick: () {
-                                _deleteTodo(index);
-                              },
-                              onClick: () {
-                                if (index == notifier.todos.length - 1) {
-                                  _scrollToBottom();
-                                }
-                              },
-                              onTextChanged: (text) {
-                                if (index == _todoNameTextInputStates.length - 1 &&
-                                    text.isNotEmpty) {
-                                  _addAndSetTodoNameInputState();
-                                }
-                                notifier.addOrUpdateName(index, text);
-                              },
-                            ),
+                        (index, inputState) {
+                          final todo = notifier.getTodo(index);
+                          ValueKey key;
+                          if (todo != null) {
+                            key = ValueKey(todo);
+                          } else {
+                            key = ValueKey('last-todo-$index');
+                          }
+                          return TodoListItem(
+                            key: ValueKey('last-todo-$index'),
+                            reorderIndex: index,
+                            inputState: inputState,
+                            isEditMode: notifier.isEditMode,
+                            isCompleted: notifier.getTodo(index)?.completed == true,
+                            isLastItem: index == _todoNameTextInputStates.length - 1,
+                            actionClick: (completed) {
+                              if (index == _todoNameTextInputStates.length - 1) {
+                                _addAndSetTodoNameInputState();
+                              }
+                              notifier.setCompleted(index, completed);
+                            },
+                            deleteClick: () {
+                              _deleteTodo(index);
+                            },
+                            onClick: () {
+                              if (index == notifier.todos.length - 1) {
+                                _scrollToBottom();
+                              }
+                            },
+                            onTextChanged: (text) {
+                              if (index == _todoNameTextInputStates.length - 1 && text.isNotEmpty) {
+                                _addAndSetTodoNameInputState();
+                              }
+                              notifier.addOrUpdateName(index, text);
+                            },
+                          );
+                        },
                       ),
                       GestureDetector(
-                        key: ValueKey('bottom'),
+                        key: ValueKey('todo-list-bottom'),
                         behavior: HitTestBehavior.translucent,
                         onTap: _dismissKeyboard,
                         child: SizedBox(
