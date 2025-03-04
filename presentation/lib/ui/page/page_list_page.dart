@@ -107,7 +107,7 @@ class _PageListPageState extends ConsumerState<PageListPage> with WidgetsBinding
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text("클립보드에서 새로운 텍스트 감지: $clipboardText"),
+        content: Text("클립보드에서 새로운 텍스트 감지\n$clipboardText"),
         action: SnackBarAction(
           label: "붙여넣기",
           onPressed: () {
