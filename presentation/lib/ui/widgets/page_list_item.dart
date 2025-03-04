@@ -111,6 +111,8 @@ class _PageListItemState extends State<PageListItem> {
                     hintText: widget.isEditMode ? LocalizationUtils.getDefaultName(context) : '',
                     hintStyle: DsTextStyles.headline.copyWith(color: DsColorPalette.gray300),
                     border: InputBorder.none,
+                    isDense: true, // 기본 패딩 줄이기
+                    contentPadding: EdgeInsets.zero, // 내부 패딩 완전히 제거
                   ),
                   readOnly: !widget.isEditMode,
                   onChanged: onTextChanged,
@@ -119,7 +121,7 @@ class _PageListItemState extends State<PageListItem> {
             ),
             if (!widget.isEditMode)
               Padding(
-                padding: EdgeInsets.only(left: 12, bottom: 3),
+                padding: EdgeInsets.only(left: 12),
                 child: Text(
                   countInfoText,
                   style: DsTextStyles.b3.copyWith(color: DsColorPalette.gray400),

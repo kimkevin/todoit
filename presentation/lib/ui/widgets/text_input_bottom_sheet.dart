@@ -64,6 +64,8 @@ class _TextInputBottomSheetState extends State<TextInputBottomSheet> {
                 height: 1.5,
               ),
               border: InputBorder.none,
+              isDense: true,
+              contentPadding: EdgeInsets.zero,
             ),
             maxLines: null,
             keyboardType: TextInputType.multiline,

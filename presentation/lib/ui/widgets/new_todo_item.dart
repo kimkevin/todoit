@@ -45,6 +45,8 @@ class _NewTodoItemState extends State<NewTodoItem> {
         hintText: '할일 입력',
         hintStyle: textStyle.copyWith(color: DsColorPalette.gray300),
         border: InputBorder.none,
+        isDense: true,
+        contentPadding: EdgeInsets.zero,
       ),
     );
   }
@@ -54,7 +56,7 @@ class _NewTodoItemState extends State<NewTodoItem> {
     final screenWidth = MediaQuery.of(context).size.width;
     return IntrinsicHeight(
       child: Container(
-        constraints: BoxConstraints(minHeight: 74, maxHeight: double.infinity),
+        constraints: BoxConstraints(minHeight: 62, maxHeight: double.infinity),
         child: Stack(
           children: [
             Align(

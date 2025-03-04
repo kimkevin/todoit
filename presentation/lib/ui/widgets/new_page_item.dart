@@ -28,7 +28,8 @@ class NewPageItem extends StatefulWidget {
     this.onPageNameChanged,
     this.onTodoNameChanged,
     this.onPageNameSubmitted,
-  })  : pageNameController = pageNameController ?? TextEditingController(),
+  })
+      : pageNameController = pageNameController ?? TextEditingController(),
         todoNameControllers = todoNameControllers ?? [];
 
   @override
@@ -55,26 +56,47 @@ class _NewPageItemState extends State<NewPageItem> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Flexible(
-                child: IntrinsicWidth(
-                  child: TextField(
-                    controller: widget.pageNameController,
-                    cursorColor: DsColorPalette.black,
-                    focusNode: widget.pageNameFocusNode,
-                    style: DsTextStyles.headline.copyWith(color: DsColorPalette.gray900),
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null, // 제한 없이 여러 줄 입력 가능
-                    decoration: InputDecoration(
-                      hintText: '페이지 입력',
-                      hintStyle: DsTextStyles.headline.copyWith(color: DsColorPalette.gray300),
-                      border: InputBorder.none,
-                    ),
-                    onChanged: widget.onPageNameChanged,
-                    onSubmitted: widget.onPageNameSubmitted,
-                  ),
+                child: ValueListenableBuilder<TextEditingValue>(
+                  valueListenable: widget.pageNameController,
+                  builder: (context, value, child) {
+                    bool showPlaceholder = value.text.isEmpty;
+                    return Stack(
+                      alignment: Alignment.centerLeft,
+                      children: [
+                        if (showPlaceholder)
+                          Text(
+                            '페이지 입력',
+                            style: DsTextStyles.headline.copyWith(color: DsColorPalette.gray300),
+                            textHeightBehavior: const TextHeightBehavior(
+                              applyHeightToFirstAscent: false,
+                              applyHeightToLastDescent: false,
+                            ),
+                          ),
+                        IntrinsicWidth(
+                          child: TextField(
+                            controller: widget.pageNameController,
+                            cursorColor: DsColorPalette.black,
+                            focusNode: widget.pageNameFocusNode,
+                            style: DsTextStyles.headline.copyWith(color: DsColorPalette.gray900),
+                            keyboardType: TextInputType.multiline,
+                            maxLines: null,
+                            // 제한 없이 여러 줄 입력 가능
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              isDense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            onChanged: widget.onPageNameChanged,
+                            onSubmitted: widget.onPageNameSubmitted,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(left: 8, bottom: 5),
+                padding: EdgeInsets.only(left: 8),
                 child: Text(
                   '${widget.todoNameControllers.length - 1}',
                   style: DsTextStyles.b3.copyWith(color: DsColorPalette.gray400),
@@ -84,21 +106,23 @@ class _NewPageItemState extends State<NewPageItem> {
           ),
         ),
         ...widget.todoNameControllers.mapIndexed(
-          (index, item) => NewTodoItem(
-            controller: widget.todoNameControllers[index],
-            focusNode: index == 0 ? widget.firstTodoNameFocusNode : null,
-            deletable: widget.lastItemDeletable || index != widget.todoNameControllers.length - 1,
-            onTextChanged: (text) {
-              final isLastItem = index == widget.todoNameControllers.length - 1;
-              if (isLastItem && text.isNotEmpty) {
-                widget.onLastItemChanged?.call();
-              }
-              widget.onTodoNameChanged?.call(index, text);
-            },
-            onDeleteClick: () {
-              widget.onTodoDeleted(index);
-            },
-          ),
+              (index, item) =>
+              NewTodoItem(
+                controller: widget.todoNameControllers[index],
+                focusNode: index == 0 ? widget.firstTodoNameFocusNode : null,
+                deletable: widget.lastItemDeletable ||
+                    index != widget.todoNameControllers.length - 1,
+                onTextChanged: (text) {
+                  final isLastItem = index == widget.todoNameControllers.length - 1;
+                  if (isLastItem && text.isNotEmpty) {
+                    widget.onLastItemChanged?.call();
+                  }
+                  widget.onTodoNameChanged?.call(index, text);
+                },
+                onDeleteClick: () {
+                  widget.onTodoDeleted(index);
+                },
+              ),
         ),
       ],
     );

@@ -166,7 +166,6 @@ class _NewPageState extends ConsumerState<NewPage> {
               children: [
                 ..._pages.mapIndexed(
                   (index, page) => NewPageItem(
-                    key: ValueKey(page),
                     pageNameController: _pageNameControllers[index],
                     todoNameControllers: _todoNameControllersList[index],
                     pageNameFocusNode: _pageNameFocusNode,

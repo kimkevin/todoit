@@ -105,6 +105,8 @@ class _TodoListItemState extends State<TodoListItem> {
           hintText: '할일 입력',
           hintStyle: DsTextStyles.b1.copyWith(color: DsColorPalette.gray300),
           border: InputBorder.none,
+          isDense: true,
+          contentPadding: EdgeInsets.zero,
         ),
       ),
     );
@@ -113,7 +115,7 @@ class _TodoListItemState extends State<TodoListItem> {
   @override
   Widget build(BuildContext context) {
     return DsRow(
-      minHeight: 60,
+      minHeight: 62,
       leading: AnimatedSize(
         duration: Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -142,8 +144,8 @@ class _TodoListItemState extends State<TodoListItem> {
                   width: 2.5,
                 ),
               ),
-              width: 26,
-              height: 26,
+              width: 24,
+              height: 24,
               child: AnimatedOpacity(
                 opacity: _isCompleted ? 1 : 0,
                 duration: Duration(milliseconds: 200),
