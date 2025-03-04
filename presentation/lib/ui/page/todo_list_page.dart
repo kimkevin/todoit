@@ -42,13 +42,13 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         final RenderBox? titleRenderBox =
-        _titleKey.currentContext?.findRenderObject() as RenderBox?;
+            _titleKey.currentContext?.findRenderObject() as RenderBox?;
         if (titleRenderBox != null) {
           _titleHeight = titleRenderBox.size.height;
         }
 
         final RenderBox? progressRenderBox =
-        _progressKey.currentContext?.findRenderObject() as RenderBox?;
+            _progressKey.currentContext?.findRenderObject() as RenderBox?;
         if (progressRenderBox != null) {
           _progressHeight = progressRenderBox.size.height;
         }
@@ -194,8 +194,10 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
     );
   }
 
-  Widget _buildProgressBar(double completionRate,
-      bool isEditMode,) {
+  Widget _buildProgressBar(
+    double completionRate,
+    bool isEditMode,
+  ) {
     return Column(
       key: ValueKey('todo-list-progress-bar'),
       children: [
@@ -295,7 +297,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                       _buildTitle(notifier.completionCount, notifier.todoCount),
                       _buildProgressBar(notifier.completionRate, notifier.isEditMode),
                       ..._todoNameTextInputStates.mapIndexed(
-                            (index, inputState) {
+                        (index, inputState) {
                           final todo = notifier.getTodo(index);
                           ValueKey key;
                           if (todo != null) {
@@ -308,9 +310,7 @@ class _TodoListPageState extends ConsumerState<TodoListPage> {
                             reorderIndex: index,
                             inputState: inputState,
                             isEditMode: notifier.isEditMode,
-                            isCompleted: notifier
-                                .getTodo(index)
-                                ?.completed == true,
+                            isCompleted: notifier.getTodo(index)?.completed == true,
                             isLastItem: index == _todoNameTextInputStates.length - 1,
                             actionClick: (completed) {
                               if (index == _todoNameTextInputStates.length - 1) {

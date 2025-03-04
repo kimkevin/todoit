@@ -74,7 +74,6 @@ class _TodoListAppBarState extends State<TodoListAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    print('TESTTEST TodoListAppBar build');
     return AppBar(
       titleSpacing: 0,
       backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -82,9 +81,12 @@ class _TodoListAppBarState extends State<TodoListAppBar> {
         alignment: Alignment.centerLeft,
         child: Visibility(
           visible: _isAppBarTitleVisible ? true : false,
-          child: Text(
-            widget.pageName,
-            style: DsTextStyles.b2.copyWith(color: DsColorPalette.gray900),
+          child: Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: Text(
+              widget.pageName,
+              style: DsTextStyles.b2.copyWith(color: DsColorPalette.gray900),
+            ),
           ),
         ),
       ),
